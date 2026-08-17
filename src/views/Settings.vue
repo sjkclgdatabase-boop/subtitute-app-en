@@ -1,51 +1,51 @@
 <template>
-  <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
+  <div class="p-4 sm:p-8 mx-auto min-h-screen space-y-8 min-w-[1024px] print:p-0 print:max-w-none print:min-w-0">
     
-    <!-- 头部区域：统一的卡片风格、排版规范与渐变大标题 -->
-    <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 space-y-2">
+    <!-- Header Section: Unified card style, typography, and gradient title -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 space-y-2">
       <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
-        TETAPAN & PENYENGGARAN SISTEM KESELURUHAN
+        SYSTEM SETTINGS & OVERALL MAINTENANCE
       </h1>
       <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
-        KONFIGURASI PARAMETER WAKTU SEKOLAH, PENGURUSAN KELAS ASAS, TETAPAN SASARAN MMI, SOKONG PEMBERSIHAN & PEMULIHAN DATA SEBELUM PELANCARAN.
+        SCHOOL TIME PARAMETER CONFIGURATION, BASIC CLASS MANAGEMENT, MMI TARGET SETTINGS, SUPPORTING DATA CLEANING & RECOVERY BEFORE LAUNCH.
       </p>
     </div>
 
-    <!-- 卡片：学校 Logo 与外观设置 -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <!-- Card: School Logo & Appearance Settings -->
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold text-xs">🖼️</span>
-        TETAPAN LOGO & PAPARAN SEKOLAH
+        SCHOOL LOGO & DISPLAY SETTINGS
       </h2>
-      <p class="text-slate-500 text-xs font-medium">KEMASKINI LOGO & NAMA SEKOLAH. SELEPAS DISIMPAN, BAR MENU DAN LAMAN LOG MASUK AKAN DIKEMASKINI SECARA MASA NYATA.</p>
+      <p class="text-slate-500 text-xs font-medium">UPDATE SCHOOL LOGO & NAME. ONCE SAVED, THE MENU BAR AND LOGIN PAGE WILL BE UPDATED IN REAL-TIME.</p>
 
       <div class="space-y-6">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">NAMA SEKOLAH SEMASA</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">CURRENT SCHOOL NAME</label>
           <input 
             v-model="schoolNameSetting" 
             type="text" 
-            placeholder="MASUKKAN NAMA SEKOLAH..." 
+            placeholder="ENTER SCHOOL NAME..." 
             class="w-full sm:w-96 px-4 h-11 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
           />
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">TUKAR LOGO SEKOLAH (SOKONG MUAT NAIK TEMPATAN)</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">CHANGE SCHOOL LOGO (SUPPORTS LOCAL UPLOAD)</label>
           
           <div class="flex items-center gap-6">
-            <!-- 预览图 -->
+            <!-- Preview Image -->
             <div class="w-20 h-20 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center p-2 overflow-hidden shadow-inner shrink-0">
               <img :src="schoolLogoSetting || '/logo.png'" alt="Logo Preview" class="w-full h-full object-contain" />
             </div>
 
-            <!-- 上传按钮与说明 -->
+            <!-- Upload Button & Instructions -->
             <div class="flex-1 space-y-2">
               <label class="relative inline-flex cursor-pointer bg-slate-900 hover:bg-slate-800 text-white px-5 h-11 rounded-2xl text-xs font-bold transition shadow-sm items-center gap-2">
-                <span>📂 PILIH IMEJ LOGO BAHARU</span>
+                <span>📂 CHOOSE NEW LOGO IMAGE</span>
                 <input type="file" accept="image/*" @change="handleSettingsLogoUpload" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
               </label>
-              <p class="text-[11px] text-slate-400 font-medium">SOKONG FORMAT PNG, JPG, SAIZ DI BAWAH 2MB ADALAH DIGALAKKAN.</p>
+              <p class="text-[11px] text-slate-400 font-medium">SUPPORTS PNG, JPG FORMATS. SIZES UNDER 2MB ARE RECOMMENDED.</p>
             </div>
           </div>
         </div>
@@ -56,40 +56,40 @@
           @click="saveSchoolIdentity" 
           class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all duration-200 cursor-pointer"
         >
-          SIMPAN PERUBAHAN LOGO & NAMA
+          SAVE LOGO & NAME CHANGES
         </button>
       </div>
     </div>
 
-    <!-- 卡片一：学校作息配置 -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <!-- Card 1: School Schedule Configuration -->
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">🏫</span>
-        KONFIGURASI WAKTU PERSEKOLAHAN
+        SCHOOL HOURS CONFIGURATION
       </h2>
       
       <div class="space-y-6">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">BILANGAN HARI PERSEKOLAHAN SEMINGGU (HARI)</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">NUMBER OF SCHOOL DAYS PER WEEK (DAYS)</label>
           <div class="flex items-center gap-4">
             <input 
               v-model.number="config.daysPerWeek" 
               type="number" min="1" max="7" 
               class="w-full sm:w-64 px-4 h-11 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
             />
-            <span class="text-xs text-slate-400 font-medium">CONTOH: 5 (MEWAKILI ISNIN HINGGA JUMAAT)</span>
+            <span class="text-xs text-slate-400 font-medium">E.G. 5 (REPRESENTING MONDAY TO FRIDAY)</span>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">JUMLAH SLOT MASA SEHARI (SLOT)</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">NUMBER OF TIME SLOTS PER DAY (SLOTS)</label>
           <div class="flex items-center gap-4">
             <input 
               v-model.number="config.periodsPerDay" 
               type="number" min="1" max="15" 
               class="w-full sm:w-64 px-4 h-11 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
             />
-            <span class="text-xs text-slate-400 font-medium">CONTOH: 11 (JUMLAH SLOT SESI PAGI)</span>
+            <span class="text-xs text-slate-400 font-medium">E.G. 11 (TOTAL SLOTS FOR MORNING SESSION)</span>
           </div>
         </div>
       </div>
@@ -99,31 +99,31 @@
           @click="saveConfig" 
           class="bg-slate-900 hover:bg-slate-800 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all duration-200 cursor-pointer"
         >
-          SIMPAN KONFIGURASI
+          SAVE CONFIGURATION
         </button>
       </div>
     </div>
 
-    <!-- 卡片二：学年上课周历与假期维护 -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <!-- Card 2: Academic Year School Calendar & Holiday Maintenance -->
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs">📅</span>
-        KONFIGURASI KALENDAR & CUTI PERSEKOLAHAN
+        SCHOOL CALENDAR & HOLIDAYS CONFIGURATION
       </h2>
-      <p class="text-slate-500 text-xs font-medium mb-6">Masukkan minggu persekolahan dan cuti sepanjang tahun. Sistem akan menolak tempoh cuti secara automatik untuk mengira sasaran tahunan dengan tepat.</p>
+      <p class="text-slate-500 text-xs font-medium mb-6">Enter school weeks and holidays throughout the year. The system will automatically exclude holiday periods to accurately calculate annual targets.</p>
 
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-200 mb-6">
         <div>
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">IMPORT / EKSPORT KALENDAR PERSEKOLAHAN BERKELOMPOK</h3>
-          <p class="text-slate-500 text-xs mt-1 font-medium">SOKONG MUAT TURUN TEMPLAT CSV PIAWAI, ISI DAN MUAT NAIK BERKELOMPOK.</p>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">BULK IMPORT / EXPORT SCHOOL CALENDAR</h3>
+          <p class="text-slate-500 text-xs mt-1 font-medium">SUPPORTS DOWNLOADING STANDARD CSV TEMPLATE, FILLING AND BULK UPLOADING.</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <button @click="downloadWeekTemplate" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer">
-            📥 MUAT TURUN TEMPLAT KALENDAR
+            📥 DOWNLOAD CALENDAR TEMPLATE
           </button>
           
           <label class="relative cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2">
-            <span>📂 PILIH FAIL KALENDAR</span>
+            <span>📂 CHOOSE CALENDAR FILE</span>
             <input type="file" ref="weekFileInput" accept=".csv" @change="handleWeekFileUpload" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
           </label>
         </div>
@@ -131,77 +131,83 @@
 
       <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 mb-6 grid grid-cols-1 sm:grid-cols-5 gap-3 items-end">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">MINGGU KE-</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1">WEEK NO.</label>
           <input type="number" v-model.number="newWeek.week_number" placeholder="1" class="w-full bg-white border border-slate-200 px-3 h-11 rounded-xl text-xs font-bold text-slate-800" />
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">TARIKH MULA (YYYY-MM-DD)</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1">START DATE (YYYY-MM-DD)</label>
           <input type="date" v-model="newWeek.start_date" class="w-full bg-white border border-slate-200 px-3 h-11 rounded-xl text-xs font-bold text-slate-800 cursor-pointer" />
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">TARIKH TAMAT (YYYY-MM-DD)</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1">END DATE (YYYY-MM-DD)</label>
           <input type="date" v-model="newWeek.end_date" class="w-full bg-white border border-slate-200 px-3 h-11 rounded-xl text-xs font-bold text-slate-800 cursor-pointer" />
         </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">JENIS</label>
-          <select v-model="newWeek.is_school_week" class="w-full bg-white border border-slate-200 px-3 h-11 rounded-xl text-xs font-bold text-slate-800 cursor-pointer">
-            <option :value="true">🟢 MINGGU PERSEKOLAHAN</option>
-            <option :value="false">🔴 MINGGU CUTI</option>
+        <div class="relative w-full">
+          <label class="block text-xs font-bold text-slate-700 mb-1">TYPE</label>
+          <select v-model="newWeek.is_school_week" class="w-full bg-white border border-slate-200 px-3 h-11 rounded-xl text-xs font-bold text-slate-800 appearance-none pr-8 cursor-pointer">
+            <option :value="true">🟢 SCHOOL WEEK</option>
+            <option :value="false">🔴 HOLIDAY WEEK</option>
           </select>
+          <div class="absolute right-3 top-[32px] pointer-events-none text-slate-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </div>
         </div>
         <button @click="addSchoolWeek" class="bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer">
-          ➕ TAMBAH SATU
+          ➕ ADD ONE
         </button>
       </div>
 
       <div class="space-y-3">
         <div class="flex items-center justify-between mb-2">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">SENARAI KALENDAR PERSEKOLAHAN YANG TELAH DISIMPAN</h3>
-          <span class="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full font-bold">JUMLAH MINGGU {{ allSchoolWeeks.length }}</span>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">SAVED SCHOOL CALENDAR LIST</h3>
+          <span class="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full font-bold">TOTAL WEEKS {{ allSchoolWeeks.length }}</span>
         </div>
 
         <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden max-h-64 overflow-y-auto">
           <div v-if="allSchoolWeeks.length === 0" class="p-8 text-center text-xs text-slate-400 font-medium">
-            TIADA DATA KALENDAR DIMASUKKAN, SILA TAMBAH ATAU IMPORT DI ATAS.
+            NO CALENDAR DATA ENTERED. PLEASE ADD OR IMPORT ABOVE.
           </div>
           <div v-for="w in allSchoolWeeks" :key="w.id" class="p-3.5 flex items-center justify-between bg-white hover:bg-slate-50 transition">
             <div class="flex items-center gap-4 text-xs font-bold text-slate-700">
-              <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-xl font-bold">MINGGU KE-{{ w.week_number }}</span>
+              <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-xl font-bold">WEEK {{ w.week_number }}</span>
               <span class="text-slate-600 font-medium">{{ w.start_date }} ~ {{ w.end_date }}</span>
               <span :class="w.is_school_week ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-red-700 bg-red-50 border-red-200'" class="px-2.5 py-1 rounded-full text-[10px] font-black border">
-                {{ w.is_school_week ? '🟢 MINGGU PERSEKOLAHAN' : '🔴 MINGGU CUTI' }}
+                {{ w.is_school_week ? '🟢 SCHOOL WEEK' : '🔴 HOLIDAY WEEK' }}
               </span>
             </div>
             <button @click="deleteSchoolWeek(w.id)" class="text-slate-400 hover:text-red-600 text-xs font-bold px-3 py-1.5 rounded-xl transition hover:bg-red-50 cursor-pointer">
-              🗑️ PADAM
+              🗑️ DELETE
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 卡片三：学校班级基础管理 -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <!-- Card 3: School Basic Class Management -->
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center font-bold text-xs">📚</span>
-        PENGURUSAN KELAS ASAS SEKOLAH
+        SCHOOL BASIC CLASS MANAGEMENT
       </h2>
-      <p class="text-slate-500 text-xs font-medium mb-6">SELENGGARA KELAS PIAWAI SEKOLAH, UNTUK KEGUNAAN JADUAL, CUTI & REKOD GANGGUAN MMI.</p>
+      <p class="text-slate-500 text-xs font-medium mb-6">MAINTAIN STANDARD SCHOOL CLASSES FOR TIMETABLES, LEAVES & MMI INTERRUPTION RECORDS.</p>
 
       <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 mb-8 flex flex-col sm:flex-row gap-4 items-end">
-        <div class="w-full sm:w-1/3">
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">TAHUN:</label>
-          <select v-model="newClassGrade" class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 cursor-pointer">
-            <option v-for="g in [1, 2, 3, 4, 5, 6]" :key="g" :value="g">TAHUN {{ g }}</option>
+        <div class="w-full sm:w-1/3 relative">
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">GRADE:</label>
+          <select v-model="newClassGrade" class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 appearance-none pr-8 cursor-pointer">
+            <option v-for="g in [1, 2, 3, 4, 5, 6]" :key="g" :value="g">GRADE {{ g }}</option>
           </select>
+          <div class="absolute right-3 top-[38px] pointer-events-none text-slate-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </div>
         </div>
 
         <div class="w-full sm:w-1/2">
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">NAMA KELAS (CONTOH: 1A, 4C):</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">CLASS NAME (E.G. 1A, 4C):</label>
           <input 
             type="text" 
             v-model="newClassName" 
-            placeholder="MASUKKAN NAMA KELAS PIAWAI..." 
+            placeholder="ENTER STANDARD CLASS NAME..." 
             class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
@@ -210,20 +216,20 @@
           @click="addClass" 
           class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all shrink-0 cursor-pointer"
         >
-          ➕ TAMBAH KELAS
+          ➕ ADD CLASS
         </button>
       </div>
 
       <div class="space-y-6">
         <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">SENARAI KELAS SEKOLAH DIMASUKKAN</h3>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">ENTERED SCHOOL CLASS LIST</h3>
           <button @click="toggleAllGrades" class="text-xs text-indigo-600 font-bold hover:underline cursor-pointer">
-            {{ allExpanded ? 'LIPAT SEMUA' : 'BUKA SEMUA' }}
+            {{ allExpanded ? 'COLLAPSE ALL' : 'EXPAND ALL' }}
           </button>
         </div>
         
         <div v-if="classList.length === 0" class="text-xs text-slate-400 font-medium py-6 text-center border border-dashed border-slate-200 rounded-2xl">
-          TIADA DATA KELAS, SILA TAMBAH DI ATAS
+          NO CLASS DATA. PLEASE ADD ABOVE.
         </div>
 
         <div v-else class="space-y-4">
@@ -233,7 +239,7 @@
                  @click="toggleGrade(gradeKey)"
                  class="flex items-center gap-3 cursor-pointer group select-none">
               <span class="px-3 py-1 bg-violet-50 text-violet-700 rounded-xl text-xs font-black tracking-wider group-hover:bg-violet-100 transition flex items-center gap-2">
-                TAHUN {{ gradeKey }} 
+                GRADE {{ gradeKey }} 
                 <span class="text-[10px] text-violet-400">{{ expandedGrades[gradeKey] ? '▼' : '▶' }}</span>
               </span>
               <div class="h-px bg-slate-100 flex-1"></div>
@@ -247,12 +253,12 @@
               >
                 <div>
                   <div class="text-xs font-bold text-slate-900">{{ c.class_name }}</div>
-                  <div class="text-[10px] text-slate-400 font-medium">TAHUN {{ c.grade }}</div>
+                  <div class="text-[10px] text-slate-400 font-medium">GRADE {{ c.grade }}</div>
                 </div>
                 <button 
                   @click.stop="deleteClass(c.id)" 
                   class="text-slate-300 hover:text-red-600 text-xs font-bold p-1 transition opacity-0 group-hover:opacity-100 ml-3 cursor-pointer"
-                  title="PADAM"
+                  title="DELETE"
                 >
                   ✕
                 </button>
@@ -264,122 +270,118 @@
       </div>
     </div>
 
-    <!-- 卡片四：MMI 科目目标模板管理与批量导入 -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <!-- Card 4: MMI Subject Target Template Management & Bulk Import -->
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">📊</span>
-        KONFIGURASI BERKELOMPOK SASARAN SUBJEK MMI
+        MMI SUBJECT TARGETS BULK CONFIGURATION
       </h2>
-      <p class="text-slate-500 text-xs font-medium mb-6">MUAT TURUN TEMPLAT PIAWAI, ISI SASARAN SLOT DAN ASAS UNTUK SETIAP TAHUN DAN SUBJEK, IMPORT BERKELOMPOK.</p>
+      <p class="text-slate-500 text-xs font-medium mb-6">DOWNLOAD STANDARD TEMPLATE, FILL IN SLOT TARGETS AND BASES FOR EACH GRADE AND SUBJECT, BULK IMPORT.</p>
 
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-200">
         <div>
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">IMPORT / EKSPORT SASARAN SUBJEK</h3>
-          <p class="text-slate-500 text-xs mt-1 font-medium">SOKONG TEMPLAT CSV, IMPORT AUTOMATIK KEMASKINI KONFIGURASI SASARAN PANGKALAN DATA.</p>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">IMPORT / EXPORT SUBJECT TARGETS</h3>
+          <p class="text-slate-500 text-xs mt-1 font-medium">SUPPORTS CSV TEMPLATE, AUTO-IMPORT TO UPDATE TARGET CONFIGURATIONS IN DATABASE.</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <button @click="downloadTemplate" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer">
-            📥 MUAT TURUN TEMPLAT
+            📥 DOWNLOAD TEMPLATE
           </button>
           
           <label class="relative cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2">
-            <span>📂 PILIH FAIL SUBJEK</span>
+            <span>📂 CHOOSE SUBJECT FILE</span>
             <input type="file" ref="fileInput" accept=".csv" @change="handleFileUpload" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
           </label>
         </div>
       </div>
     </div>
 
-    <!-- 卡片五：本地数据备份与恢复 -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <!-- Card 5: Local Data Backup & Recovery -->
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">💾</span>
-        SANDARAN & PEMULIHAN DATA TEMPATAN
+        LOCAL DATA BACKUP & RECOVERY
       </h2>
-      <p class="text-slate-500 text-xs font-medium mb-6">Buat sandaran berkala bagi semua data teras sekolah dan simpan dalam komputer tempatan untuk memastikan data sentiasa selamat.</p>
+      <p class="text-slate-500 text-xs font-medium mb-6">Create regular backups of all core school data and store them on your local computer to ensure data safety.</p>
       
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <!-- 导出备份 -->
+        <!-- Export Backup -->
         <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-4">
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">EKSPORT SANDARAN DATA PENUH</h3>
-            <p class="text-slate-500 text-xs mt-1 font-medium">MUAT TURUN FAIL SANDARAN JSON YANG MENGANDUNGI DATA UTAMA SEKOLAH.</p>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">EXPORT FULL SYSTEM BACKUP</h3>
+            <p class="text-slate-500 text-xs mt-1 font-medium">DOWNLOAD A JSON BACKUP FILE CONTAINING MAIN SCHOOL DATA.</p>
           </div>
           <button @click="exportFullBackup" class="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer">
-            📤 EKSPORT SANDARAN PENUH SISTEM
+            📤 EXPORT FULL SYSTEM BACKUP
           </button>
         </div>
 
-        <!-- 恢复备份 -->
+        <!-- Restore Backup -->
         <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-4">
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">PULIH DATA SISTEM</h3>
-            <p class="text-slate-500 text-xs mt-1 font-medium">PULIH DATA SEKOLAH MELALUI FAIL SANDARAN JSON TERDAHULU.</p>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">RESTORE SYSTEM DATA</h3>
+            <p class="text-slate-500 text-xs mt-1 font-medium">RESTORE SCHOOL DATA VIA PREVIOUS JSON BACKUP FILE.</p>
           </div>
           <label class="relative block w-full text-center cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center justify-center">
-            <span>📥 PILIH FAIL SANDARAN & PULIH</span>
+            <span>📥 CHOOSE BACKUP FILE & RESTORE</span>
             <input type="file" accept=".json" @change="importFullBackup" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
           </label>
         </div>
       </div>
     </div>
 
-    <!-- 卡片六：正式上线数据清理、备份与维护面板 -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <!-- Card 6: Official Launch Data Cleaning, Backup & Maintenance Panel -->
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-xs">🛠️</span>
-        PEMBERSIHAN & PENYENGGARAN DATA PELANCARAN RASMI
+        OFFICIAL LAUNCH DATA CLEANING & MAINTENANCE
       </h2>
-      <p class="text-slate-500 text-xs font-medium mb-6">UNTUK MEMBERSIHKAN DATA UJIAN SEBELUM PELANCARAN RASMI, SOKONG SANDARAN SATU KLIK.</p>
+      <p class="text-slate-500 text-xs font-medium mb-6">TO CLEAN TEST DATA BEFORE OFFICIAL LAUNCH, ONE-CLICK BACKUP IS SUPPORTED.</p>
       
       <div class="space-y-6">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-slate-100 gap-4">
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">KOSONGKAN SEMUA REKOD CUTI & GURU GANTI</h3>
-            <p class="text-slate-500 text-xs mt-1 font-medium">PADAM HANYA DATA UJIAN CUTI & GURU GANTI, KEKALKAN PROFIL GURU & JADUAL.</p>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">CLEAR ALL LEAVE & SUBSTITUTE RECORDS</h3>
+            <p class="text-slate-500 text-xs mt-1 font-medium">DELETE ONLY LEAVE & SUBSTITUTE TEST DATA, KEEPING TEACHER PROFILES & TIMETABLES.</p>
           </div>
-          <!-- ⭐️ 统一加上 w-full sm:w-80 和 justify-center -->
           <button @click="clearOnlyRecords" :disabled="loading" class="w-full sm:w-80 h-11 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-xs rounded-2xl transition shadow-sm border border-amber-200 disabled:opacity-50 shrink-0 cursor-pointer flex items-center justify-center">
-            KOSONGKAN REKOD CUTI
+            CLEAR LEAVE RECORDS
           </button>
         </div>
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-slate-100 gap-4">
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">TETAP SEMULA JADUAL WAKTU SEKOLAH</h3>
-            <p class="text-slate-500 text-xs mt-1 font-medium">KOSONGKAN SEMUA DATA JADUAL WAKTU, MEMUDAHKAN IMPORT JADUAL BAHARU.</p>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">RESET SCHOOL TIMETABLE</h3>
+            <p class="text-slate-500 text-xs mt-1 font-medium">CLEAR ALL TIMETABLE DATA, MAKING IT EASIER TO IMPORT A NEW TIMETABLE.</p>
           </div>
-          <!-- ⭐️ 统一加上 w-full sm:w-80 和 justify-center -->
           <button @click="clearOnlyTimetable" :disabled="loading" class="w-full sm:w-80 h-11 bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold text-xs rounded-2xl transition shadow-sm border border-orange-200 disabled:opacity-50 shrink-0 cursor-pointer flex items-center justify-center">
-            KOSONGKAN JADUAL WAKTU SEKOLAH
+            CLEAR SCHOOL TIMETABLE
           </button>
         </div>
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-slate-100 gap-4">
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900">SANDARAN & KOSONGKAN DATA SEJARAH GANGGUAN MMI</h3>
-            <p class="text-slate-500 text-xs mt-1 font-medium">MUAT TURUN SANDARAN JSON, KEMUDIAN PADAM SEMUA LOG GANGGUAN MMI DENGAN SELAMAT.</p>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900">BACKUP & CLEAR MMI INTERRUPTION HISTORY DATA</h3>
+            <p class="text-slate-500 text-xs mt-1 font-medium">DOWNLOAD JSON BACKUP, THEN SAFELY DELETE ALL MMI INTERRUPTION LOGS.</p>
           </div>
-          <!-- ⭐️ 统一加上 w-full sm:w-80 和 justify-center -->
           <button @click="backupAndClearMmi" :disabled="loading" class="w-full sm:w-80 h-11 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs rounded-2xl transition shadow-sm border border-indigo-200 disabled:opacity-50 shrink-0 cursor-pointer flex items-center justify-center">
-            📥 SANDARAN & KOSONGKAN DATA MMI
+            📥 BACKUP & CLEAR MMI DATA
           </button>
         </div>
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-red-600">OPERASI BERBAHAYA: INISIALISASI SISTEM</h3>
-            <p class="text-slate-500 text-xs mt-1 font-medium">KOSONGKAN CUTI, GURU GANTI, JADUAL, SENARAI GURU, PULIH KEPADA KEADAAN ASAL.</p>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-red-600">DANGEROUS OPERATION: SYSTEM INITIALIZATION</h3>
+            <p class="text-slate-500 text-xs mt-1 font-medium">CLEAR LEAVES, SUBSTITUTES, TIMETABLES, TEACHER LISTS, RESTORE TO INITIAL STATE.</p>
           </div>
-          <!-- ⭐️ 统一加上 w-full sm:w-80 和 justify-center -->
           <button @click="clearEverything" :disabled="loading" class="w-full sm:w-80 h-11 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-2xl transition shadow-md disabled:opacity-50 shrink-0 cursor-pointer flex items-center justify-center">
-            TETAP SEMULA SISTEM SEPENUHNYA
+            RESET SYSTEM COMPLETELY
           </button>
         </div>
       </div>
     </div>
 
-    <!-- 📊 动态数字百分比进度条弹窗 -->
+    <!-- 📊 Dynamic Numeric Percentage Progress Bar Modal -->
     <Transition
       enter-active-class="transition duration-300 ease-out"
       enter-from-class="opacity-0 scale-95"
@@ -399,7 +401,7 @@
 
           <div>
             <h3 class="text-lg font-extrabold text-slate-900">
-              {{ uploadProgress.percent === 100 ? 'IMPORT TEMPLAT BERJAYA!' : 'SEDANG MENGIMPORT DATA TEMPLAT...' }}
+              {{ uploadProgress.percent === 100 ? 'TEMPLATE IMPORT SUCCESSFUL!' : 'IMPORTING TEMPLATE DATA...' }}
             </h3>
             <p class="text-xs font-semibold text-slate-500 mt-1.5">
               {{ uploadProgress.statusText }}
@@ -415,7 +417,7 @@
             </div>
             
             <div class="flex justify-between items-center text-xs font-bold px-1">
-              <span class="text-slate-400">KEMAJUAN PEMPROSESAN</span>
+              <span class="text-slate-400">PROCESSING PROGRESS</span>
               <span class="text-indigo-600 font-black text-sm">{{ uploadProgress.percent }}%</span>
             </div>
           </div>
@@ -438,7 +440,7 @@ const loading = ref(false)
 const fileInput = ref(null)
 const weekFileInput = ref(null)
 
-// 📊 上传百分比进度条状态
+// 📊 Upload percentage progress bar state
 const uploadProgress = ref({
   show: false,
   percent: 0,
@@ -447,7 +449,7 @@ const uploadProgress = ref({
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
-const startProgress = (initialText = 'SEDANG MEMBACA FAIL TEMPLAT...') => {
+const startProgress = (initialText = 'READING TEMPLATE FILE...') => {
   uploadProgress.value = {
     show: true,
     percent: 10,
@@ -460,14 +462,14 @@ const updateProgress = (percent, text) => {
   if (text) uploadProgress.value.statusText = text
 }
 
-const finishProgress = async (successMsg = 'IMPORT BERJAYA') => {
+const finishProgress = async (successMsg = 'IMPORT SUCCESSFUL') => {
   uploadProgress.value.percent = 100
   uploadProgress.value.statusText = successMsg
   await sleep(600)
   uploadProgress.value.show = false
 }
 
-// 班级管理状态
+// Class management state
 const classList = ref([])
 const newClassGrade = ref(1)
 const newClassName = ref('')
@@ -475,7 +477,7 @@ const newClassName = ref('')
 const expandedGrades = ref({ 1: true, 2: true, 3: true, 4: true, 5: true, 6: true })
 const allExpanded = computed(() => Object.values(expandedGrades.value).every(v => v))
 
-// 上课周历状态
+// School weeks state
 const allSchoolWeeks = ref([])
 const newWeek = ref({ week_number: 1, start_date: '', end_date: '', is_school_week: true })
 
@@ -515,11 +517,11 @@ onMounted(() => {
 })
 
 const saveConfig = () => {
-  if (config.value.daysPerWeek < 1 || config.value.daysPerWeek > 7) return toast.error("BILANGAN HARI MESTI ANTARA 1 HINGGA 7")
-  if (config.value.periodsPerDay < 1 || config.value.periodsPerDay > 15) return toast.error("BILANGAN SLOT MASA MESTI ANTARA 1 HINGGA 15")
+  if (config.value.daysPerWeek < 1 || config.value.daysPerWeek > 7) return toast.error("NUMBER OF DAYS MUST BE BETWEEN 1 AND 7")
+  if (config.value.periodsPerDay < 1 || config.value.periodsPerDay > 15) return toast.error("NUMBER OF TIME SLOTS MUST BE BETWEEN 1 AND 15")
   
   localStorage.setItem('school_config', JSON.stringify(config.value))
-  toast.success("KONFIGURASI SISTEM BERJAYA DISIMPAN!")
+  toast.success("SYSTEM CONFIGURATION SAVED SUCCESSFULLY!")
 }
 
 const fetchClasses = async () => {
@@ -545,7 +547,7 @@ const fetchSchoolWeeks = async () => {
 
 const addClass = async () => {
   if (!newClassName.value.trim()) {
-    return toast.error("SILA MASUKKAN NAMA KELAS!")
+    return toast.error("PLEASE ENTER A CLASS NAME!")
   }
 
   try {
@@ -556,11 +558,11 @@ const addClass = async () => {
 
     if (error) throw error
 
-    toast.success("KELAS BERJAYA DITAMBAH!")
+    toast.success("CLASS ADDED SUCCESSFULLY!")
     newClassName.value = ''
     fetchClasses()
   } catch (err) {
-    toast.error("GAGAL MENAMBAH (NAMA KELAS MUNGKIN WUJUD): " + err.message)
+    toast.error("FAILED TO ADD (CLASS NAME MAY ALREADY EXIST): " + err.message)
   }
 }
 
@@ -568,27 +570,27 @@ const deleteClass = async (id) => {
   try {
     const { error } = await supabase.from('classes').delete().eq('id', id)
     if (error) throw error
-    toast.success("KELAS TELAH DIPADAM")
+    toast.success("CLASS DELETED")
     fetchClasses()
   } catch (err) {
-    toast.error("GAGAL MEMADAM: " + err.message)
+    toast.error("FAILED TO DELETE: " + err.message)
   }
 }
 
 const addSchoolWeek = async () => {
   if (!newWeek.value.start_date || !newWeek.value.end_date) {
-    return toast.error("SILA ISI TARIKH MULA DAN TAMAT DENGAN LENGKAP!")
+    return toast.error("PLEASE FILL IN START AND END DATES COMPLETELY!")
   }
   try {
     const { error } = await supabase.from('school_weeks').insert([newWeek.value])
     if (error) throw error
-    toast.success("KALENDAR PERSEKOLAHAN BERJAYA DITAMBAH!")
+    toast.success("SCHOOL CALENDAR ADDED SUCCESSFULLY!")
     newWeek.value.week_number += 1 
     newWeek.value.start_date = ''
     newWeek.value.end_date = ''
     fetchSchoolWeeks()
   } catch (err) {
-    toast.error("GAGAL MENAMBAH: " + err.message)
+    toast.error("FAILED TO ADD: " + err.message)
   }
 }
 
@@ -596,10 +598,10 @@ const deleteSchoolWeek = async (id) => {
   try {
     const { error } = await supabase.from('school_weeks').delete().eq('id', id)
     if (error) throw error
-    toast.success("REKOD MINGGU INI TELAH DIPADAM")
+    toast.success("THIS WEEK'S RECORD HAS BEEN DELETED")
     fetchSchoolWeeks()
   } catch (err) {
-    toast.error("GAGAL MEMADAM: " + err.message)
+    toast.error("FAILED TO DELETE: " + err.message)
   }
 }
 
@@ -613,24 +615,24 @@ const downloadWeekTemplate = () => {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.setAttribute('href', url)
-  link.setAttribute('download', 'TEMPLAT_KALENDAR_PERSEKOLAHAN.csv')
+  link.setAttribute('download', 'SCHOOL_CALENDAR_TEMPLATE.csv')
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
-  toast.success("MUAT TURUN TEMPLAT KALENDAR BERJAYA!")
+  toast.success("CALENDAR TEMPLATE DOWNLOADED SUCCESSFULLY!")
 }
 
 const handleWeekFileUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
-  startProgress('SEDANG MEMBACA FAIL CSV TEMPLAT KALENDAR...')
+  startProgress('READING CALENDAR TEMPLATE CSV FILE...')
 
   const reader = new FileReader()
   reader.onload = async (e) => {
     try {
       await sleep(250)
-      updateProgress(35, 'SEDANG MENILIK FORMAT TARIKH DAN KESAHIHAN DATA...')
+      updateProgress(35, 'VALIDATING DATE FORMATS AND DATA VALIDITY...')
 
       const text = e.target.result
       const lines = text.split('\n')
@@ -664,24 +666,24 @@ const handleWeekFileUpload = async (event) => {
 
       if (rows.length === 0) {
         uploadProgress.value.show = false
-        toast.error("FAIL KOSONG ATAU FORMAT SALAH!")
+        toast.error("FILE IS EMPTY OR FORMAT IS INCORRECT!")
         return
       }
 
       await sleep(250)
-      updateProgress(70, `SEDANG MENULIS ${rows.length} REKOD KALENDAR KE PANGKALAN DATA...`)
+      updateProgress(70, `WRITING ${rows.length} CALENDAR RECORDS TO DATABASE...`)
 
       const { error } = await supabase.from('school_weeks').insert(rows)
       if (error) throw error
 
-      await finishProgress(`BERJAYA MENGIMPORT ${rows.length} MINGGU KALENDAR!`)
+      await finishProgress(`SUCCESSFULLY IMPORTED ${rows.length} CALENDAR WEEKS!`)
 
-      toast.success(`BERJAYA MENGIMPORT BERKELOMPOK ${rows.length} REKOD KALENDAR!`)
+      toast.success(`BULK IMPORTED ${rows.length} CALENDAR RECORDS SUCCESSFULLY!`)
       if (weekFileInput.value) weekFileInput.value.value = ''
       fetchSchoolWeeks()
     } catch (err) {
       uploadProgress.value.show = false
-      toast.error("IMPORT KALENDAR GAGAL: " + err.message)
+      toast.error("CALENDAR IMPORT FAILED: " + err.message)
     }
   }
   reader.readAsText(file)
@@ -697,24 +699,24 @@ const downloadTemplate = () => {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.setAttribute('href', url)
-  link.setAttribute('download', 'TEMPLAT_SASARAN_SUBJEK.csv')
+  link.setAttribute('download', 'SUBJECT_TARGETS_TEMPLATE.csv')
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
-  toast.success("MUAT TURUN TEMPLAT SASARAN BERJAYA!")
+  toast.success("TARGETS TEMPLATE DOWNLOADED SUCCESSFULLY!")
 }
 
 const handleFileUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
-  startProgress('SEDANG MEMBACA FAIL CSV TEMPLAT SASARAN...')
+  startProgress('READING SUBJECT TARGETS TEMPLATE CSV FILE...')
 
   const reader = new FileReader()
   reader.onload = async (e) => {
     try {
       await sleep(250)
-      updateProgress(40, 'SEDANG MENGURAIKAN SASARAN SUBJEK SETIAP TAHUN...')
+      updateProgress(40, 'PARSING GRADE SUBJECT TARGETS...')
 
       const text = e.target.result
       const lines = text.split('\n')
@@ -736,30 +738,30 @@ const handleFileUpload = async (event) => {
 
       if (rows.length === 0) {
         uploadProgress.value.show = false
-        toast.error("FAIL KOSONG ATAU FORMAT SALAH!")
+        toast.error("FILE IS EMPTY OR FORMAT IS INCORRECT!")
         return
       }
 
       await sleep(250)
-      updateProgress(75, `SEDANG MENULIS ${rows.length} SASARAN SUBJEK KE PANGKALAN DATA...`)
+      updateProgress(75, `WRITING ${rows.length} SUBJECT TARGETS TO DATABASE...`)
 
       const { error } = await supabase.from('subject_targets').insert(rows)
       if (error) throw error
 
-      await finishProgress(`BERJAYA MENGIMPORT ${rows.length} SASARAN SUBJEK!`)
+      await finishProgress(`SUCCESSFULLY IMPORTED ${rows.length} SUBJECT TARGETS!`)
 
-      toast.success(`BERJAYA MENGIMPORT BERKELOMPOK ${rows.length} REKOD SASARAN SUBJEK!`)
+      toast.success(`BULK IMPORTED ${rows.length} SUBJECT TARGET RECORDS SUCCESSFULLY!`)
       if (fileInput.value) fileInput.value.value = ''
     } catch (err) {
       uploadProgress.value.show = false
-      toast.error("IMPORT GAGAL: " + err.message)
+      toast.error("IMPORT FAILED: " + err.message)
     }
   }
   reader.readAsText(file)
 }
 
 const clearOnlyRecords = async () => {
-  if (!confirm("⚠️ ADAKAH ANDA PASTI MAHU MENGKOSONGKAN SEMUA REKOD CUTI & GURU GANTI? TINDAKAN INI TIDAK BOLEH DIBATALKAN!")) return
+  if (!confirm("⚠️ ARE YOU SURE YOU WANT TO CLEAR ALL LEAVE & SUBSTITUTE RECORDS? THIS ACTION CANNOT BE UNDONE!")) return
 
   loading.value = true
   try {
@@ -769,32 +771,32 @@ const clearOnlyRecords = async () => {
     const { error: err2 } = await supabase.from('leave_requests').delete().not('id', 'is', null)
     if (err2) throw err2
 
-    toast.success("SEMUA REKOD CUTI & GURU GANTI BERJAYA DIKOSONGKAN!")
+    toast.success("ALL LEAVE & SUBSTITUTE RECORDS CLEARED SUCCESSFULLY!")
   } catch (error) {
-    toast.error("PENGKOSONGAN GAGAL: " + error.message)
+    toast.error("CLEARING FAILED: " + error.message)
   } finally {
     loading.value = false
   }
 }
 
 const clearOnlyTimetable = async () => {
-  if (!confirm("⚠️ ADAKAH ANDA PASTI MAHU MENGKOSONGKAN JADUAL WAKTU SEKOLAH? SENARAI GURU AKAN DIKEKALKAN.")) return
+  if (!confirm("⚠️ ARE YOU SURE YOU WANT TO CLEAR THE SCHOOL TIMETABLE? TEACHER LISTS WILL BE PRESERVED.")) return
 
   loading.value = true
   try {
     const { error } = await supabase.from('timetable').delete().not('id', 'is', null)
     if (error) throw error
 
-    toast.success("JADUAL WAKTU SEKOLAH TELAH DI TETAP SEMULA!")
+    toast.success("SCHOOL TIMETABLE HAS BEEN RESET!")
   } catch (error) {
-    toast.error("PENGKOSONGAN JADUAL GAGAL: " + error.message)
+    toast.error("TIMETABLE CLEARING FAILED: " + error.message)
   } finally {
     loading.value = false
   }
 }
 
 const backupAndClearMmi = async () => {
-  if (!confirm("📥 ADAKAH ANDA PASTI MAHU MEMBUAT SANDARAN DAN MENGKOSONGKAN SEMUA DATA SEJARAH GANGGUAN MMI?")) return
+  if (!confirm("📥 ARE YOU SURE YOU WANT TO BACKUP AND CLEAR ALL MMI INTERRUPTION HISTORY DATA?")) return
 
   loading.value = true
   try {
@@ -810,22 +812,22 @@ const backupAndClearMmi = async () => {
       downloadAnchor.click()
       downloadAnchor.remove()
     } else {
-      toast.success("TIADA DATA GANGGUAN MMI UNTUK DISANDARKAN, AKAN TERUS KOSONGKAN.")
+      toast.success("NO MMI INTERRUPTION DATA TO BACKUP. PROCEEDING TO CLEAR.")
     }
 
     const { error: deleteErr } = await supabase.from('mmi_interruptions').delete().not('id', 'is', null)
     if (deleteErr) throw deleteErr
 
-    toast.success("DATA GANGGUAN MMI BERJAYA DISANDARKAN DAN DIKOSONGKAN DARI PANGKALAN DATA!")
+    toast.success("MMI INTERRUPTION DATA BACKED UP AND CLEARED FROM DATABASE SUCCESSFULLY!")
   } catch (error) {
-    toast.error("SANDARAN ATAU PENGKOSONGAN MMI GAGAL: " + error.message)
+    toast.error("MMI BACKUP OR CLEAR FAILED: " + error.message)
   } finally {
     loading.value = false
   }
 }
 
 const clearEverything = async () => {
-  if (!confirm("🚨 AMARAN: TINDAKAN INI AKAN MEMADAM SEMUA GURU, JADUAL WAKTU, KELAS DAN REKOD CUTI DALAM SISTEM! ADAKAH ANDA PASTI MAHU MENETAP SEMULA KEPADA KEADAAN ASAL?")) return
+  if (!confirm("🚨 WARNING: THIS ACTION WILL DELETE ALL TEACHERS, TIMETABLES, CLASSES AND LEAVE RECORDS IN THE SYSTEM! ARE YOU SURE YOU WANT TO RESET TO THE INITIAL STATE?")) return
 
   loading.value = true
   try {
@@ -836,17 +838,17 @@ const clearEverything = async () => {
     const { error } = await supabase.from('teachers').delete().not('id', 'is', null)
     if (error) throw error
 
-    toast.success("SISTEM TELAH DISET SEMULA SEPENUHNYA KEPADA KEADAAN ASAL!")
+    toast.success("SYSTEM HAS BEEN COMPLETELY RESET TO ITS INITIAL STATE!")
     fetchClasses()
     fetchSchoolWeeks()
   } catch (error) {
-    toast.error("PENETAPAN SEMULA GAGAL: " + error.message)
+    toast.error("RESET FAILED: " + error.message)
   } finally {
     loading.value = false
   }
 }
 
-// --- 学校名称与 Logo 设置状态 ---
+// --- School Name & Logo Settings State ---
 const schoolNameSetting = ref('')
 const schoolLogoSetting = ref('')
 
@@ -868,13 +870,13 @@ const handleSettingsLogoUpload = (event) => {
   if (!file) return
 
   if (file.size > 2 * 1024 * 1024) {
-    return toast.error("SAIZ IMEJ LOGO TERLALU BESAR, SILA PILIH BAWAH 2MB")
+    return toast.error("LOGO IMAGE SIZE IS TOO LARGE, PLEASE CHOOSE UNDER 2MB")
   }
 
   const reader = new FileReader()
   reader.onload = (e) => {
     schoolLogoSetting.value = e.target.result
-    toast.success("LOGO BAHARU BERJAYA DIBACA, SILA KLIK SIMPAN DI BAWAH!")
+    toast.success("NEW LOGO READ SUCCESSFULLY, PLEASE CLICK SAVE BELOW!")
   }
   reader.readAsDataURL(file)
 }
@@ -894,20 +896,20 @@ const saveSchoolIdentity = async () => {
     localStorage.setItem('school_logo', schoolLogoSetting.value)
     localStorage.setItem('school_name', schoolNameSetting.value.trim())
 
-    toast.success("LOGO & NAMA SEKOLAH BERJAYA DIKEMASKINI! SISTEM TELAH DIKEMASKINI.")
+    toast.success("SCHOOL LOGO & NAME UPDATED SUCCESSFULLY! SYSTEM HAS BEEN REFRESHED.")
 
     setTimeout(() => {
       window.location.reload()
     }, 600)
   } catch (err) {
-    toast.error("GAGAL MENYIMPAN: " + err.message)
+    toast.error("FAILED TO SAVE: " + err.message)
   }
 }
 
-// 📦 导出全量系统备份（Supabase 云端版）
+// 📦 Export Full System Backup (Supabase Cloud Version)
 const exportFullBackup = async () => {
   try {
-    toast.success("SEDANG MENYEDIAKAN SANDARAN DATA CLOUD...")
+    toast.success("PREPARING CLOUD DATA BACKUP...")
     
     const [teachers, classes, schoolWeeks, subjectTargets, timetable, leaveRequests, substituteAssignments, schoolSettings] = await Promise.all([
       supabase.from('teachers').select('*'),
@@ -943,23 +945,23 @@ const exportFullBackup = async () => {
     downloadAnchor.click()
     downloadAnchor.remove()
 
-    toast.success("EKSPORT SANDARAN PENUH SISTEM BERJAYA!")
+    toast.success("EXPORT FULL SYSTEM BACKUP SUCCESSFUL!")
   } catch (err) {
-    toast.error("EKSPORT SANDARAN GAGAL: " + err.message)
+    toast.error("BACKUP EXPORT FAILED: " + err.message)
   }
 }
 
-// 📥 恢复全量系统备份（WebApp 云端专用 - 兼容本地与云端JSON）
+// 📥 Restore Full System Backup (WebApp Cloud Version - Compatible with Local & Cloud JSON)
 const importFullBackup = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
-  if (!confirm("⚠️ AMARAN: PEMULIHAN SANDARAN AKAN MENIMPA DATA SEMASA DALAM PANGKALAN DATA CLOUD! ADAKAH ANDA PASTI?")) {
+  if (!confirm("⚠️ WARNING: RESTORING BACKUP WILL OVERWRITE CURRENT DATA IN THE CLOUD DATABASE! ARE YOU SURE?")) {
     event.target.value = ''
     return
   }
 
-  toast.info("SEDANG MEMBACA DAN MENILIK FAIL SANDARAN...")
+  toast.info("READING AND VALIDATING BACKUP FILE...")
   const reader = new FileReader()
   
   reader.onload = async (e) => {
@@ -972,7 +974,7 @@ const importFullBackup = async (event) => {
       } else if (typeof raw === 'object' && !Array.isArray(raw)) {
         d = raw      
       } else {
-        throw new Error("FORMAT FAIL TIDAK SOKONG")
+        throw new Error("UNSUPPORTED FILE FORMAT")
       }
       
       if (Array.isArray(d.schoolSettings) && d.schoolSettings.length > 0) {
@@ -1028,14 +1030,14 @@ const importFullBackup = async (event) => {
         await supabase.from('mmi_interruptions').upsert(d.mmiInterruptions)
       }
 
-      toast.success("PEMULIHAN DATA SISTEM BERJAYA! LAMAN AKAN DIREFRESH...")
+      toast.success("SYSTEM DATA RESTORED SUCCESSFULLY! PAGE WILL REFRESH...")
       setTimeout(() => {
         window.location.reload()
       }, 1000)
       
     } catch (err) {
-      console.error("RALAT IMPORT:", err)
-      toast.error("PEMULIHAN GAGAL: " + err.message)
+      console.error("IMPORT ERROR:", err)
+      toast.error("RESTORE FAILED: " + err.message)
     } finally {
       event.target.value = '' 
     }

@@ -4,10 +4,10 @@
     class="bg-slate-900 text-slate-300 flex flex-col h-screen sticky top-0 left-0 shrink-0 z-40 border-r border-slate-800 print:hidden shadow-xl transition-all duration-300"
   >
     
-    <!-- 顶部：汉堡菜单按钮 + Logo + 学校名称 -->
+    <!-- Top: Hamburger Toggle Button + Logo + School Name -->
     <div class="p-4 border-b border-slate-800 flex items-center justify-between gap-2 select-none">
       
-      <!-- Logo 与学校名称 (折叠时隐藏) -->
+      <!-- Logo & School Name (Hidden when collapsed) -->
       <div v-show="!isSidebarCollapsed" class="flex items-center gap-2.5 cursor-pointer overflow-hidden flex-1 min-w-0" @click="router.push('/')">
         <img 
           :src="currentLogo" 
@@ -19,21 +19,21 @@
             {{ currentSchoolName }}
           </span>
           <span class="text-[9px] font-bold text-indigo-400 tracking-wider mt-0.5 uppercase">
-            SISTEM PENGURUSAN PINTAR
+            SMART ACADEMIC MANAGEMENT
           </span>
         </div>
       </div>
 
-      <!-- 仅在折叠时显示的居中小 Logo -->
-      <div v-show="isSidebarCollapsed" class="mx-auto cursor-pointer" @click="router.push('/')" title="Utama">
+      <!-- Centered small Logo when collapsed -->
+      <div v-show="isSidebarCollapsed" class="mx-auto cursor-pointer" @click="router.push('/')" title="Home">
         <img :src="currentLogo" alt="Logo" class="w-9 h-9 object-contain rounded-xl bg-slate-800 p-1 shrink-0 shadow-sm" />
       </div>
 
-      <!-- ⭐️ 侧边栏缩放/折叠 SVG 图标按钮 -->
+      <!-- ⭐️ Sidebar Collapse/Expand SVG Icon Button -->
       <button 
         @click="toggleSidebar" 
         class="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition cursor-pointer shrink-0 shadow-sm"
-        :title="isSidebarCollapsed ? 'Buka Sidebar' : 'Tutup Sidebar'"
+        :title="isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'"
       >
         <svg class="w-5 h-5 transition-transform duration-300" :class="isSidebarCollapsed ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="4" />
@@ -42,7 +42,7 @@
       </button>
     </div>
 
-    <!-- 中部：垂直滚动导航菜单 -->
+    <!-- Middle: Scrollable Navigation Menu -->
     <div class="flex-1 overflow-y-auto px-3 py-4 space-y-1.5 scrollbar-thin scrollbar-thumb-slate-700">
       <router-link 
         v-for="(item, index) in navItems" 
@@ -57,28 +57,28 @@
       </router-link>
     </div>
 
-    <!-- 底部操作区 -->
+    <!-- Bottom Actions Area -->
     <div class="p-3 border-t border-slate-800 bg-slate-950/40 space-y-1.5">
       
-      <!-- 切换回中文版按钮 -->
+      <!-- Switch back / Other language placeholder -->
       <button 
-        @click="switchToChinese" 
+        @click="switchLanguagePlaceholder" 
         class="w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors cursor-pointer"
-        :title="isSidebarCollapsed ? 'Bahasa Cina' : ''"
+        :title="isSidebarCollapsed ? 'Language' : ''"
       >
         <span class="text-base shrink-0">🌐</span>
-        <span v-show="!isSidebarCollapsed" class="truncate">中文</span>
+        <span v-show="!isSidebarCollapsed" class="truncate">Language</span>
       </button>
 
-      <!-- 退出登录按钮 -->
+      <!-- Logout Button -->
       <button 
         @click="logout" 
         class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors cursor-pointer"
-        :title="isSidebarCollapsed ? 'LOG KELUAR' : ''"
+        :title="isSidebarCollapsed ? 'Logout' : ''"
       >
         <div class="flex items-center gap-3.5 truncate">
           <span class="text-base shrink-0">🚪</span>
-          <span v-show="!isSidebarCollapsed" class="truncate">LOG KELUAR</span>
+          <span v-show="!isSidebarCollapsed" class="truncate">LOGOUT</span>
         </div>
         <svg v-show="!isSidebarCollapsed" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -99,9 +99,9 @@ const router = useRouter()
 const toast = useToast()
 
 const currentLogo = ref('/logo.png')
-const currentSchoolName = ref('SISTEM PENGURUSAN AKADEMIK PINTAR')
+const currentSchoolName = ref('SMART ACADEMIC MANAGEMENT SYSTEM')
 
-// 侧边栏折叠状态控制 (默认展开为 false)
+// Sidebar collapse state control (default expanded as false)[cite: 4]
 const isSidebarCollapsed = ref(false)
 
 const toggleSidebar = () => {
@@ -128,7 +128,7 @@ const loadSidebarIdentity = async () => {
       }
     }
   } catch (err) {
-    console.error('GAGAL MEMUATKAN TETAPAN SIDEBAR:', err)
+    console.error('FAILED TO LOAD SIDEBAR SETTINGS:', err)
   }
 }
 
@@ -137,39 +137,28 @@ onMounted(() => {
 })
 
 const navItems = [
-  { name: 'GAMBARAN KESELURUHAN', path: '/', icon: '📊' },
-  { name: 'PENDAFTARAN CUTI GURU', path: '/leave-entry', icon: '📝' },
-  { name: 'PROFIL GURU', path: '/teachers', icon: '👩‍🏫' },
-  { name: 'JADUAL WAKTU', path: '/timetable', icon: '📅' },
-  { name: 'JADUAL GURU GANTI', path: '/records', icon: '🔄' },
-  { name: 'PUSAT LAPORAN MMI', path: '/statistics', icon: '📈' },
-  { name: 'REKOD GANGGUAN MMI', path: '/mmi-interruption', icon: '⚠️' }, 
-  { name: 'PUSAT ANALISIS', path: '/subject-analysis', icon: '🎯' },
-  { name: 'TETAPAN SISTEM', path: '/settings', icon: '⚙️' } 
+  { name: 'DASHBOARD OVERVIEW', path: '/', icon: '📊' },
+  { name: 'TEACHER LEAVE ENTRY', path: '/leave-entry', icon: '📝' },
+  { name: 'TEACHER PROFILES', path: '/teachers', icon: '👩‍🏫' },
+  { name: 'MASTER TIMETABLE', path: '/timetable', icon: '📅' },
+  { name: 'SUBSTITUTE RECORDS', path: '/records', icon: '🔄' },
+  { name: 'MMI REPORT CENTER', path: '/statistics', icon: '📈' },
+  { name: 'MMI INTERRUPTION LOG', path: '/mmi-interruption', icon: '⚠️' }, 
+  { name: 'ANALYSIS CENTER', path: '/subject-analysis', icon: '🎯' },
+  { name: 'SYSTEM SETTINGS', path: '/settings', icon: '⚙️' } 
 ]
 
-const switchToChinese = async () => {
-  try {
-    const { data: { session } } = await supabase.auth.getSession()
-    const chineseAppUrl = 'https://subtitute-app.vercel.app/login' 
-
-    if (session) {
-      window.location.href = `${chineseAppUrl}/?access_token=${session.access_token}&refresh_token=${session.refresh_token}`
-    } else {
-      window.location.href = chineseAppUrl
-    }
-  } catch (error) {
-    toast.error("Gagal bertukar: " + error.message)
-  }
+const switchLanguagePlaceholder = () => {
+  toast.info("Language switching is currently independent.")
 }
 
 const logout = async () => {
   try {
     await supabase.auth.signOut()
-    toast.success("BERJAYA LOG KELUAR")
+    toast.success("Successfully logged out")
     window.location.href = '/login'
   } catch (error) {
-    toast.error("LOG KELUAR GAGAL: " + error.message)
+    toast.error("Logout failed: " + error.message)
   }
 }
 </script>

@@ -1,51 +1,51 @@
 <template>
-  <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
+  <div class="p-4 sm:p-8 mx-auto min-h-screen space-y-8 min-w-max w-full print:p-0 print:w-auto print:block print:m-0">
     
-    <!-- 头部区域：统一的卡片风格、排版规范与渐变大标题 -->
-    <div class="no-print bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 space-y-6">
+    <!-- Top Header: Unified card style and gradient title -->
+    <div class="no-print bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 space-y-6">
       
-      <!-- 第一部分：大标题与副标题 -->
+      <!-- Part 1: Main Title & Subtitle -->
       <div class="space-y-2 max-w-4xl">
         <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
-          PUSAT ANALISIS SASARAN & KADAR PENCAPAIAN SUBJEK
+          SUBJECT TARGET & ACHIEVEMENT RATE ANALYSIS CENTER
         </h1>
         <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
-          MENJEJAK SASARAN PENGAJARAN, GANGGUAN MMI DAN PENCAPAIAN DARI PELBAGAI DIMENSI, SOKONG LAPORAN DATA, PAPAN PEMUKA VISUAL & EKSPORT PDF.
+          TRACK TEACHING TARGETS, MMI INTERRUPTIONS, AND ACHIEVEMENTS FROM MULTIPLE DIMENSIONS, SUPPORTING DATA REPORTS, VISUAL DASHBOARDS & PDF EXPORTS.
         </p>
       </div>
 
-      <!-- 第二部分：底部同行对齐（左侧是 Tab 切换，右侧是三个操作按钮） -->
+      <!-- Part 2: Bottom Row Alignment (Left Tab Switcher, Right Action Buttons) -->
       <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 pt-4 border-t border-slate-100">
         
-        <!-- 左侧：视图切换 Tab -->
+        <!-- Left: View Switcher Tabs -->
         <div class="flex flex-wrap gap-3">
           <button 
             @click="activeTab = 'table'" 
-            class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
+            class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap"
             :class="activeTab === 'table' ? 'bg-slate-900 text-white shadow-md' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'"
           >
-            <span>📊 LAPORAN DATA TERPERINCI</span>
+            <span>📊 DETAILED DATA REPORT</span>
           </button>
           <button 
             @click="activeTab = 'chart'" 
-            class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
+            class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap"
             :class="activeTab === 'chart' ? 'bg-slate-900 text-white shadow-md' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'"
           >
-            <span>📈 PAPAN PEMUKA CARTA VISUAL</span>
+            <span>📈 VISUAL CHART DASHBOARD</span>
           </button>
         </div>
 
-        <!-- 右侧：三个操作按钮 -->
+        <!-- Right: Action Buttons -->
         <div class="flex flex-wrap items-center gap-3">
-          <button @click="exportPdfReport" class="no-print bg-emerald-600 hover:bg-emerald-700 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer">
-            <span>📥 CETAK / PDF</span>
+          <button @click="exportPdfReport" class="no-print bg-emerald-600 hover:bg-emerald-700 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer whitespace-nowrap">
+            <span>📥 PRINT / PDF</span>
           </button>
-          <button @click="showManageModal = true" class="no-print bg-slate-900 hover:bg-slate-800 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer">
-            ⚙️ URUS SASARAN
+          <button @click="showManageModal = true" class="no-print bg-slate-900 hover:bg-slate-800 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer whitespace-nowrap">
+            ⚙️ MANAGE TARGETS
           </button>
-          <button @click="loadAnalyticsData" :disabled="loading" class="no-print bg-indigo-600 hover:bg-indigo-700 text-white px-5 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer flex items-center gap-2">
+          <button @click="loadAnalyticsData" :disabled="loading" class="no-print bg-indigo-600 hover:bg-indigo-700 text-white px-5 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer flex items-center gap-2 whitespace-nowrap">
             <span v-if="loading" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-            <span>{{ loading ? 'MENGIRA...' : '🔄 SEGAR SEMULA' }}</span>
+            <span>{{ loading ? 'CALCULATING...' : '🔄 REFRESH' }}</span>
           </button>
         </div>
 
@@ -53,257 +53,259 @@
 
     </div>
 
-    <!-- 🔍 多维度高级筛选面板：统一样式规范 -->
-    <div class="no-print bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm grid grid-cols-1 sm:grid-cols-4 gap-4">
-      <div>
-        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">PENAPIS MENGIKUT TAHUN</label>
-        <select v-model="filterGrade" @change="onGradeChange" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-          <option value="all">SEMUA TAHUN SEKOLAH</option>
-          <option v-for="g in [1,2,3,4,5,6]" :key="g" :value="g">TAHUN {{ g }}</option>
+    <!-- 🔍 Multi-Dimensional Advanced Filter Panel -->
+    <div class="no-print bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5 grid grid-cols-4 gap-4">
+      <div class="relative w-full">
+        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">FILTER BY GRADE</label>
+        <select v-model="filterGrade" @change="onGradeChange" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none pr-8 cursor-pointer truncate">
+          <option value="all">ALL SCHOOL GRADES</option>
+          <option v-for="g in [1,2,3,4,5,6]" :key="g" :value="g">GRADE {{ g }}</option>
         </select>
+        <div class="absolute right-3 top-[42px] pointer-events-none text-slate-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
       </div>
 
-      <div>
-        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">PENAPIS MENGIKUT KELAS</label>
-        <select v-model="filterClass" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-          <option value="all">SEMUA KELAS UNTUK TAHUN INI</option>
+      <div class="relative w-full">
+        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">FILTER BY CLASS</label>
+        <select v-model="filterClass" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none pr-8 cursor-pointer truncate">
+          <option value="all">ALL CLASSES FOR THIS GRADE</option>
           <option v-for="c in availableClasses" :key="c.id" :value="c.class_name">{{ c.class_name }}</option>
         </select>
+        <div class="absolute right-3 top-[42px] pointer-events-none text-slate-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
       </div>
 
-      <div>
-        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">PENAPIS MENGIKUT SUBJEK</label>
-        <select v-model="filterSubject" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-          <option value="all">SEMUA SUBJEK</option>
+      <div class="relative w-full">
+        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">FILTER BY SUBJECT</label>
+        <select v-model="filterSubject" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none pr-8 cursor-pointer truncate">
+          <option value="all">ALL SUBJECTS</option>
           <option v-for="s in uniqueSubjects" :key="s" :value="s">{{ s }}</option>
         </select>
+        <div class="absolute right-3 top-[42px] pointer-events-none text-slate-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
       </div>
 
-      <div>
-        <label class="block text-xs font-bold text-indigo-600 mb-2 uppercase tracking-wider">👨‍🏫 PENAPIS MENGIKUT GURU SUBJEK</label>
-        <select v-model="filterTeacher" class="w-full bg-indigo-50/50 border border-indigo-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-          <option value="all">SEMUA GURU SEKOLAH</option>
+      <div class="relative w-full">
+        <label class="block text-xs font-bold text-indigo-600 mb-2 uppercase tracking-wider">👨‍🏫 FILTER BY SUBJECT TEACHER</label>
+        <select v-model="filterTeacher" class="w-full bg-indigo-50/50 border border-indigo-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none pr-8 cursor-pointer truncate">
+          <option value="all">ALL SCHOOL TEACHERS</option>
           <option v-for="tch in allTeachers" :key="tch.id" :value="tch.name">{{ tch.name }}</option>
         </select>
+        <div class="absolute right-3 top-[42px] pointer-events-none text-slate-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
       </div>
     </div>
 
-    <!-- 🎯 核心统计指标卡片容器 -->
-    <div id="pdfContentContainer" class="space-y-8 bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5">
-      
-      <!-- 打印专属标题抬头 -->
-      <div class="print-header bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-4 text-center">
-        <h2 class="text-xl font-extrabold text-slate-950">LAPORAN PENILAIAN SASARAN PENGAJARAN SEKOLAH & GANGGUAN MMI</h2>
-        <p class="text-xs text-slate-600 mt-1">
-          SYARAT PENAPISAN: TAHUN [{{ filterGrade === 'all' ? 'SEMUA' : filterGrade }}] | KELAS [{{ filterClass === 'all' ? 'SEMUA' : filterClass }}] | SUBJEK [{{ filterSubject === 'all' ? 'SEMUA' : filterSubject }}] | GURU [{{ filterTeacher === 'all' ? 'SEMUA' : filterTeacher }}]
-        </p>
+    <!-- 🎯 Core Statistical Metrics -->
+    <div class="grid grid-cols-3 gap-6 print-summary">
+      <div class="bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5">
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">TOTAL FILTERED RESULTS</div>
+        <div class="text-3xl font-black text-slate-900 mt-2">{{ analysisSummary.total }}</div>
+      </div>
+      <div class="bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5">
+        <div class="text-xs font-bold text-emerald-600 uppercase tracking-wider">TARGET MET (PASSED)</div>
+        <div class="text-3xl font-black text-emerald-700 mt-2">{{ analysisSummary.met }}</div>
+      </div>
+      <div class="bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5">
+        <div class="text-xs font-bold text-red-600 uppercase tracking-wider">⚠️ NOT MET (WARNING)</div>
+        <div class="text-3xl font-black text-red-700 mt-2">{{ analysisSummary.unmet }}</div>
+      </div>
+    </div>
+
+    <!-- ================= TAB 1: Detailed Data Report View ================= -->
+    <div v-if="activeTab === 'table'" class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
+      <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">DETAILED ANALYSIS REPORT (CLASS, SUBJECT & TEACHER COMPARISON)</h3>
+        <span class="text-[11px] text-slate-500 font-bold">EFFECTIVE SCHOOL CALENDAR RATIO: {{ (progressRatio * 100).toFixed(1) }}%</span>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 print-summary">
-        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
-          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">JUMLAH KEPUTUSAN PENAPISAN</div>
-          <div class="text-3xl font-black text-slate-900 mt-2">{{ analysisSummary.total }}</div>
-        </div>
-        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
-          <div class="text-xs font-bold text-emerald-600 uppercase tracking-wider">SASARAN DICAPAI (MELEPASI)</div>
-          <div class="text-3xl font-black text-emerald-700 mt-2">{{ analysisSummary.met }}</div>
-        </div>
-        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
-          <div class="text-xs font-bold text-red-600 uppercase tracking-wider">⚠️ BELUM DICAPAI (AMARAN)</div>
-          <div class="text-3xl font-black text-red-700 mt-2">{{ analysisSummary.unmet }}</div>
-        </div>
-      </div>
+      <table class="w-full text-left border-collapse whitespace-nowrap print-table">
+        <thead>
+          <tr class="bg-slate-50 text-[11px] font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200 select-none">
+            <th @click="toggleSort('class_name')" class="py-4 pl-8 pr-4 cursor-pointer hover:bg-slate-100 transition select-none">
+              GRADE / CLASS <span class="text-indigo-600">{{ getSortIcon('class_name') }}</span>
+            </th>
+            <th @click="toggleSort('subject_name')" class="p-4 cursor-pointer hover:bg-slate-100 transition select-none">
+              SUBJECT NAME <span class="text-indigo-600">{{ getSortIcon('subject_name') }}</span>
+            </th>
+            <th @click="toggleSort('teacher_name')" class="p-4 cursor-pointer hover:bg-slate-100 transition select-none">
+              SUBJECT TEACHER <span class="text-indigo-600">{{ getSortIcon('teacher_name') }}</span>
+            </th>
+            <th @click="toggleSort('target')" class="p-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
+              ANNUAL PLAN TARGET <span class="text-indigo-600">{{ getSortIcon('target') }}</span>
+            </th>
+            <th @click="toggleSort('expected')" class="p-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
+              THEORETICAL ACTUAL PROGRESS <span class="text-indigo-600">{{ getSortIcon('expected') }}</span>
+            </th>
+            <th @click="toggleSort('lostCount')" class="p-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
+              TOTAL PDPC PERIODS AFFECTED <span class="text-indigo-600">{{ getSortIcon('lostCount') }}</span>
+            </th>
+            <th @click="toggleSort('actual')" class="p-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
+              ACTUAL EXECUTION <span class="text-indigo-600">{{ getSortIcon('actual') }}</span>
+            </th>
+            <th @click="toggleSort('gap')" class="p-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
+              GAP <span class="text-indigo-600">{{ getSortIcon('gap') }}</span>
+            </th>
+            <th @click="toggleSort('status')" class="py-4 pr-8 pl-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
+              STATUS <span class="text-indigo-600">{{ getSortIcon('status') }}</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-800">
+          <tr v-if="filteredAnalysisList.length === 0">
+            <td colspan="9" class="py-12 text-center text-slate-400 font-medium">
+              NO ANALYSIS RECORDS FOUND, PLEASE ADJUST FILTER CONDITIONS.
+            </td>
+          </tr>
+          <tr v-for="(item, idx) in filteredAnalysisList" :key="idx" class="hover:bg-slate-50/50 transition">
+            <td class="py-4 pl-8 pr-4 font-bold text-slate-900">
+              GRADE {{ item.grade }} - {{ item.class_name }}
+            </td>
+            <td class="p-4 font-bold text-slate-900">{{ item.subject_name }}</td>
+            <td class="p-4 font-bold text-indigo-900">{{ item.teacher_name || 'NOT ASSIGNED' }}</td>
+            <td class="p-4 text-center font-bold">{{ item.target }} SLOTS</td>
+            <td class="p-4 text-center font-bold text-indigo-700">{{ item.expected }} SLOTS</td>
+            <td class="p-4 text-center text-amber-700 font-bold">-{{ item.lostCount }} SLOTS</td>
+            <td class="p-4 text-center font-bold text-slate-900">{{ item.actual }} SLOTS</td>
+            <td class="p-4 text-center font-bold" :class="item.gap >= 0 ? 'text-emerald-700' : 'text-red-700'">
+              {{ item.gap >= 0 ? '+' + item.gap : item.gap }} SLOTS
+            </td>
+            <td class="py-4 pr-8 pl-4 text-center font-bold">
+              <span 
+                class="px-2.5 py-1 rounded-lg text-xs inline-block"
+                :class="{
+                  'bg-red-50 text-red-700': item.status === 'NOT MET',
+                  'bg-emerald-50 text-emerald-700': item.status === 'EXCEEDED TARGET',
+                  'bg-slate-100 text-slate-700': item.status === 'TARGET MET'
+                }"
+              >
+                {{ item.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-      <!-- ================= TAB 1: 详细数据报表视图 ================= -->
-      <div v-if="activeTab === 'table'" class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
-        <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">LAPORAN ANALISIS TERPERINCI (PERBANDINGAN KELAS, SUBJEK & GURU)</h3>
-          <span class="text-[11px] text-slate-500 font-bold">NISBAH KALENDAR PERSEKOLAHAN BERKESAN: {{ (progressRatio * 100).toFixed(1) }}%</span>
-        </div>
-
-        <div>
-          <table class="w-full text-left border-collapse print-table">
-            <thead>
-              <tr class="bg-slate-50 text-[11px] font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200">
-                <th @click="toggleSort('class_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-100 transition select-none">
-                  TAHUN / KELAS <span class="text-indigo-600">{{ getSortIcon('class_name') }}</span>
-                </th>
-                <th @click="toggleSort('subject_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-100 transition select-none">
-                  NAMA SUBJEK <span class="text-indigo-600">{{ getSortIcon('subject_name') }}</span>
-                </th>
-                <th @click="toggleSort('teacher_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-100 transition select-none">
-                  GURU SUBJEK <span class="text-indigo-600">{{ getSortIcon('teacher_name') }}</span>
-                </th>
-                <th @click="toggleSort('target')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
-                  SASARAN RANCANGAN TAHUNAN <span class="text-indigo-600">{{ getSortIcon('target') }}</span>
-                </th>
-                <th @click="toggleSort('expected')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
-                  KEMAJUAN SEBENAR TEORETIKAL <span class="text-indigo-600">{{ getSortIcon('expected') }}</span>
-                </th>
-                <th @click="toggleSort('lostCount')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
-                  Jumlah Waktu PdPc terjejas AKIBAT GANGGUAN <span class="text-indigo-600">{{ getSortIcon('lostCount') }}</span>
-                </th>
-                <th @click="toggleSort('actual')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
-                  PELAKSANAAN SEBENAR <span class="text-indigo-600">{{ getSortIcon('actual') }}</span>
-                </th>
-                <th @click="toggleSort('gap')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
-                  JURANG <span class="text-indigo-600">{{ getSortIcon('gap') }}</span>
-                </th>
-                <th @click="toggleSort('status')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
-                  STATUS <span class="text-indigo-600">{{ getSortIcon('status') }}</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-800">
-              <tr v-if="filteredAnalysisList.length === 0">
-                <td colspan="9" class="py-12 text-center text-slate-400 font-medium">
-                  TIADA REKOD ANALISIS DIJUMPAI, SILA LARASKAN SYARAT PENAPISAN.
-                </td>
-              </tr>
-              <tr v-for="(item, idx) in filteredAnalysisList" :key="idx" class="hover:bg-slate-50/50 transition">
-                <td class="py-3 px-4 font-bold text-slate-900">
-                  TAHUN {{ item.grade }} - {{ item.class_name }}
-                </td>
-                <td class="py-3 px-4 font-bold text-slate-900">{{ item.subject_name }}</td>
-                <td class="py-3 px-4 font-bold text-indigo-900">{{ item.teacher_name || 'BELUM DITETAPKAN' }}</td>
-                <td class="py-3 px-4 text-center font-bold">{{ item.target }} SLOT</td>
-                <td class="py-3 px-4 text-center font-bold text-indigo-700">{{ item.expected }} SLOT</td>
-                <td class="py-3 px-4 text-center text-amber-700 font-bold">-{{ item.lostCount }} SLOT</td>
-                <td class="py-3 px-4 text-center font-bold text-slate-900">{{ item.actual }} SLOT</td>
-                <td class="py-3 px-4 text-center font-bold" :class="item.gap >= 0 ? 'text-emerald-700' : 'text-red-700'">
-                  {{ item.gap >= 0 ? '+' + item.gap : item.gap }} SLOT
-                </td>
-                <td class="py-3 px-4 text-center font-bold">
-                  <span 
-                    class="px-2.5 py-1 rounded-lg text-xs"
-                    :class="{
-                      'bg-red-50 text-red-700': item.status === 'BELUM MENCAPAI SASARAN',
-                      'bg-emerald-50 text-emerald-700': item.status === 'MELEPASI SASARAN',
-                      'bg-slate-100 text-slate-700': item.status === 'MENCAPAI SASARAN'
-                    }"
-                  >
-                    {{ item.status }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ================= TAB 2: 📈 视觉图表分析看板 ================= -->
-      <div v-if="activeTab === 'chart'" class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
-            <div class="flex justify-between items-center">
-              <h3 class="text-sm font-bold text-slate-800">🎯 KADAR KESIHATAN PENCAPAIAN KESELURUHAN SUBJEK</h3>
-              <span class="text-xs text-indigo-600 font-bold bg-indigo-50 px-2.5 py-1 rounded-lg">PENGIRAAN MASA NYATA</span>
-            </div>
-            
-            <div class="py-4 flex flex-col items-center justify-center space-y-4">
-              <div class="relative w-36 h-36 rounded-full flex items-center justify-center border-8 border-slate-100 shadow-inner"
-                   :style="{ borderColor: completionRate >= 80 ? '#10b981' : '#f59e0b' }">
-                <div class="text-center">
-                  <span class="text-3xl font-black text-slate-900">{{ completionRate }}%</span>
-                  <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">KADAR PENCAPAIAN</div>
-                </div>
-              </div>
-              <p class="text-xs text-slate-500 font-medium">DI BAWAH SYARAT SEMASA, <strong class="text-slate-800">{{ analysisSummary.met }}</strong> SUBJEK TELAH MENCAPAI SASARAN, <strong class="text-red-600">{{ analysisSummary.unmet }}</strong> BELUM MENCAPAI.</p>
-            </div>
-          </div>
-
-          <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
-            <div class="flex justify-between items-center">
-              <h3 class="text-sm font-bold text-slate-800">📊 TABURAN PENCAPAIAN MENGIKUT TAHUN</h3>
-              <span class="text-xs text-slate-400 font-semibold">DICAPAI VS BELUM DICAPAI</span>
-            </div>
-
-            <div class="space-y-3 pt-2">
-              <div v-for="g in [1,2,3,4,5,6]" :key="g" class="space-y-1">
-                <div class="flex justify-between text-xs font-bold">
-                  <span class="text-slate-700">TAHUN {{ g }} TAHUN</span>
-                  <span class="text-slate-500">DICAPAI: {{ getGradeStats(g).met }} / BELUM DICAPAI: {{ getGradeStats(g).unmet }}</span>
-                </div>
-                <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
-                  <div class="bg-emerald-500 h-full transition-all duration-500" :style="{ width: getGradeStats(g).total > 0 ? (getGradeStats(g).met / getGradeStats(g).total) * 100 + '%' : '0%' }"></div>
-                  <div class="bg-red-400 h-full transition-all duration-500" :style="{ width: getGradeStats(g).total > 0 ? (getGradeStats(g).unmet / getGradeStats(g).total) * 100 + '%' : '0%' }"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+    <!-- ================= TAB 2: 📈 Visual Chart Analysis Dashboard ================= -->
+    <div v-if="activeTab === 'chart'" class="space-y-6">
+      <div class="grid grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-4">
           <div class="flex justify-between items-center">
-            <div>
-              <h3 class="text-sm font-bold text-slate-800">⚠️ KEDUDUKAN SUBJEK KEHILANGAN SLOT TERBANYAK AKIBAT GANGGUAN MMI</h3>
-              <p class="text-xs text-slate-400 mt-0.5 font-medium">MENUNJUKKAN KEHILANGAN SLOT PENGAJARAN MENGIKUT SUBJEK AKIBAT CUTI ATAU URUSAN RASMI</p>
+            <h3 class="text-sm font-bold text-slate-800">🎯 OVERALL SUBJECT ACHIEVEMENT HEALTH RATE</h3>
+            <span class="text-xs text-indigo-600 font-bold bg-indigo-50 px-2.5 py-1 rounded-lg">REAL-TIME CALCULATION</span>
+          </div>
+          
+          <div class="py-4 flex flex-col items-center justify-center space-y-4">
+            <div class="relative w-36 h-36 rounded-full flex items-center justify-center border-8 border-slate-100 shadow-inner"
+                 :style="{ borderColor: completionRate >= 80 ? '#10b981' : '#f59e0b' }">
+              <div class="text-center">
+                <span class="text-3xl font-black text-slate-900">{{ completionRate }}%</span>
+                <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">ACHIEVEMENT RATE</div>
+              </div>
             </div>
-            <span class="text-xs bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-bold">AMARAN GANGGUAN</span>
+            <p class="text-xs text-slate-500 font-medium">UNDER CURRENT CONDITIONS, <strong class="text-slate-800">{{ analysisSummary.met }}</strong> SUBJECTS HAVE MET THE TARGET, <strong class="text-red-600">{{ analysisSummary.unmet }}</strong> HAVE NOT.</p>
+          </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold text-slate-800">📊 ACHIEVEMENT DISTRIBUTION BY GRADE</h3>
+            <span class="text-xs text-slate-400 font-semibold">MET VS NOT MET</span>
           </div>
 
-          <div class="space-y-4">
-            <div v-if="subjectLossRanking.length === 0" class="text-xs text-slate-400 text-center py-6">
-              TIADA REKOD KEHILANGAN GANGGUAN DI BAWAH SYARAT SEMASA.
-            </div>
-            <div v-for="(item, index) in subjectLossRanking.slice(0, 5)" :key="index" class="space-y-1.5">
-              <div class="flex justify-between items-center text-xs font-bold">
-                <span class="text-slate-800 flex items-center gap-2">
-                  <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[10px] font-black">{{ index + 1 }}</span>
-                  {{ item.subject }}
-                </span>
-                <span class="text-amber-600 font-black">-{{ item.lost }} JUMLAH KEHILANGAN SLOT</span>
+          <div class="space-y-3 pt-2">
+            <div v-for="g in [1,2,3,4,5,6]" :key="g" class="space-y-1">
+              <div class="flex justify-between text-xs font-bold">
+                <span class="text-slate-700">GRADE {{ g }}</span>
+                <span class="text-slate-500">MET: {{ getGradeStats(g).met }} / NOT MET: {{ getGradeStats(g).unmet }}</span>
               </div>
-              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                <div class="bg-amber-500 h-full rounded-full transition-all duration-500" 
-                     :style="{ width: Math.min(100, (item.lost / maxSubjectLoss) * 100) + '%' }"></div>
+              <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
+                <div class="bg-emerald-500 h-full transition-all duration-500" :style="{ width: getGradeStats(g).total > 0 ? (getGradeStats(g).met / getGradeStats(g).total) * 100 + '%' : '0%' }"></div>
+                <div class="bg-red-400 h-full transition-all duration-500" :style="{ width: getGradeStats(g).total > 0 ? (getGradeStats(g).unmet / getGradeStats(g).total) * 100 + '%' : '0%' }"></div>
               </div>
             </div>
           </div>
         </div>
-
       </div>
+
+      <div class="bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800">⚠️ RANKING OF SUBJECTS WITH MOST SLOT LOSSES DUE TO MMI INTERRUPTIONS</h3>
+            <p class="text-xs text-slate-400 mt-0.5 font-medium">SHOWING TEACHING SLOT LOSSES BY SUBJECT DUE TO LEAVE OR OFFICIAL BUSINESS</p>
+          </div>
+          <span class="text-xs bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-bold">INTERRUPTION WARNING</span>
+        </div>
+
+        <div class="space-y-4">
+          <div v-if="subjectLossRanking.length === 0" class="text-xs text-slate-400 text-center py-6">
+            NO INTERRUPTION LOSS RECORDS FOUND UNDER CURRENT CONDITIONS.
+          </div>
+          <div v-for="(item, index) in subjectLossRanking.slice(0, 5)" :key="index" class="space-y-1.5">
+            <div class="flex justify-between items-center text-xs font-bold">
+              <span class="text-slate-800 flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[10px] font-black">{{ index + 1 }}</span>
+                {{ item.subject }}
+              </span>
+              <span class="text-amber-600 font-black">-{{ item.lost }} TOTAL SLOT LOSSES</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+              <div class="bg-amber-500 h-full rounded-full transition-all duration-500" 
+                   :style="{ width: Math.min(100, (item.lost / maxSubjectLoss) * 100) + '%' }"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- 弹窗：管理目标 -->
+    <!-- Modal: Manage Targets -->
     <div v-if="showManageModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
       <div class="bg-white rounded-3xl max-w-3xl w-full p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center border-b border-slate-100 pb-4">
-          <h3 class="text-base font-bold text-slate-800">⚙️ PENYENGGARAN SASARAN SUBJEK DALAM TALIAN</h3>
-          <button @click="showManageModal = false" class="text-slate-400 hover:text-slate-700 font-bold text-sm cursor-pointer">✕ TUTUP</button>
+          <h3 class="text-base font-bold text-slate-800">⚙️ ONLINE SUBJECT TARGET MAINTENANCE</h3>
+          <button @click="showManageModal = false" class="text-slate-400 hover:text-slate-700 font-bold text-sm cursor-pointer">✕ CLOSE</button>
         </div>
 
-        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
-          <div>
-            <label class="block text-[11px] font-bold text-slate-600 mb-1">TAHUN</label>
-            <select v-model="newTarget.grade" class="w-full bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer">
-              <option v-for="g in [1,2,3,4,5,6]" :key="g" :value="g">TAHUN {{ g }}</option>
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 grid grid-cols-4 gap-3 items-end">
+          <div class="relative w-full">
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">GRADE</label>
+            <select v-model="newTarget.grade" class="w-full bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold appearance-none pr-8 cursor-pointer">
+              <option v-for="g in [1,2,3,4,5,6]" :key="g" :value="g">GRADE {{ g }}</option>
             </select>
+            <div class="absolute right-3 top-[28px] pointer-events-none text-slate-500">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
           </div>
           <div>
-            <label class="block text-[11px] font-bold text-slate-600 mb-1">NAMA SUBJEK</label>
-            <input type="text" v-model="newTarget.subject_name" placeholder="CONTOH: MATEMATIK" class="w-full bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold" />
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">SUBJECT NAME</label>
+            <input type="text" v-model="newTarget.subject_name" placeholder="E.G. MATHEMATICS" class="w-full bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold" />
           </div>
           <div>
-            <label class="block text-[11px] font-bold text-slate-600 mb-1">JUMLAH SLOT RANCANGAN</label>
-            <input type="number" v-model.number="newTarget.planned_periods" placeholder="CONTOH: 215" class="w-full bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold" />
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">TOTAL PLANNED SLOTS</label>
+            <input type="number" v-model.number="newTarget.planned_periods" placeholder="E.G. 215" class="w-full bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold" />
           </div>
           <button @click="addTarget" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs font-bold shadow-sm transition cursor-pointer">
-            ➕ TAMBAH SASARAN BAHARU
+            ➕ ADD NEW TARGET
           </button>
         </div>
 
         <div class="space-y-3">
-          <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">SENARAI SASARAN SUBJEK YANG DITETAPKAN</h4>
+          <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">LIST OF ESTABLISHED SUBJECT TARGETS</h4>
           <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden max-h-60 overflow-y-auto">
             <div v-for="t in allTargets" :key="t.id" class="p-3 flex items-center justify-between bg-white hover:bg-slate-50 transition">
               <div class="flex items-center gap-4 text-xs font-semibold text-slate-700">
-                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg font-bold">TAHUN {{ t.grade }}</span>
+                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg font-bold">GRADE {{ t.grade }}</span>
                 <span class="text-slate-900 font-bold">{{ t.subject_name }}</span>
-                <span class="text-slate-500">SASARAN: <strong>{{ t.planned_periods }}</strong> SLOT</span>
+                <span class="text-slate-500">TARGET: <strong>{{ t.planned_periods }}</strong> SLOTS</span>
               </div>
               <button @click="deleteTarget(t.id)" class="text-slate-400 hover:text-red-600 text-xs font-bold px-2 py-1 transition cursor-pointer">
-                🗑️ PADAM
+                🗑️ DELETE
               </button>
             </div>
           </div>
@@ -311,7 +313,7 @@
 
         <div class="flex justify-end pt-2">
           <button @click="loadAnalyticsData(); showManageModal = false" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm cursor-pointer">
-            SELESAI & SEGAR SEMULA LAPORAN
+            DONE & REFRESH REPORT
           </button>
         </div>
       </div>
@@ -508,15 +510,13 @@ const loadAnalyticsData = async () => {
 
         const assignedTeacherNames = [...new Set(matchedEntries.map(e => e.resolved_teacher_name).filter(Boolean))]
         const assignedTeacherIds = [...new Set(matchedEntries.map(e => e.teacher_id || e.teacher_info?.id).filter(Boolean))]
-        const assignedTeacherName = assignedTeacherNames.length > 0 ? assignedTeacherNames.join(' / ') : 'BELUM DITETAPKAN'
+        const assignedTeacherName = assignedTeacherNames.length > 0 ? assignedTeacherNames.join(' / ') : 'NOT ASSIGNED'
 
         const uniquePeriods = new Set(matchedEntries.map(e => `${e.weekday}-${e.period}`))
         const weeklyPeriods = uniquePeriods.size
 
-       // 🌟 核心升级：引入时间槽去重 Set，防止同一节课同时被“请假”和“MMI干扰”重复计算两次
         const lostSlotSet = new Set()
 
-        // 1. 请假干扰损失收集
         if (leaveRequests && leaveRequests.length > 0) {
           leaveRequests.forEach(req => {
             const reqClass = cleanString(req.class_name)
@@ -544,19 +544,16 @@ const loadAnalyticsData = async () => {
                   const matchWd = itemWeekday === leaveWeekday || itemWeekday === (leaveWeekday === 0 ? 7 : leaveWeekday)
                   
                   if (matchCls && matchSubj && matchWd) {
-                    // ⭐️ 以“日期-节次”作为唯一凭证存入 Set
                     lostSlotSet.add(`${req.leave_date}-P${item.period}`)
                   }
                 })
               } else {
-                // 如果没有具体日期，作为保底直接计入一个标记
                 lostSlotSet.add(`NODATE-${Math.random()}`)
               }
             }
           })
         }
 
-        // 2. MMI 活动干扰损失收集
         if (interruptions && interruptions.length > 0) {
           interruptions.forEach(int => {
             if (int.type === 'class') {
@@ -573,9 +570,9 @@ const loadAnalyticsData = async () => {
 
               const isClassAffected = 
                 intScope === 'all' || 
-                targetDisp.includes('SEMUA') || targetDisp.includes('全校') ||
+                targetDisp.includes('SEMUA') || targetDisp.includes('ALL') ||
                 (intScope === 'grade' && intGrade === Number(cls.grade)) ||
-                targetDisp.includes(`TAHUN ${cls.grade}`) || targetDisp.includes(`Tahun ${cls.grade}`) ||
+                targetDisp.includes(`GRADE ${cls.grade}`) || targetDisp.includes(`TAHUN ${cls.grade}`) ||
                 (intScope === 'class' && (intClass.includes(clsName) || clsName.includes(intClass || ''))) ||
                 targetDisp.includes(clsName)
 
@@ -592,7 +589,6 @@ const loadAnalyticsData = async () => {
                   const matchWeekday = itemWeekday === intWeekday || itemWeekday === (intWeekday === 0 ? 7 : intWeekday)
 
                   if (matchClass && matchPeriod && matchSubject && matchWeekday) {
-                    // ⭐️ 同样以“日期-节次”存入 Set，自动过滤掉和前面“请假”重叠的同一节课
                     lostSlotSet.add(`${int.interruption_date}-P${item.period}`)
                   }
                 })
@@ -601,7 +597,6 @@ const loadAnalyticsData = async () => {
           })
         }
 
-        // 3. 最终该科目的总受干扰损失节数 = 去重后的时间槽总大小
         let lostCount = lostSlotSet.size
 
         const plannedAccumulated = currentWeek * weeklyPeriods
@@ -610,13 +605,13 @@ const loadAnalyticsData = async () => {
         const theoryProgress = Math.round(moeTarget * (currentWeek / totalSchoolWeeks))
         const gap = Number((actual - theoryProgress).toFixed(1))
         
-        let status = 'MENCAPAI SASARAN'
+        let status = 'TARGET MET'
         if (gap < 0) {
-          status = 'BELUM MENCAPAI SASARAN'
+          status = 'NOT MET'
         } else if (gap > 0) {
-          status = 'MELEPASI SASARAN'
+          status = 'EXCEEDED TARGET'
         } else {
-          status = 'MENCAPAI SASARAN'
+          status = 'TARGET MET'
         }
 
         results.push({
@@ -635,10 +630,10 @@ const loadAnalyticsData = async () => {
     }
 
     analysisList.value = results
-    toast.success("DATA ANALISIS BERJAYA DISEGAR SEMULA!")
+    toast.success("ANALYTICS DATA REFRESHED SUCCESSFULLY!")
   } catch (err) {
-    console.error("RALAT ANALISIS:", err)
-    toast.error("GAGAL MEMUATKAN DATA: " + err.message)
+    console.error("ANALYTICS ERROR:", err)
+    toast.error("FAILED TO LOAD DATA: " + err.message)
   } finally {
     loading.value = false
   }
@@ -666,16 +661,16 @@ const filteredAnalysisList = computed(() => {
       const strA = String(valA)
       const strB = String(valB)
       return sortOrder.value === 'asc' 
-        ? strA.localeCompare(strB, 'ms-MY') 
-        : strB.localeCompare(strA, 'ms-MY')
+        ? strA.localeCompare(strB, 'en') 
+        : strB.localeCompare(strA, 'en')
     }
   })
 })
 
 const analysisSummary = computed(() => {
   const total = filteredAnalysisList.value.length
-  const met = filteredAnalysisList.value.filter(i => i.status === 'MENCAPAI SASARAN' || i.status === 'MELEPASI SASARAN').length
-  const unmet = filteredAnalysisList.value.filter(i => i.status === 'BELUM MENCAPAI SASARAN').length
+  const met = filteredAnalysisList.value.filter(i => i.status === 'TARGET MET' || i.status === 'EXCEEDED TARGET').length
+  const unmet = filteredAnalysisList.value.filter(i => i.status === 'NOT MET').length
   return { total, met, unmet }
 })
 
@@ -686,8 +681,8 @@ const completionRate = computed(() => {
 
 const getGradeStats = (g) => {
   const list = filteredAnalysisList.value.filter(i => Number(i.grade) === Number(g))
-  const met = list.filter(i => i.status === 'MENCAPAI SASARAN' || i.status === 'MELEPASI SASARAN').length
-  const unmet = list.filter(i => i.status === 'BELUM MENCAPAI SASARAN').length
+  const met = list.filter(i => i.status === 'TARGET MET' || i.status === 'EXCEEDED TARGET').length
+  const unmet = list.filter(i => i.status === 'NOT MET').length
   return { met, unmet, total: list.length }
 }
 
@@ -713,7 +708,7 @@ const exportPdfReport = () => {
 }
 
 const addTarget = async () => {
-  if (!newTarget.value.subject_name.trim()) return toast.error("SILA MASUKKAN NAMA SUBJEK!")
+  if (!newTarget.value.subject_name.trim()) return toast.error("PLEASE ENTER A SUBJECT NAME!")
   try {
     const { error } = await supabase.from('subject_targets').insert([{
       grade: newTarget.value.grade,
@@ -722,11 +717,11 @@ const addTarget = async () => {
       kpm_min_hours: newTarget.value.kpm_min_hours
     }])
     if (error) throw error
-    toast.success("SASARAN BERJAYA DITAMBAH!")
+    toast.success("TARGET ADDED SUCCESSFULLY!")
     newTarget.value.subject_name = ''
     loadAnalyticsData()
   } catch (err) {
-    toast.error("GAGAL MENAMBAH: " + err.message)
+    toast.error("FAILED TO ADD: " + err.message)
   }
 }
 
@@ -734,10 +729,10 @@ const deleteTarget = async (id) => {
   try {
     const { error } = await supabase.from('subject_targets').delete().eq('id', id)
     if (error) throw error
-    toast.success("SASARAN TELAH DIPADAM")
+    toast.success("TARGET DELETED")
     loadAnalyticsData()
   } catch (err) {
-    toast.error("GAGAL MEMADAM: " + err.message)
+    toast.error("FAILED TO DELETE: " + err.message)
   }
 }
 
@@ -773,10 +768,6 @@ onActivated(() => {
     color: black !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-  }
-  #pdfContentContainer {
-    box-shadow: none !important;
-    padding: 0 !important;
   }
   .print-summary {
     display: grid !important;

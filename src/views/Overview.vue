@@ -1,26 +1,28 @@
 <template>
-  <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
+  <!-- 🌟 核心：给最外层一个定死的最小宽度 (min-w-[1024px]) -->
+  <div class="p-4 sm:p-8 mx-auto min-h-screen space-y-8 min-w-[1024px]">
     
-    <!-- 头部区域：采用统一的卡片和排版规范 -->
-    <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+    <!-- Header Section -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 flex justify-between items-center gap-6">
       <div class="space-y-2 max-w-3xl">
-      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">          PUSAT PENGURUSAN GURU GANTI
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+          SUBSTITUTE TEACHER MANAGEMENT CENTER
         </h1>
         <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
-          PEMANTAUAN CUTI GURU SECARA MASA NYATA, MENJEJAK PROSES AGIHAN TUGASAN GURU GANTI
+          REAL-TIME TEACHER LEAVE MONITORING & SUBSTITUTE TASK ASSIGNMENT TRACKING
         </p>
       </div>
       <router-link to="/leave-entry" class="group relative inline-flex items-center justify-center px-6 py-3 text-xs sm:text-sm font-bold text-white transition-all duration-200 bg-slate-900 rounded-2xl hover:bg-slate-800 hover:shadow-lg hover:shadow-slate-900/20 shrink-0">
-        <span>DAFTAR CUTI BAHARU</span>
-        <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        <span>NEW LEAVE ENTRY</span>
+        <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       </router-link>
     </div>
 
-    <!-- 核心指标统计卡片 -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Core Metrics Cards -->
+    <div class="grid grid-cols-3 gap-6">
       <div class="bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
         <div class="flex items-center justify-between">
-          <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">TUGASAN GURU GANTI BELUM DIAGIHKAN</p>
+          <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">PENDING SUBSTITUTE TASKS</p>
           <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center ring-1 ring-amber-500/20">⏳</div>
         </div>
         <p class="text-3xl font-black text-slate-900 mt-4">{{ pendingCount }}</p>
@@ -28,7 +30,7 @@
       
       <div class="bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
         <div class="flex items-center justify-between">
-          <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Pengagihan Selesai</p>
+          <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">ASSIGNMENT COMPLETED</p>
           <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center ring-1 ring-emerald-500/20">✓</div>
         </div>
         <p class="text-3xl font-black text-slate-900 mt-4">{{ assignedCount }}</p>
@@ -36,30 +38,30 @@
       
       <div class="bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
         <div class="flex items-center justify-between">
-          <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">JUMLAH KESELURUHAN TUGASAN</p>
+          <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">TOTAL TASKS</p>
           <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center ring-1 ring-indigo-500/20">📊</div>
         </div>
         <p class="text-3xl font-black text-slate-900 mt-4">{{ leaveRequests.length }}</p>
       </div>
     </div>
 
-    <!-- 过滤器与视图切换栏 -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5">
-      <div class="flex flex-wrap items-center gap-3">
+    <!-- Filter & View Switcher Bar -->
+    <div class="flex justify-between items-center gap-4 bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5">
+      <div class="flex items-center gap-3">
         <div class="flex bg-slate-100 p-1.5 rounded-2xl">
           <button 
             @click="viewMode = 'today'"
             :class="viewMode === 'today' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'"
             class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
           >
-            📅 HARI INI SAHAJA
+            📅 TODAY ONLY
           </button>
           <button 
             @click="viewMode = 'grouped'"
             :class="viewMode === 'grouped' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'"
             class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
           >
-            📂 MENGIKUT TARIKH
+            📂 GROUP BY DATE
           </button>
         </div>
 
@@ -72,60 +74,59 @@
       </div>
 
       <div class="text-xs text-slate-500 font-bold">
-        PAPARAN SEMASA <span class="text-slate-900">{{ displayedRequests.length }}</span> REKOD CUTI
+        CURRENT DISPLAY: <span class="text-slate-900">{{ displayedRequests.length }}</span> LEAVE RECORDS
       </div>
     </div>
 
-    <!-- 数据表格区域 -->
+    <!-- Data Table Area -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
       
-      <!-- 模式一：只看今天 -->
-      <div v-if="viewMode === 'today'" class="overflow-x-auto">
+      <!-- Mode 1: Today Only -->
+      <div v-if="viewMode === 'today'">
         <table class="w-full text-left border-collapse whitespace-nowrap">
           <thead>
             <tr class="bg-slate-50 border-b border-slate-100 text-slate-500 text-xs uppercase tracking-widest font-semibold select-none">
               <th class="py-4 pl-6 pr-4 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('teacher')">
-                GURU CUTI <span v-if="sortKey === 'teacher'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+                ABSENT TEACHER <span v-if="sortKey === 'teacher'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
               <th class="p-4 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('class')">
-                KELAS / SUBJEK <span v-if="sortKey === 'class'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+                CLASS / SUBJECT <span v-if="sortKey === 'class'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
               <th class="p-4 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('period')">
-                SLOT MASA <span v-if="sortKey === 'period'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+                TIME SLOT <span v-if="sortKey === 'period'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
               <th class="p-4 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('status')">
-                STATUS TUGASAN <span v-if="sortKey === 'status'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+                TASK STATUS <span v-if="sortKey === 'status'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
               <th class="p-4 text-left cursor-pointer hover:text-indigo-600 transition" @click="handleSort('substitute')">
-                GURU GANTI <span v-if="sortKey === 'substitute'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+                SUBSTITUTE TEACHER <span v-if="sortKey === 'substitute'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
-              <th class="py-4 pr-6 pl-4 text-right">TINDAKAN</th>
+              <th class="py-4 pr-6 pl-4 text-right">ACTIONS</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-800">
             <tr v-if="displayedRequests.length === 0">
-              <td colspan="6" class="py-12 text-center text-slate-400 font-medium">TIADA REKOD CUTI GURU PADA TARIKH ({{ targetDate }}) </td>
+              <td colspan="6" class="py-12 text-center text-slate-400 font-medium">NO TEACHER LEAVE RECORDS FOR DATE ({{ targetDate }}) </td>
             </tr>
             <tr v-for="req in displayedRequests" :key="req.id" class="hover:bg-slate-50/50 transition-colors group">
               <td class="py-4 pl-6 pr-4 font-bold text-slate-900">
-                {{ teachersMap[req.teacher_id]?.name || 'SEDANG DIMUAT...' }}
+                {{ teachersMap[req.teacher_id]?.name || 'LOADING...' }}
               </td>
               <td class="p-4">
                 <div class="flex items-center gap-2">
                   <span class="text-slate-900 font-semibold">{{ req.class_name }}</span>
-                  <span v-if="req.class_name.includes('/')" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[10px] font-bold">KELAS GABUNGAN</span>
+                  <span v-if="req.class_name.includes('/')" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[10px] font-bold">COMBINED CLASS</span>
                   <span class="text-slate-300">·</span>
                   <span class="text-slate-500">{{ req.subject }}</span>
                 </div>
               </td>
+              <!-- 🌟 格式化为带有空格和上标的样式 -->
               <td class="p-4">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-xs">
-                  SESI KE-{{ req.period }}
-                </span>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-xs" v-html="formatOrdinalPeriodHtml(req.period)"></span>
               </td>
               <td class="p-4">
                 <span :class="statusClass(req.status)" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ring-1 ring-inset">
-                  {{ req.status === 'pending' ? 'BELUM DITETAPKAN' : 'TELAH DITETAPKAN' }}
+                  {{ req.status === 'pending' ? 'PENDING' : 'ASSIGNED' }}
                 </span>
               </td>
               <td class="p-4 text-left">
@@ -138,9 +139,9 @@
                 <button 
                   v-if="req.status === 'pending'"
                   @click="openRecommendModal(req)"
-                  class="inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-all cursor-pointer"
+                  class="inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-all cursor-pointer whitespace-nowrap"
                 >
-                  ✨ Penjadualan Pintar & Manual
+                  ✨ Smart & Manual Scheduling
                 </button>
               </td>
             </tr>
@@ -148,10 +149,10 @@
         </table>
       </div>
 
-      <!-- 模式二：按日期折叠归类 -->
+      <!-- Mode 2: Grouped by Date -->
       <div v-else class="p-6 space-y-4">
         <div v-if="Object.keys(groupedRequests).length === 0" class="py-12 text-center text-slate-400 font-medium">
-          TIADA SEBARANG REKOD CUTI
+          NO LEAVE RECORDS AVAILABLE
         </div>
 
         <div v-for="(requests, date) in groupedRequests" :key="date" class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
@@ -162,57 +163,56 @@
             <div class="flex items-center gap-3">
               <span class="font-bold text-slate-900 text-sm">📅 {{ date }}</span>
               <span class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-bold">
-                {{ requests.length }} SLOT TUGASAN
+                {{ requests.length }} TASK SLOTS
               </span>
             </div>
             <span class="text-slate-400 text-xs font-bold">
-              {{ foldedDates[date] ? 'BUKA ▼' : 'TUTUP ▲' }}
+              {{ foldedDates[date] ? 'EXPAND ▼' : 'COLLAPSE ▲' }}
             </span>
           </button>
 
-          <div v-show="!foldedDates[date]" class="overflow-x-auto bg-white">
+          <div v-show="!foldedDates[date]" class="bg-white">
             <table class="w-full text-left border-collapse whitespace-nowrap">
               <thead>
                 <tr class="bg-slate-50/50 border-b border-slate-100 text-slate-500 text-xs uppercase tracking-widest font-semibold select-none">
                   <th class="py-3 pl-6 pr-4 w-48 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('teacher')">
-                    GURU CUTI <span v-if="sortKey === 'teacher'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+                    ABSENT TEACHER <span v-if="sortKey === 'teacher'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
                   </th>
                   <th class="p-3 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('class')">
-                    KELAS / SUBJEK <span v-if="sortKey === 'class'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+                    CLASS / SUBJECT <span v-if="sortKey === 'class'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
                   </th>
                   <th class="p-3 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('period')">
-                    SLOT MASA <span v-if="sortKey === 'period'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+                    TIME SLOT <span v-if="sortKey === 'period'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
                   </th>
                   <th class="p-3 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('status')">
                     STATUS <span v-if="sortKey === 'status'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
                   </th>
                   <th class="p-3 text-left cursor-pointer hover:text-indigo-600 transition" @click="handleSort('substitute')">
-                    TUGASAN GURU GANTI <span v-if="sortKey === 'substitute'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+                    SUBSTITUTE TEACHER <span v-if="sortKey === 'substitute'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
                   </th>
-                  <th class="py-3 pr-6 pl-3 text-right">TINDAKAN</th>
+                  <th class="py-3 pr-6 pl-3 text-right">ACTIONS</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-800">
                 <tr v-for="req in requests" :key="req.id" class="hover:bg-slate-50/50 transition-colors group">
                   <td class="py-3 pl-6 pr-4 text-slate-900 font-bold w-48">
-                    {{ teachersMap[req.teacher_id]?.name || 'SEDANG DIMUAT...' }}
+                    {{ teachersMap[req.teacher_id]?.name || 'LOADING...' }}
                   </td>
                   <td class="p-3">
                     <div class="flex items-center gap-2">
                       <span class="text-slate-900 font-semibold">{{ req.class_name }}</span>
-                      <span v-if="req.class_name.includes('/')" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[10px] font-bold">KELAS GABUNGAN</span>
+                      <span v-if="req.class_name.includes('/')" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[10px] font-bold">COMBINED CLASS</span>
                       <span class="text-slate-300">·</span>
                       <span class="text-slate-500">{{ req.subject }}</span>
                     </div>
                   </td>
+                  <!-- 🌟 格式化为带有空格和上标样式 -->
                   <td class="p-3">
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-xs">
-                      SESI KE-{{ req.period }}
-                    </span>
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-xs" v-html="formatOrdinalPeriodHtml(req.period)"></span>
                   </td>
                   <td class="p-3">
                     <span :class="statusClass(req.status)" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ring-1 ring-inset">
-                      {{ req.status === 'pending' ? 'BELUM DITETAPKAN' : 'TELAH DITETAPKAN' }}
+                      {{ req.status === 'pending' ? 'PENDING' : 'ASSIGNED' }}
                     </span>
                   </td>
                   <td class="p-3 text-left">
@@ -225,9 +225,9 @@
                     <button 
                       v-if="req.status === 'pending'"
                       @click="openRecommendModal(req)"
-                      class="inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-all cursor-pointer"
+                      class="inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-all cursor-pointer whitespace-nowrap"
                     >
-                      ✨ JADUAL
+                      ✨ SCHEDULE
                     </button>
                   </td>
                 </tr>
@@ -239,7 +239,7 @@
 
     </div>
 
-    <!-- 弹窗 -->
+    <!-- Modal -->
     <transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100" leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
         <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" @click="showModal = false"></div>
@@ -247,8 +247,8 @@
           
           <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white/50 backdrop-blur-md shrink-0">
             <div>
-              <h2 class="text-xl font-bold text-slate-900">PUSAT PENETAPAN GURU GANTI</h2>
-              <p class="text-sm text-slate-500 mt-1">SOKONGAN CADANGAN PINTAR, ATAU PILIH MANA-MANA GURU SESI YANG SAMA SECARA MANUAL DI BAWAH</p>
+              <h2 class="text-xl font-bold text-slate-900">SUBSTITUTE ASSIGNMENT CENTER</h2>
+              <p class="text-sm text-slate-500 mt-1">SUPPORTED BY SMART RECOMMENDATIONS, OR SELECT ANY SAME-SESSION TEACHER MANUALLY BELOW</p>
             </div>
             <button @click="showModal = false" class="text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition cursor-pointer">×</button>
           </div>
@@ -256,27 +256,27 @@
           <div class="p-8 bg-slate-50/50 space-y-6 overflow-y-auto">
             
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
-              <span class="text-xs font-bold text-slate-700 whitespace-nowrap">📍 LOKASI / CATATAN:</span>
+              <span class="text-xs font-bold text-slate-700 whitespace-nowrap">📍 LOCATION / REMARK:</span>
               <input 
                 v-model="assignmentRemark" 
                 type="text" 
-                placeholder="CONTOH: PERPUSTAKAAN (JIKA PERLU BAWA KE PERPUSTAKAAN ATAU GABUNG KELAS)" 
+                placeholder="E.G. LIBRARY (IF STUDENTS NEED TO BE BROUGHT TO THE LIBRARY OR CLASSES COMBINED)" 
                 class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
               />
             </div>
 
             <div class="bg-indigo-50/60 p-5 rounded-2xl border border-indigo-100 shadow-sm">
               <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900 mb-3 flex items-center gap-2">
-                <span>🛠️ TETAPAN MANUAL (TANPA CADANGAN PINTAR)</span>
+                <span>🛠️ MANUAL ASSIGNMENT (WITHOUT SMART RECOMMENDATION)</span>
               </h3>
               <div class="flex flex-col sm:flex-row items-center gap-3">
                 <select 
                   v-model="manualSelectedTeacherId" 
                   class="w-full px-3.5 py-2.5 bg-white border border-indigo-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
                 >
-                  <option value="" disabled>-- SILA PILIH GURU SESI SAMA SECARA MANUAL --</option>
+                  <option value="" disabled>-- PLEASE SELECT A SAME-SESSION TEACHER MANUALLY --</option>
                   <option v-for="t in allSameSessionTeachers" :key="t.id" :value="t.id">
-                    {{ t.name }} (SUBJEK: {{ t.subject || 'TIADA' }})
+                    {{ t.name }} (SUBJECT: {{ t.subject || 'NONE' }})
                   </option>
                 </select>
                 <button 
@@ -284,7 +284,7 @@
                   :disabled="!manualSelectedTeacherId"
                   class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl text-xs font-semibold shadow-sm transition-all shrink-0 cursor-pointer"
                 >
-                  SAHKAN TETAPAN MANUAL
+                  CONFIRM MANUAL ASSIGNMENT
                 </button>
               </div>
             </div>
@@ -292,15 +292,15 @@
             <hr class="border-slate-200" />
 
             <div>
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">✨ SENARAI CALON CADANGAN PINTAR (TOP 6)</h3>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">✨ SMART RECOMMENDATION CANDIDATES (TOP 6)</h3>
               
               <div v-if="loading" class="flex flex-col items-center justify-center py-6 space-y-3">
                 <div class="w-6 h-6 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin"></div>
-                <p class="text-xs text-slate-500 font-medium">ALGORITMA PINTAR SEDANG DIKIRA...</p>
+                <p class="text-xs text-slate-500 font-medium">SMART ALGORITHM IS CALCULATING...</p>
               </div>
               
               <div v-else-if="recommendations.length === 0" class="bg-white p-4 rounded-2xl border border-slate-200 text-xs text-slate-500 text-center">
-                TIADA CADANGAN AUTOMATIK, SILA GUNAKAN TETAPAN MANUAL DI ATAS.
+                NO AUTOMATIC RECOMMENDATIONS AVAILABLE, PLEASE USE MANUAL ASSIGNMENT ABOVE.
               </div>
 
               <div v-else class="space-y-3">
@@ -315,16 +315,16 @@
                         <span class="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">{{ teacher.subject }}</span>
                       </div>
                       <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
-                        <span>JADUAL ASAL: <span class="font-bold text-slate-700">{{ teacher.originalClasses }} KELAS</span></span>
+                        <span>ORIGINAL SCHEDULE: <span class="font-bold text-slate-700">{{ teacher.originalClasses }} CLASSES</span></span>
                         <span>·</span>
-                        <span>JUMLAH GANTIAN HARI INI: <span class="font-bold text-orange-600">{{ teacher.todaySubCount }} KELAS</span></span>
+                        <span>TODAY'S SUBSTITUTIONS: <span class="font-bold text-orange-600">{{ teacher.todaySubCount }} CLASSES</span></span>
                         <span>·</span>
-                        <span>JUMLAH GANTIAN MINGGU INI: <span class="font-bold text-slate-700">{{ teacher.currentSubCount }}/{{ teacher.max_substitute_per_week }}</span></span>
+                        <span>THIS WEEK'S SUBSTITUTIONS: <span class="font-bold text-slate-700">{{ teacher.currentSubCount }}/{{ teacher.max_substitute_per_week }}</span></span>
                       </div>    
                     </div>
                   </div>
                   <button @click="assignSubstitute(teacher.id)" class="bg-slate-900 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer">
-                    TETAPAN PINTAR
+                    SMART ASSIGN
                   </button>
                 </div>
               </div>
@@ -360,6 +360,22 @@ const foldedDates = ref({})
 
 const sortKey = ref('period')
 const sortOrder = ref('asc')
+
+// 🌟 核心修改：在数字上标和 PERIOD 之间加入 &nbsp; 空格
+const formatOrdinalPeriodHtml = (p) => {
+  const num = Number(p)
+  if (isNaN(num)) return `PERIOD ${p}`
+  
+  let suffix = 'th'
+  if (num % 100 < 11 || num % 100 > 13) {
+    switch (num % 10) {
+      case 1: suffix = 'st'; break;
+      case 2: suffix = 'nd'; break;
+      case 3: suffix = 'rd'; break;
+    }
+  }
+  return `${num}<sup>${suffix}</sup>&nbsp;PERIOD`
+}
 
 const handleSort = (key) => {
   if (sortKey.value === key) {
@@ -465,7 +481,7 @@ const getSubstituteDisplay = (leaveRequestId) => {
   if (!sub || !sub.sub_teacher_id) return ''
   
   const subTeacher = teachersMap.value[sub.sub_teacher_id]
-  const name = subTeacher ? subTeacher.name : 'TIDAK DIKENALI'
+  const name = subTeacher ? subTeacher.name : 'UNKNOWN'
 
   if (sub.remark) {
     return `${name} (${sub.remark})`
@@ -505,7 +521,7 @@ const openRecommendModal = async (req) => {
 
     allSameSessionTeachers.value = teachersData || []
   } catch (error) {
-    toast.error("GAGAL MEMUATKAN DATA JADUAL: " + error.message)
+    toast.error("FAILED TO LOAD SCHEDULE DATA: " + error.message)
   } finally {
     loading.value = false
   }
@@ -526,11 +542,11 @@ const assignSubstitute = async (teacherId) => {
       .eq('id', currentRequest.value.id)
     if (updateErr) throw updateErr
 
-    toast.success("AGIHAN GURU GANTI BERJAYA!")
+    toast.success("SUBSTITUTE ASSIGNED SUCCESSFULLY!")
     showModal.value = false
     fetchRequests()
   } catch (error) {
-    toast.error("AGIHAN GAGAL: " + error.message)
+    toast.error("ASSIGNMENT FAILED: " + error.message)
   }
 }
 

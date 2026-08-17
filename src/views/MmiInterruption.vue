@@ -1,21 +1,22 @@
 <template>
-  <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
+  <!-- 🌟 1. 统一的桌面端最小宽度约束 -->
+  <div class="p-4 sm:p-8 mx-auto min-h-screen space-y-8 min-w-[1024px]">
     
-    <!-- 头部区域：统一的卡片风格、排版规范与渐变大标题 -->
-    <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 space-y-2">
+    <!-- Header Section: Unified card style, typography, and gradient title -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 space-y-2">
       <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
-        PUSAT REKOD GANGGUAN MMI
+        MMI INTERRUPTION RECORD CENTER
       </h1>
       <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
-        MELINDUNGI MASA INSTRUKSIONAL · REKOD MENGIKUT KELAS DAN GURU UNTUK MENJAMIN MASA PENGAJARAN.
+        PROTECTING INSTRUCTIONAL TIME · RECORDS BY CLASS AND TEACHER TO GUARANTEE TEACHING HOURS.
       </p>
     </div>
 
-    <!-- 模式切换卡片：统一样式规范 -->
-    <div class="bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 space-y-4">
+    <!-- Mode Switcher Card: Unified style guidelines -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 space-y-4">
       <div class="flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
-        <span class="text-lg font-bold text-slate-900">PILIH MOD REKOD GANGGUAN</span>
+        <span class="text-lg font-bold text-slate-900">SELECT INTERRUPTION RECORD MODE</span>
       </div>
 
       <div class="inline-flex bg-slate-100 p-1.5 rounded-2xl shadow-inner">
@@ -24,28 +25,28 @@
           :class="activeTab === 'class' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'"
           class="px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
-          <span>🏫 REKOD KELAS</span>
+          <span>🏫 CLASS RECORDS</span>
         </button>
         <button 
           @click="activeTab = 'teacher'" 
           :class="activeTab === 'teacher' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'"
           class="px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
-          <span>👩‍🏫 REKOD GURU</span>
+          <span>👩‍🏫 TEACHER RECORDS</span>
         </button>
       </div>
     </div>
 
-    <!-- 维度一：依据班级记录干扰 -->
-    <div v-if="activeTab === 'class'" class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 mb-8">
+    <!-- Dimension 1: Record Interruption by Class -->
+    <div v-if="activeTab === 'class'" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 mb-8">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
-        PENDAFTARAN GANGGUAN
+        INTERRUPTION REGISTRATION
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">📅 TARIKH GANGGUAN:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2">📅 INTERRUPTION DATE:</label>
           <input 
             type="date" 
             v-model="classForm.date" 
@@ -54,68 +55,71 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">⚠️ SEBAB GANGGUAN:</label>
-          <select 
-            v-model="classForm.reason" 
-            class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-3 cursor-pointer"
-          >
-            <option value="Perhimpunan">PERHIMPUNAN</option>
-            <option value="Program Sekolah">PROGRAM SEKOLAH</option>
-            <option value="Ceramah">CERAMAH</option>
-            <option value="Latihan Sukan">LATIHAN SUKAN</option>
-            <option value="Pertandingan">PERTANDINGAN</option>
-            <option value="Urusan Rasmi">URUSAN RASMI</option>
-            <option value="Lain-lain">LAIN-LAIN (NYATAKAN)</option>
-          </select>
+          <label class="block text-xs font-bold text-slate-700 mb-2">⚠️ REASON FOR INTERRUPTION:</label>
+          <!-- 🌟 2. 修复所有的 select：相对定位 + SVG 箭头 + truncate 防溢出 -->
+          <div class="relative w-full mb-3">
+            <select 
+              v-model="classForm.reason" 
+              class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none pr-8 truncate cursor-pointer"
+            >
+              <option value="Perhimpunan">ASSEMBLY</option>
+              <option value="Program Sekolah">SCHOOL PROGRAM</option>
+              <option value="Ceramah">TALK / LECTURE</option>
+              <option value="Latihan Sukan">SPORTS PRACTICE</option>
+              <option value="Pertandingan">COMPETITION</option>
+              <option value="Urusan Rasmi">OFFICIAL BUSINESS</option>
+              <option value="Lain-lain">OTHERS (PLEASE SPECIFY)</option>
+            </select>
+            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+          </div>
 
           <input 
             v-if="classForm.reason === 'Lain-lain'"
             type="text" 
             v-model="classForm.customReason" 
-            placeholder="NYATAKAN SEBAB GANGGUAN DI SINI..." 
+            placeholder="PLEASE SPECIFY REASON HERE..." 
             class="w-full bg-white border border-indigo-300 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
           />
         </div>
       </div>
 
       <div class="mb-6 bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
-        <label class="block text-xs font-bold text-slate-700">🎯 Skop terjejas:</label>
+        <label class="block text-xs font-bold text-slate-700">🎯 Affected Scope:</label>
         
         <div class="flex flex-wrap gap-4">
           <label class="inline-flex items-center gap-2 cursor-pointer">
             <input type="radio" v-model="classForm.scopeType" value="specific" class="text-indigo-600 focus:ring-indigo-500" />
-            <span class="text-xs font-bold text-slate-800">1. KELAS TERTENTU</span>
+            <span class="text-xs font-bold text-slate-800">1. SPECIFIC CLASSES</span>
           </label>
           <label class="inline-flex items-center gap-2 cursor-pointer">
             <input type="radio" v-model="classForm.scopeType" value="grade" class="text-indigo-600 focus:ring-indigo-500" />
-            <span class="text-xs font-bold text-slate-800">2. TAHUN TERTENTU</span>
+            <span class="text-xs font-bold text-slate-800">2. SPECIFIC GRADE</span>
           </label>
           <label class="inline-flex items-center gap-2 cursor-pointer">
             <input type="radio" v-model="classForm.scopeType" value="all" class="text-indigo-600 focus:ring-indigo-500" />
-            <span class="text-xs font-bold text-slate-800">3. SEMUA KELAS SEKOLAH</span>
+            <span class="text-xs font-bold text-slate-800">3. ALL CLASSES IN SCHOOL</span>
           </label>
         </div>
 
-        <!-- 规整对齐的班级卡片选择区 -->
         <div v-if="classForm.scopeType === 'specific'" class="space-y-3 pt-2">
-          <!-- 顶部快捷操作栏 -->
           <div class="flex justify-between items-center pb-2 border-b border-slate-200/80 text-xs">
-            <span class="font-bold text-slate-500">Sila pilih kelas yang terjejas:</span>
+            <span class="font-bold text-slate-500">Please select affected classes:</span>
             <div class="space-x-3">
               <button type="button" @click="selectAllClasses" class="text-indigo-600 hover:text-indigo-800 font-bold cursor-pointer">
-                ☑️ Pilih Semua
+                ☑️ Select All
               </button>
               <span class="text-slate-300">|</span>
               <button type="button" @click="clearAllClasses" class="text-slate-500 hover:text-slate-700 font-bold cursor-pointer">
-                ❌ Kosongkan
+                ❌ Clear
               </button>
             </div>
           </div>
 
-          <!-- 各年级规整行 -->
           <div v-for="(classes, grade) in groupedClasses" :key="grade" class="flex flex-col sm:flex-row sm:items-center gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-xs">
             <div class="w-28 shrink-0 flex items-center justify-between sm:justify-start gap-2">
-              <span class="text-xs font-black text-slate-700 uppercase tracking-wider">TAHUN {{ grade }}</span>
+              <span class="text-xs font-black text-slate-700 uppercase tracking-wider">GRADE {{ grade }}</span>
               <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-extrabold">
                 {{ classes.filter(c => classForm.selectedClasses.includes(c)).length }}/{{ classes.length }}
               </span>
@@ -144,36 +148,42 @@
             :class="classForm.selectedGrade === g ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white text-slate-700 border-slate-200'"
             class="px-4 py-2 border rounded-xl text-xs font-bold transition-all cursor-pointer"
           >
-            TAHUN {{ g }} (TAHUN {{ g }})
+            GRADE {{ g }}
           </button>
         </div>
 
         <div v-if="classForm.scopeType === 'all'" class="text-xs text-indigo-700 font-bold pt-2">
-          ✅ MELIBATKAN SEMUA KELAS TAHUN 1 HINGGA 6
+          ✅ INVOLVING ALL CLASSES FROM GRADE 1 TO 6
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">⏰ SLOT MASA MULA:</label>
-          <select v-model="classForm.startPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-bold text-slate-800 cursor-pointer">
-            <option v-for="p in 11" :key="p" :value="p">SESI KE-{{ p }}</option>
+        <div class="relative w-full">
+          <label class="block text-xs font-bold text-slate-700 mb-2">⏰ START TIME SLOT:</label>
+          <select v-model="classForm.startPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-bold text-slate-800 appearance-none pr-8 cursor-pointer">
+            <option v-for="p in 11" :key="p" :value="p">PERIOD {{ p }}</option>
           </select>
+          <div class="absolute right-4 top-[38px] pointer-events-none text-slate-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </div>
         </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">⏰ SLOT MASA TAMAT:</label>
-          <select v-model="classForm.endPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-bold text-slate-800 cursor-pointer">
-            <option v-for="p in 11" :key="p" :value="p">SESI KE-{{ p }}</option>
+        <div class="relative w-full">
+          <label class="block text-xs font-bold text-slate-700 mb-2">⏰ END TIME SLOT:</label>
+          <select v-model="classForm.endPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-bold text-slate-800 appearance-none pr-8 cursor-pointer">
+            <option v-for="p in 11" :key="p" :value="p">PERIOD {{ p }}</option>
           </select>
+          <div class="absolute right-4 top-[38px] pointer-events-none text-slate-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </div>
         </div>
       </div>
 
       <div class="mb-6">
-        <label class="block text-xs font-bold text-slate-700 mb-2">📝 PENERANGAN & INTERVENSI</label>
+        <label class="block text-xs font-bold text-slate-700 mb-2">📝 DESCRIPTION & INTERVENTION</label>
         <input 
           v-model="classForm.remarks" 
           type="text" 
-          placeholder="CONTOH: CERAMAH DEMAM DENGGI DI DEWAN UTAMA." 
+          placeholder="E.G. DENGUE FEVER TALK IN THE MAIN HALL." 
           class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
@@ -182,20 +192,20 @@
         @click="submitClassInterruption" 
         class="bg-slate-900 hover:bg-slate-800 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer"
       >
-        💾 SIMPAN REKOD GANGGUAN KELAS
+        💾 SAVE CLASS INTERRUPTION RECORD
       </button>
     </div>
 
-    <!-- 维度二：依据老师记录干扰 -->
-    <div v-if="activeTab === 'teacher'" class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 mb-8">
+    <!-- Dimension 2: Record Interruption by Teacher -->
+    <div v-if="activeTab === 'teacher'" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 mb-8">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-violet-600"></span>
-        PENDAFTARAN GANGGUAN GURU
+        TEACHER INTERRUPTION REGISTRATION
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">📅 TARIKH GANGGUAN:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2">📅 INTERRUPTION DATE:</label>
           <input 
             type="date" 
             v-model="teacherForm.date" 
@@ -204,37 +214,40 @@
           />
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">👩‍🏫 PILIH GURU TERJEJAS / CUTI</label>
+        <div class="relative w-full">
+          <label class="block text-xs font-bold text-slate-700 mb-2">👩‍🏫 SELECT AFFECTED / LEAVING TEACHER</label>
           <select 
             v-model="teacherForm.teacherId" 
             @change="loadTeacherSubjects"
-            class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none pr-8 truncate cursor-pointer"
           >
-            <option value="" disabled>-- SILA PILIH GURU --</option>
+            <option value="" disabled>-- PLEASE SELECT A TEACHER --</option>
             <option v-for="t in teachersList" :key="t.id" :value="t.id">{{ t.name }}</option>
           </select>
+          <div class="absolute right-4 top-[38px] pointer-events-none text-slate-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </div>
         </div>
       </div>
 
       <div class="mb-6">
-        <label class="block text-xs font-bold text-slate-700 mb-2">⚠️ SEBAB GANGGUAN (CONTOH: RASMI / KURSUS / CUTI SAKIT):</label>
+        <label class="block text-xs font-bold text-slate-700 mb-2">⚠️ REASON FOR INTERRUPTION (E.G. OFFICIAL / COURSE / SICK LEAVE):</label>
         <input 
           v-model="teacherForm.reason" 
           type="text" 
-          placeholder="CONTOH: MENGIRINGI PASUKAN, MESYUARAT, BENGKEL, CUTI SAKIT" 
+          placeholder="E.G. ACCOMPANYING TEAM, MEETING, WORKSHOP, SICK LEAVE" 
           class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-800"
         />
       </div>
 
       <div class="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 mb-6">
         <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900 mb-3 flex items-center justify-between">
-          <span>📚 Penyesuaian Data automatik : JADUAL ASAL DAN KELAS terjejas</span>
-          <span v-if="loadingSubjects" class="text-xs font-normal text-indigo-600 animate-pulse">JADUAL SEDANG DIMUATKAN</span>
+          <span>📚 Automatic Data Adjustment: Original Timetable and Affected Classes</span>
+          <span v-if="loadingSubjects" class="text-xs font-normal text-indigo-600 animate-pulse">LOADING TIMETABLE</span>
         </h3>
 
         <div v-if="exportedSubjects.length === 0" class="text-xs text-slate-400 py-4 text-center">
-          SILA PILIH TARIKH DAN GURU UNTUK MEMUATKAN KELAS DAN SUBJEK TERJEJAS
+          PLEASE SELECT DATE AND TEACHER TO LOAD AFFECTED CLASSES AND SUBJECTS
         </div>
 
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -245,12 +258,12 @@
           >
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-xs font-extrabold text-slate-900">SESI KE-{{ sub.period }}</span>
-                <span v-if="sub.is_combined" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[9px] font-bold">KELAS GABUNGAN</span>
+                <span class="text-xs font-extrabold text-slate-900">PERIOD {{ sub.period }}</span>
+                <span v-if="sub.is_combined" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[9px] font-bold">COMBINED CLASS</span>
               </div>
               <span class="text-xs text-slate-500">{{ sub.class_name }} · {{ sub.subject }}</span>
             </div>
-            <span class="text-[10px] px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 font-bold">TERJEJAS</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 font-bold">AFFECTED</span>
           </div>
         </div>
       </div>
@@ -260,178 +273,181 @@
         :disabled="exportedSubjects.length === 0"
         class="bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer"
       >
-        💾 SAH DAN SIMPAN REKOD GANGGUAN GURU
+        💾 CONFIRM AND SAVE TEACHER INTERRUPTION RECORD
       </button>
     </div>
 
-    <!-- 干扰日志历史记录表格区 -->
-    <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5">
+    <!-- Interruption Log History Table Area -->
+    <!-- 🌟 这里去掉了溢出滚动，外层圆角保护 -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5">
       
-      <!-- 第一行：标题与导出按钮 -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-4">
         <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <span>📊 JADUAL SEJARAH GANGGUAN MMI</span>
+          <span>📊 MMI INTERRUPTION HISTORY SCHEDULE</span>
           <span class="text-xs bg-slate-100 px-2.5 py-1 rounded-full text-slate-600 font-semibold">
-            JUMLAH {{ filteredLogs.length }} REKOD
+            TOTAL {{ filteredLogs.length }} RECORDS
           </span>
         </h2>
 
         <button 
           @click="exportLogsToExcel" 
-          class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
         >
-          <span>📥 EKSPORT JADUAL EXCEL</span>
+          <span>📥 EXPORT EXCEL SCHEDULE</span>
         </button>
       </div>
 
-      <!-- 第二行：所有筛选与搜索框平铺 -->
+      <!-- Filters (全部换成了完美的 SVG + appearance-none 下拉框) -->
       <div class="flex flex-wrap items-center gap-3 mb-6">
-        <select v-model="typeFilter" class="bg-slate-50 border border-slate-200 px-3.5 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
-          <option value="all">SEMUA JENIS</option>
-          <option value="class">GANGGUAN KELAS</option>
-          <option value="teacher">GANGGUAN GURU</option>
-        </select>
+        <div class="relative min-w-[140px]">
+          <select v-model="typeFilter" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none appearance-none pr-8 cursor-pointer">
+            <option value="all">ALL TYPES</option>
+            <option value="class">CLASS INTERRUPTION</option>
+            <option value="teacher">TEACHER INTERRUPTION</option>
+          </select>
+          <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </div>
+        </div>
 
-        <select v-model="dateRangeFilter" class="bg-slate-50 border border-slate-200 px-3.5 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
-          <option value="all">SEMUA TEMPOH MASA</option>
-          <option value="week">📅 MINGGU INI (7 HARI TERAKHIR)</option>
-          <option value="month">📅 BULAN INI (BULAN SEMASA)</option>
-        </select>
+        <div class="relative min-w-[200px]">
+          <select v-model="dateRangeFilter" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none appearance-none pr-8 cursor-pointer">
+            <option value="all">ALL TIME PERIODS</option>
+            <option value="week">📅 THIS WEEK (LAST 7 DAYS)</option>
+            <option value="month">📅 THIS MONTH (CURRENT MONTH)</option>
+          </select>
+          <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </div>
+        </div>
 
-        <select v-model="selectedMonth" class="bg-slate-50 border border-slate-200 px-3.5 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
-          <option value="all">🗓️ SEMUA BULAN (SETAHUN)</option>
-          <option v-for="m in 12" :key="m" :value="String(m)">BULAN {{ m }}</option>
-        </select>
+        <div class="relative min-w-[200px]">
+          <select v-model="selectedMonth" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none appearance-none pr-8 cursor-pointer">
+            <option value="all">🗓️ ALL MONTHS (YEAR-ROUND)</option>
+            <option v-for="m in 12" :key="m" :value="String(m)">MONTH {{ m }}</option>
+          </select>
+          <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </div>
+        </div>
 
-        <div class="relative flex-1 min-w-[200px]">
+        <div class="flex-1 min-w-[200px]">
           <input 
             type="text" 
             v-model="searchQuery" 
-            placeholder="CARI GURU / KELAS / SEBAB..." 
+            placeholder="SEARCH TEACHER / CLASS / REASON..." 
             class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
       </div>
 
-      <!-- 表格区域 -->
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse text-xs table-fixed">
-          <thead>
-            <tr class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-200 select-none">
-              <!-- TARIKH: 靠左对齐 -->
-              <th @click="handleSort('interruption_date')" class="py-3 px-4 w-32 cursor-pointer hover:bg-slate-100 transition text-left">
-                <div class="flex items-center gap-1">
-                  <span>TARIKH</span>
-                  <span class="text-[10px] text-indigo-600 font-bold">
-                    {{ sortField === 'interruption_date' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
-                  </span>
-                </div>
-              </th>
-
-              <!-- JENIS: 居中对齐 -->
-              <th @click="handleSort('type')" class="py-3 px-3 w-28 cursor-pointer hover:bg-slate-100 transition text-center">
-                <div class="flex items-center justify-center gap-1">
-                  <span>JENIS</span>
-                  <span class="text-[10px] text-indigo-600 font-bold">
-                    {{ sortField === 'type' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
-                  </span>
-                </div>
-              </th>
-
-              <!-- SASARAN / SKOP: 靠左对齐 -->
-              <th @click="handleSort('target_display')" class="py-3 px-4 w-auto cursor-pointer hover:bg-slate-100 transition text-left">
-                <div class="flex items-center gap-1">
-                  <span>SASARAN / SKOP</span>
-                  <span class="text-[10px] text-indigo-600 font-bold">
-                    {{ sortField === 'target_display' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
-                  </span>
-                </div>
-              </th>
-
-              <!-- SLOT MASA: 居中对齐 -->
-              <th @click="handleSort('start_period')" class="py-3 px-3 w-32 cursor-pointer hover:bg-slate-100 transition text-center">
-                <div class="flex items-center justify-center gap-1">
-                  <span>SLOT MASA</span>
-                  <span class="text-[10px] text-indigo-600 font-bold">
-                    {{ sortField === 'start_period' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
-                  </span>
-                </div>
-              </th>
-
-              <!-- SEBAB: 居中对齐 -->
-              <th @click="handleSort('reason')" class="py-3 px-3 w-36 cursor-pointer hover:bg-slate-100 transition text-center">
-                <div class="flex items-center justify-center gap-1">
-                  <span>SEBAB</span>
-                  <span class="text-[10px] text-indigo-600 font-bold">
-                    {{ sortField === 'reason' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
-                  </span>
-                </div>
-              </th>
-
-              <!-- TINDAKAN: 居中对齐 -->
-              <th class="py-3 px-3 w-24 text-center">TINDAKAN</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100 font-medium text-slate-800">
-            <tr v-if="filteredLogs.length === 0">
-              <td colspan="6" class="py-12 text-center text-slate-400 font-medium">
-                TIADA REKOD GANGGUAN MMI DIKESAN
-              </td>
-            </tr>
-            <tr v-for="log in filteredLogs" :key="log.id" class="hover:bg-slate-50/50 transition">
-              <!-- TARIKH: 靠左 -->
-              <td class="py-3.5 px-4 font-bold text-slate-900 truncate text-left">{{ log.interruption_date }}</td>
-              
-              <!-- JENIS: 居中 -->
-              <td class="py-3.5 px-3 text-center truncate">
-                <span :class="log.type === 'class' ? 'bg-indigo-50 text-indigo-700' : 'bg-violet-50 text-violet-700'" class="px-2.5 py-1 rounded-full text-xs font-bold inline-block">
-                  {{ log.type === 'class' ? 'KELAS' : 'GURU' }}
+      <!-- 🌟 3. 表格核心修复：去掉 table-fixed，去掉僵硬的 w-xx，全部依靠 whitespace-nowrap 自动排开 -->
+      <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+        <thead>
+          <tr class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-200 select-none">
+            <th @click="handleSort('interruption_date')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-left">
+              <div class="flex items-center gap-1">
+                <span>DATE</span>
+                <span class="text-[10px] text-indigo-600 font-bold">
+                  {{ sortField === 'interruption_date' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
                 </span>
-              </td>
+              </div>
+            </th>
 
-              <!-- SASARAN / SKOP: 靠左 -->
-              <td class="py-3.5 px-4 font-semibold text-slate-800 truncate text-left" :title="formatTargetDisplay(log.target_display)">
-                {{ formatTargetDisplay(log.target_display) }}
-              </td>
-
-              <!-- SLOT MASA: 居中 -->
-              <td class="py-3.5 px-3 text-center truncate">
-                <span class="bg-slate-100 px-2.5 py-1 rounded-lg text-xs text-slate-700 font-bold inline-block">
-                  KE-{{ log.start_period }} - {{ log.end_period }}
+            <th @click="handleSort('type')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-center">
+              <div class="flex items-center justify-center gap-1">
+                <span>TYPE</span>
+                <span class="text-[10px] text-indigo-600 font-bold">
+                  {{ sortField === 'type' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
                 </span>
-              </td>
+              </div>
+            </th>
 
-              <!-- SEBAB: 居中 -->
-              <td class="py-3.5 px-3 text-center truncate">
-                <span v-if="!log.reason || log.reason === '-'">-</span>
-                <button 
-                  v-else 
-                  @click="openDetailModal(log)" 
-                  class="text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-xl transition inline-flex items-center justify-center gap-1 text-xs mx-auto cursor-pointer"
-                >
-                  <span>LIHAT BUTIRAN</span> 
-                  <span>🔍</span>
-                </button>
-              </td>
+            <th @click="handleSort('target_display')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-left">
+              <div class="flex items-center gap-1">
+                <span>TARGET / SCOPE</span>
+                <span class="text-[10px] text-indigo-600 font-bold">
+                  {{ sortField === 'target_display' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
+                </span>
+              </div>
+            </th>
 
-              <!-- TINDAKAN: 居中 -->
-              <td class="py-3.5 px-3 text-center truncate">
-                <button @click="deleteLog(log)" class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-1.5 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition">
-                  PADAM
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+            <th @click="handleSort('start_period')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-center">
+              <div class="flex items-center justify-center gap-1">
+                <span>TIME SLOT</span>
+                <span class="text-[10px] text-indigo-600 font-bold">
+                  {{ sortField === 'start_period' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
+                </span>
+              </div>
+            </th>
+
+            <th @click="handleSort('reason')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-center">
+              <div class="flex items-center justify-center gap-1">
+                <span>REASON</span>
+                <span class="text-[10px] text-indigo-600 font-bold">
+                  {{ sortField === 'reason' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
+                </span>
+              </div>
+            </th>
+
+            <th class="py-4 px-4 text-center">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 font-medium text-slate-800">
+          <tr v-if="filteredLogs.length === 0">
+            <td colspan="6" class="py-12 text-center text-slate-400 font-medium">
+              NO MMI INTERRUPTION RECORDS DETECTED
+            </td>
+          </tr>
+          <tr v-for="log in filteredLogs" :key="log.id" class="hover:bg-slate-50/50 transition">
+            
+            <td class="py-4 px-4 font-bold text-slate-900 text-left">{{ log.interruption_date }}</td>
+            
+            <td class="py-4 px-4 text-center">
+              <span :class="log.type === 'class' ? 'bg-indigo-50 text-indigo-700' : 'bg-violet-50 text-violet-700'" class="px-2.5 py-1 rounded-full text-xs font-bold inline-block">
+                {{ log.type === 'class' ? 'CLASS' : 'TEACHER' }}
+              </span>
+            </td>
+
+            <!-- 针对选择多班级过长的情况，单独允许它换行，并限制最大宽度 -->
+            <td class="py-4 px-4 font-semibold text-slate-800 text-left whitespace-normal min-w-[200px]" :title="formatTargetDisplay(log.target_display)">
+              {{ formatTargetDisplay(log.target_display) }}
+            </td>
+
+            <td class="py-4 px-4 text-center">
+              <span class="bg-slate-100 px-2.5 py-1 rounded-lg text-xs text-slate-700 font-bold inline-block">
+                PERIOD {{ log.start_period }} - {{ log.end_period }}
+              </span>
+            </td>
+
+            <td class="py-4 px-4 text-center">
+              <span v-if="!log.reason || log.reason === '-'">-</span>
+              <button 
+                v-else 
+                @click="openDetailModal(log)" 
+                class="text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5 text-xs cursor-pointer"
+              >
+                <span>VIEW DETAILS</span> 
+                <span>🔍</span>
+              </button>
+            </td>
+
+            <td class="py-4 px-4 text-center">
+              <button @click="deleteLog(log)" class="text-xs text-red-600 hover:text-red-800 font-bold px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition">
+                DELETE
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <!-- 备注详情弹窗 -->
+    <!-- Remark Details Modal -->
     <div v-if="showDetailModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl ring-1 ring-slate-900/10 animate-in fade-in zoom-in duration-200">
         <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
           <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-            <span>📝 BUTIRAN GANGGUAN MMI</span>
+            <span>📝 MMI INTERRUPTION DETAILS</span>
           </h3>
           <button @click="showDetailModal = false" class="text-slate-400 hover:text-slate-600 font-bold text-sm bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center cursor-pointer">
             ✕
@@ -440,16 +456,16 @@
 
         <div class="space-y-3 mb-6 text-xs text-slate-700">
           <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-            <span class="font-bold text-slate-400 block mb-1">📅 TARIKH & SASARAN:</span>
+            <span class="font-bold text-slate-400 block mb-1">📅 DATE & TARGET:</span>
             <span class="font-semibold text-slate-900">{{ currentDetailLog?.interruption_date }} | {{ currentDetailLog?.target_display }}</span>
           </div>
           <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-            <span class="font-bold text-slate-400 block mb-1">⚠️ SEBAB GANGGUAN:</span>
+            <span class="font-bold text-slate-400 block mb-1">⚠️ REASON FOR INTERRUPTION:</span>
             <span class="font-semibold text-slate-900">{{ currentDetailLog?.reason }}</span>
           </div>
           
           <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
-            <span class="font-bold text-indigo-900 block mb-1">📄 NOTA & KANDUNGAN JADUAL:</span>
+            <span class="font-bold text-indigo-900 block mb-1">📄 NOTES & TIMETABLE CONTENT:</span>
             
             <p v-if="currentDetailLog?.type === 'teacher'" class="text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">
               {{ currentDetailLog?.remarks?.replace('自动同步自请假录入 ', '') }}
@@ -460,16 +476,16 @@
               
               <span v-if="loadingDetail" class="animate-pulse inline-flex items-center gap-1">
                 <svg class="animate-spin h-3 w-3 text-slate-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                SEDANG MEMADANKAN JADUAL WAKTU...
+                MATCHING TIMETABLE...
               </span>
-              <span v-else>{{ currentDetailAffectedClasses || 'TIADA REKOD JADUAL ATAU KELAS TERJEJAS' }}</span>
+              <span v-else>{{ currentDetailAffectedClasses || 'NO TIMETABLE RECORD OR AFFECTED CLASSES' }}</span>
             </div>
           </div>
         </div>
 
         <div class="flex justify-end">
           <button @click="showDetailModal = false" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl text-xs font-bold transition cursor-pointer">
-            TUTUP
+            CLOSE
           </button>
         </div>
       </div>
@@ -596,16 +612,16 @@ const openDetailModal = async (log) => {
           const p = Number(t.period)
           if (p < startP || p > endP) return false
 
-          if (targetDisp.includes('SEMUA') || targetDisp.includes('全校')) return true
+          if (targetDisp.includes('SEMUA') || targetDisp.includes('ALL')) return true
           
-          if (targetDisp.includes('TAHUN') || targetDisp.includes('全年级')) {
-            const match = targetDisp.match(/(?:TAHUN|Tahun)\s*(\d)/)
+          if (targetDisp.includes('TAHUN') || targetDisp.includes('GRADE')) {
+            const match = targetDisp.match(/(?:TAHUN|Grade)\s*(\d)/i)
             const grade = match ? match[1] : null
             return grade && String(t.class_name).startsWith(grade)
           }
           
-          if (targetDisp.includes('KELAS:') || targetDisp.includes('班级:')) {
-            const classesStr = targetDisp.replace(/(?:KELAS|班级)[:：]/, '').trim()
+          if (targetDisp.includes('KELAS:') || targetDisp.includes('CLASS:')) {
+            const classesStr = targetDisp.replace(/(?:KELAS|CLASS)[:：]/i, '').trim()
             const classList = classesStr.split(',').map(c => c.trim())
             return classList.some(c => t.class_name === c || t.class_name.includes(c) || c.includes(t.class_name))
           }
@@ -617,14 +633,14 @@ const openDetailModal = async (log) => {
           const periods = [...new Set(matched.map(m => m.period))].sort((a, b) => a - b).join(', ')
           const classes = matched.map(m => `${m.class_name}(${m.subject || m.subject_name})`).join(', ')
           
-          currentDetailAffectedClasses.value = `(MELIBATKAN SLOT: KE-${periods} | SUBJEK: ${classes})`
+          currentDetailAffectedClasses.value = `(INVOLVING SLOTS: PERIOD ${periods} | SUBJECTS: ${classes})`
         } else {
-          currentDetailAffectedClasses.value = 'TIADA REKOD JADUAL ATAU KELAS TERJEJAS'
+          currentDetailAffectedClasses.value = 'NO TIMETABLE RECORD OR AFFECTED CLASSES'
         }
       }
     } catch (err) {
-      console.error("GAGAL MEMUATKAN BUTIRAN:", err)
-      currentDetailAffectedClasses.value = 'GAGAL MEMUATKAN KELAS TERJEJAS'
+      console.error("FAILED TO LOAD DETAILS:", err)
+      currentDetailAffectedClasses.value = 'FAILED TO LOAD AFFECTED CLASSES'
     } finally {
       loadingDetail.value = false
     }
@@ -719,7 +735,7 @@ const loadTeacherSubjects = async () => {
 
     exportedSubjects.value = Array.from(periodMap.values())
   } catch (err) {
-    toast.error("GAGAL MENGESTRAK SUBJEK: " + err.message)
+    toast.error("FAILED TO EXTRACT SUBJECTS: " + err.message)
   } finally {
     loadingSubjects.value = false
   }
@@ -728,20 +744,20 @@ const loadTeacherSubjects = async () => {
 const submitClassInterruption = async () => {
   let targetDisplay = ''
   if (classForm.value.scopeType === 'specific') {
-    if (classForm.value.selectedClasses.length === 0) return toast.error("SILA PILIH SEKURANG-KURANGNYA SATU KELAS!")
+    if (classForm.value.selectedClasses.length === 0) return toast.error("PLEASE SELECT AT LEAST ONE CLASS!")
     targetDisplay = classForm.value.selectedClasses.join(', ')
   } else if (classForm.value.scopeType === 'grade') {
-    targetDisplay = `TAHUN ${classForm.value.selectedGrade} (SETAHUN)`
+    targetDisplay = `GRADE ${classForm.value.selectedGrade}`
   } else {
-    targetDisplay = 'SEMUA KELAS SEKOLAH'
+    targetDisplay = 'ALL CLASSES IN SCHOOL'
   }
 
   const finalReason = classForm.value.reason === 'Lain-lain' 
-    ? (classForm.value.customReason ? classForm.value.customReason.trim().toUpperCase() : 'LAIN-LAIN')
+    ? (classForm.value.customReason ? classForm.value.customReason.trim().toUpperCase() : 'OTHERS')
     : classForm.value.reason.toUpperCase()
 
   if (classForm.value.reason === 'Lain-lain' && !classForm.value.customReason) {
-    return toast.error("SILA NYATAKAN SEBAB GANGGUAN!")
+    return toast.error("PLEASE SPECIFY THE REASON FOR INTERRUPTION!")
   }
 
   try {
@@ -757,11 +773,11 @@ const submitClassInterruption = async () => {
 
     if (error) throw error
 
-    toast.success("REKOD GANGGUAN KELAS BERJAYA DISIMPAN!")
+    toast.success("CLASS INTERRUPTION RECORD SAVED SUCCESSFULLY!")
     fetchLogs()
     classForm.value.customReason = ''
   } catch (err) {
-    toast.error("GAGAL MENYIMPAN: " + err.message)
+    toast.error("FAILED TO SAVE: " + err.message)
   }
 }
 
@@ -779,19 +795,19 @@ const submitTeacherInterruption = async () => {
     const { error } = await supabase.from('mmi_interruptions').insert({
       interruption_date: teacherForm.value.date,
       type: 'teacher',
-      target_display: `GURU: ${teacher?.name || ''}`,
+      target_display: `TEACHER: ${teacher?.name || ''}`,
       start_period: startP,
       end_period: endP,
-      reason: teacherForm.value.reason ? teacherForm.value.reason.toUpperCase() : 'GURU TIDAK HADIR / TERJEJAS',
-      remarks: `(MELIBATKAN SLOT: KE-${periods.join(', ')} | SUBJEK: ${subjectSummary})`
+      reason: teacherForm.value.reason ? teacherForm.value.reason.toUpperCase() : 'TEACHER ABSENT / AFFECTED',
+      remarks: `(INVOLVING SLOTS: PERIOD ${periods.join(', ')} | SUBJECTS: ${subjectSummary})`
     })
 
     if (error) throw error
 
-    toast.success("REKOD GANGGUAN GURU BERJAYA DISIMPAN!")
+    toast.success("TEACHER INTERRUPTION RECORD SAVED SUCCESSFULLY!")
     fetchLogs()
   } catch (err) {
-    toast.error("GAGAL MENYIMPAN: " + err.message)
+    toast.error("FAILED TO SAVE: " + err.message)
   }
 }
 
@@ -806,17 +822,17 @@ const fetchLogs = async () => {
 
 const exportLogsToExcel = () => {
   if (filteredLogs.value.length === 0) {
-    return toast.error("TIADA DATA UNTUK DIEKSPORT!")
+    return toast.error("NO DATA TO EXPORT!")
   }
 
-  let csvContent = "\uFEFFTARIKH,JENIS,SASARAN,SLOT MASA,SEBAB,NOTA\n"
+  let csvContent = "\uFEFFDATE,TYPE,TARGET,TIME SLOT,REASON,NOTES\n"
   filteredLogs.value.forEach(item => {
-    const typeStr = item.type === 'class' ? 'KELAS' : 'GURU'
+    const typeStr = item.type === 'class' ? 'CLASS' : 'TEACHER'
     const row = [
       item.interruption_date,
       typeStr,
       `"${(item.target_display || '').replace(/"/g, '""')}"`,
-      `"KE-${item.start_period}-${item.end_period}"`,
+      `"PERIOD ${item.start_period}-${item.end_period}"`,
       `"${(item.reason || '').replace(/"/g, '""')}"`,
       `"${(item.remarks || '').replace(/"/g, '""')}"`
     ]
@@ -827,20 +843,20 @@ const exportLogsToExcel = () => {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.setAttribute('href', url)
-  link.setAttribute('download', `MMI_SEJARAH_GANGGUAN_${getLocalToday()}.csv`)
+  link.setAttribute('download', `MMI_INTERRUPTION_HISTORY_${getLocalToday()}.csv`)
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
-  toast.success("EKSPORT LAPORAN BERJAYA!")
+  toast.success("REPORT EXPORTED SUCCESSFULLY!")
 }
 
 const formatTargetDisplay = (text) => {
   if (!text) return ''
-  return text.replace(/^(KELAS|班级)[:：]\s*/i, '').trim()
+  return text.replace(/^(KELAS|CLASS)[:：]\s*/i, '').trim()
 }
 
 const deleteLog = async (log) => {
-  if (!confirm(`ADAKAH ANDA PASTI MAHU MEMADAM REKOD GANGGUAN MMI PADA ${log.interruption_date} INI?`)) return
+  if (!confirm(`ARE YOU SURE YOU WANT TO DELETE THIS MMI INTERRUPTION RECORD ON ${log.interruption_date}?`)) return
 
   try {
     const { error: mmiErr } = await supabase
@@ -850,10 +866,10 @@ const deleteLog = async (log) => {
 
     if (mmiErr) throw mmiErr
 
-    if (log.type === 'teacher' || (log.target_display && (log.target_display.includes('GURU:') || log.target_display.includes('GURU')))) {
+    if (log.type === 'teacher' || (log.target_display && (log.target_display.includes('GURU:') || log.target_display.includes('TEACHER')))) {
       let teacherName = ''
       if (log.target_display) {
-        teacherName = log.target_display.replace(/GURU[:：]?\s*/, '').trim()
+        teacherName = log.target_display.replace(/(?:GURU|TEACHER)[:：]?\s*/i, '').trim()
       }
 
       if (teacherName) {
@@ -887,10 +903,10 @@ const deleteLog = async (log) => {
       }
     }
 
-    toast.success("REKOD GANGGUAN DAN CUTI BERKAITAN BERJAYA DIPADAM!")
+    toast.success("INTERRUPTION AND RELATED LEAVE RECORDS DELETED SUCCESSFULLY!")
     fetchLogs()
   } catch (err) {
-    toast.error("GAGAL MEMADAM: " + err.message)
+    toast.error("FAILED TO DELETE: " + err.message)
   }
 }
 
