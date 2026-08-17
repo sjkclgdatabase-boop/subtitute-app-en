@@ -16,9 +16,9 @@
         />
       </div>
 
-      <!-- 系统大标题 -->
+      <!-- 系统大标题 (English) -->
       <h1 class="text-xl font-black tracking-widest text-slate-900 text-center uppercase leading-tight font-serif drop-shadow-sm">
-        SISTEM PENGURUSAN AKADEMIK PINTAR
+        SMART ACADEMIC MANAGEMENT SYSTEM
       </h1>
       
       <!-- 动态学校副标题 -->
@@ -31,7 +31,7 @@
         
         <!-- 邮箱输入框 -->
         <div class="relative flex items-center">
-          <label for="email" class="sr-only">MASUKKAN E-MEL</label>
+          <label for="email" class="sr-only">ENTER EMAIL</label>
           <span class="absolute left-4 text-cyan-600">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
           </span>
@@ -41,14 +41,14 @@
             type="email" 
             required
             autocomplete="email"
-            placeholder="MASUKKAN E-MEL" 
+            placeholder="ENTER EMAIL" 
             class="w-full bg-slate-50 border border-slate-200 py-3.5 pl-12 pr-4 rounded-2xl text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition shadow-inner"
           />
         </div>
 
         <!-- 密码输入框 -->
         <div class="relative flex items-center">
-          <label for="password" class="sr-only">MASUKKAN KATA LALUAN</label>
+          <label for="password" class="sr-only">ENTER PASSWORD</label>
           <span class="absolute left-4 text-cyan-600">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
           </span>
@@ -58,7 +58,7 @@
             type="password" 
             required
             autocomplete="current-password"
-            placeholder="MASUKKAN KATA LALUAN" 
+            placeholder="ENTER PASSWORD" 
             class="w-full bg-slate-50 border border-slate-200 py-3.5 pl-12 pr-4 rounded-2xl text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition shadow-inner"
           />
         </div>
@@ -66,7 +66,7 @@
         <!-- 忘记密码链接 -->
         <div class="text-right pt-1 pb-2">
           <button type="button" @click="handleForgotPassword" class="text-[11px] font-bold text-slate-500 hover:text-cyan-600 transition bg-transparent border-0 cursor-pointer">
-            LUPA KATA LALUAN?
+            FORGOT PASSWORD?
           </button>
         </div>
 
@@ -77,7 +77,7 @@
           class="w-full bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-black py-3.5 rounded-2xl shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2 text-xs tracking-widest uppercase disabled:opacity-50 cursor-pointer"
         >
           <span v-if="loading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-          <span>LOG MASUK SISTEM</span>
+          <span>SIGN IN TO SYSTEM</span>
         </button>
 
       </form>
@@ -125,7 +125,7 @@ onMounted(async () => {
       }
     }
   } catch (err) {
-    console.error('GAGAL MEMUATKAN MAKLUMAT SEKOLAH:', err)
+    console.error('FAILED TO LOAD SCHOOL INFORMATION:', err)
   }
 })
 
@@ -138,19 +138,19 @@ const handleLogin = async () => {
     })
 
     if (error) {
-      toast.error(`LOG MASUK GAGAL: ${error.message}`)
+      toast.error(`LOGIN FAILED: ${error.message}`)
     } else {
-      toast.success("LOG MASUK BERJAYA!")
+      toast.success("LOGIN SUCCESSFUL!")
       router.push('/')
     }
   } catch (err) {
-    toast.error("RALAT TIDAK DIKETAHUI, SILA CUBA LAGI")
+    toast.error("UNKNOWN ERROR OCCURRED, PLEASE TRY AGAIN")
   } finally {
     loading.value = false
   }
 }
 
 const handleForgotPassword = () => {
-  toast.error("SILA HUBUNGI PENTADBIR SISTEM UNTUK MENETAP SEMULA KATA LALUAN.")
+  toast.error("PLEASE CONTACT THE SYSTEM ADMINISTRATOR TO RESET YOUR PASSWORD.")
 }
 </script>

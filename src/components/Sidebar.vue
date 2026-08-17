@@ -15,10 +15,10 @@
           class="w-10 h-10 object-contain rounded-xl bg-slate-800 p-1 shadow-sm shrink-0"
         />
         <div class="flex flex-col justify-center overflow-hidden min-w-0">
-          <span class="font-bold text-[13px] tracking-tight text-white leading-tight truncate">
+          <span class="font-bold text-[14px] tracking-tight text-white leading-tight truncate">
             {{ currentSchoolName }}
           </span>
-          <span class="text-[9px] font-bold text-indigo-400 tracking-wider mt-0.5 uppercase">
+          <span class="text-[8px] font-bold text-indigo-400 tracking-wider mt-0.5 uppercase">
             SMART ACADEMIC MANAGEMENT
           </span>
         </div>
@@ -57,20 +57,30 @@
       </router-link>
     </div>
 
-    <!-- Bottom Actions Area -->
+    <!-- Bottom Actions Area: Multi-language Switch + Logout -->
     <div class="p-3 border-t border-slate-800 bg-slate-950/40 space-y-1.5">
       
-      <!-- Switch back / Other language placeholder -->
+      <!-- 1. Switch to Chinese Version -->
       <button 
-        @click="switchLanguagePlaceholder" 
+        @click="switchToLanguage('https://subtitute-app.vercel.app')" 
         class="w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors cursor-pointer"
-        :title="isSidebarCollapsed ? 'Language' : ''"
+        :title="isSidebarCollapsed ? '中文' : ''"
       >
-        <span class="text-base shrink-0">🌐</span>
-        <span v-show="!isSidebarCollapsed" class="truncate">Language</span>
+        <span class="text-base shrink-0">🇨🇳</span>
+        <span v-show="!isSidebarCollapsed" class="truncate">中文</span>
       </button>
 
-      <!-- Logout Button -->
+      <!-- 2. Switch to Malay Version -->
+      <button 
+        @click="switchToLanguage('https://subtitute-app-bm.vercel.app')" 
+        class="w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300 transition-colors cursor-pointer"
+        :title="isSidebarCollapsed ? 'Bahasa Melayu' : ''"
+      >
+        <span class="text-base shrink-0">🇲🇾</span>
+        <span v-show="!isSidebarCollapsed" class="truncate">Bahasa Melayu</span>
+      </button>
+
+      <!-- 3. Logout Button -->
       <button 
         @click="logout" 
         class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors cursor-pointer"
@@ -101,7 +111,7 @@ const toast = useToast()
 const currentLogo = ref('/logo.png')
 const currentSchoolName = ref('SMART ACADEMIC MANAGEMENT SYSTEM')
 
-// Sidebar collapse state control (default expanded as false)[cite: 4]
+// Sidebar collapse state control (default expanded as false)
 const isSidebarCollapsed = ref(false)
 
 const toggleSidebar = () => {
@@ -148,8 +158,18 @@ const navItems = [
   { name: 'SYSTEM SETTINGS', path: '/settings', icon: '⚙️' } 
 ]
 
-const switchLanguagePlaceholder = () => {
-  toast.info("Language switching is currently independent.")
+// Unified cross-domain seamless jump with Token forwarding
+const switchToLanguage = async (targetUrl) => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session) {
+      window.location.href = `${targetUrl}/?access_token=${session.access_token}&refresh_token=${session.refresh_token}`
+    } else {
+      window.location.href = targetUrl
+    }
+  } catch (error) {
+    toast.error("Failed to switch: " + error.message)
+  }
 }
 
 const logout = async () => {
