@@ -1,8 +1,7 @@
 <template>
-  <div class="p-4 sm:p-8 mx-auto min-h-screen space-y-8 min-w-[1024px] print:p-0 print:max-w-none print:min-w-0">
+  <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
     
-    <!-- Header Section: Unified card style, typography, and gradient title -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 space-y-2">
+    <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 space-y-2">
       <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
         SYSTEM SETTINGS & OVERALL MAINTENANCE
       </h1>
@@ -11,8 +10,70 @@
       </p>
     </div>
 
-    <!-- Card: School Logo & Appearance Settings -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
+      <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">👤</span>
+        ADMIN ACCOUNT MANAGEMENT
+      </h2>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900">ADD NEW ADMINISTRATOR</h3>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">NEW USER EMAIL</label>
+            <input 
+              v-model="newUserEmail" 
+              type="email" 
+              placeholder="teacher@school.edu.my" 
+              class="w-full px-4 h-11 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">INITIAL PASSWORD</label>
+            <input 
+              v-model="newUserPassword" 
+              type="password" 
+              placeholder="At least 6 characters" 
+              class="w-full px-4 h-11 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            />
+          </div>
+
+          <button 
+            @click="handleCreateUser" 
+            :disabled="creatingUser"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-11 rounded-xl text-xs font-bold shadow-sm transition cursor-pointer disabled:opacity-50"
+          >
+            {{ creatingUser ? 'CREATING USER...' : 'CONFIRM & CREATE USER' }}
+          </button>
+        </div>
+
+        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4 flex flex-col">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900">📋 EXISTING USER LIST</h3>
+            <button @click="fetchUsers" class="text-xs text-indigo-600 font-bold hover:underline cursor-pointer">REFRESH</button>
+          </div>
+
+          <div class="flex-1 overflow-y-auto max-h-56 space-y-2 border border-slate-200 bg-white rounded-xl p-3">
+            <div v-if="userList.length === 0" class="text-center text-xs text-slate-400 py-8">NO USERS FOUND OR LOADING...</div>
+            <div v-for="u in userList" :key="u.id" class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-xs">
+              <div class="truncate pr-2">
+                <div class="font-bold text-slate-800 truncate">{{ u.email }}</div>
+                <div class="text-[10px] text-slate-400">Created: {{ new Date(u.created_at).toLocaleDateString() }}</div>
+              </div>
+              <button 
+                @click="handleDeleteUser(u.id, u.email)" 
+                class="text-rose-500 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer"
+              >
+                DELETE
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold text-xs">🖼️</span>
         SCHOOL LOGO & DISPLAY SETTINGS
@@ -34,12 +95,10 @@
           <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">CHANGE SCHOOL LOGO (SUPPORTS LOCAL UPLOAD)</label>
           
           <div class="flex items-center gap-6">
-            <!-- Preview Image -->
             <div class="w-20 h-20 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center p-2 overflow-hidden shadow-inner shrink-0">
               <img :src="schoolLogoSetting || '/logo.png'" alt="Logo Preview" class="w-full h-full object-contain" />
             </div>
 
-            <!-- Upload Button & Instructions -->
             <div class="flex-1 space-y-2">
               <label class="relative inline-flex cursor-pointer bg-slate-900 hover:bg-slate-800 text-white px-5 h-11 rounded-2xl text-xs font-bold transition shadow-sm items-center gap-2">
                 <span>📂 CHOOSE NEW LOGO IMAGE</span>
@@ -61,8 +120,7 @@
       </div>
     </div>
 
-    <!-- Card 1: School Schedule Configuration -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">🏫</span>
         SCHOOL HOURS CONFIGURATION
@@ -104,8 +162,7 @@
       </div>
     </div>
 
-    <!-- Card 2: Academic Year School Calendar & Holiday Maintenance -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs">📅</span>
         SCHOOL CALENDAR & HOLIDAYS CONFIGURATION
@@ -142,15 +199,12 @@
           <label class="block text-xs font-bold text-slate-700 mb-1">END DATE (YYYY-MM-DD)</label>
           <input type="date" v-model="newWeek.end_date" class="w-full bg-white border border-slate-200 px-3 h-11 rounded-xl text-xs font-bold text-slate-800 cursor-pointer" />
         </div>
-        <div class="relative w-full">
+        <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">TYPE</label>
-          <select v-model="newWeek.is_school_week" class="w-full bg-white border border-slate-200 px-3 h-11 rounded-xl text-xs font-bold text-slate-800 appearance-none pr-8 cursor-pointer">
+          <select v-model="newWeek.is_school_week" class="w-full bg-white border border-slate-200 px-3 h-11 rounded-xl text-xs font-bold text-slate-800 cursor-pointer">
             <option :value="true">🟢 SCHOOL WEEK</option>
             <option :value="false">🔴 HOLIDAY WEEK</option>
           </select>
-          <div class="absolute right-3 top-[32px] pointer-events-none text-slate-500">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-          </div>
         </div>
         <button @click="addSchoolWeek" class="bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer">
           ➕ ADD ONE
@@ -183,8 +237,7 @@
       </div>
     </div>
 
-    <!-- Card 3: School Basic Class Management -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center font-bold text-xs">📚</span>
         SCHOOL BASIC CLASS MANAGEMENT
@@ -192,14 +245,11 @@
       <p class="text-slate-500 text-xs font-medium mb-6">MAINTAIN STANDARD SCHOOL CLASSES FOR TIMETABLES, LEAVES & MMI INTERRUPTION RECORDS.</p>
 
       <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 mb-8 flex flex-col sm:flex-row gap-4 items-end">
-        <div class="w-full sm:w-1/3 relative">
+        <div class="w-full sm:w-1/3">
           <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">GRADE:</label>
-          <select v-model="newClassGrade" class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 appearance-none pr-8 cursor-pointer">
+          <select v-model="newClassGrade" class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 cursor-pointer">
             <option v-for="g in [1, 2, 3, 4, 5, 6]" :key="g" :value="g">GRADE {{ g }}</option>
           </select>
-          <div class="absolute right-3 top-[38px] pointer-events-none text-slate-500">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-          </div>
         </div>
 
         <div class="w-full sm:w-1/2">
@@ -270,8 +320,7 @@
       </div>
     </div>
 
-    <!-- Card 4: MMI Subject Target Template Management & Bulk Import -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">📊</span>
         MMI SUBJECT TARGETS BULK CONFIGURATION
@@ -296,8 +345,7 @@
       </div>
     </div>
 
-    <!-- Card 5: Local Data Backup & Recovery -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">💾</span>
         LOCAL DATA BACKUP & RECOVERY
@@ -305,7 +353,6 @@
       <p class="text-slate-500 text-xs font-medium mb-6">Create regular backups of all core school data and store them on your local computer to ensure data safety.</p>
       
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <!-- Export Backup -->
         <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-4">
           <div>
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">EXPORT FULL SYSTEM BACKUP</h3>
@@ -316,7 +363,6 @@
           </button>
         </div>
 
-        <!-- Restore Backup -->
         <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-4">
           <div>
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">RESTORE SYSTEM DATA</h3>
@@ -330,8 +376,7 @@
       </div>
     </div>
 
-    <!-- Card 6: Official Launch Data Cleaning, Backup & Maintenance Panel -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8 transition-all duration-300 hover:shadow-md space-y-6">
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-xs">🛠️</span>
         OFFICIAL LAUNCH DATA CLEANING & MAINTENANCE
@@ -381,7 +426,6 @@
       </div>
     </div>
 
-    <!-- 📊 Dynamic Numeric Percentage Progress Bar Modal -->
     <Transition
       enter-active-class="transition duration-300 ease-out"
       enter-from-class="opacity-0 scale-95"
@@ -439,6 +483,78 @@ const config = ref({ daysPerWeek: 5, periodsPerDay: 8 })
 const loading = ref(false)
 const fileInput = ref(null)
 const weekFileInput = ref(null)
+
+// --- User Management State ---
+const newUserEmail = ref('')
+const newUserPassword = ref('')
+const creatingUser = ref(false)
+const userList = ref([])
+
+const fetchUsers = async () => {
+  try {
+    const { data, error } = await supabase.functions.invoke('create-user', {
+      body: { action: 'list' }
+    })
+    if (error || data?.error) throw new Error(error?.message || data?.error)
+    if (data?.users) {
+      userList.value = data.users
+    }
+  } catch (err) {
+    console.error("获取用户列表失败:", err.message)
+  }
+}
+
+const handleCreateUser = async () => {
+  if (!newUserEmail.value.trim() || !newUserPassword.value) {
+    return toast.error("请完整填写邮箱与初始密码！")
+  }
+
+  creatingUser.value = true
+  try {
+    const { data, error } = await supabase.functions.invoke('create-user', {
+      body: { 
+        action: 'create',
+        email: newUserEmail.value.trim(), 
+        password: newUserPassword.value 
+      }
+    })
+
+    if (error || data?.error) {
+      throw new Error(error?.message || data?.error)
+    }
+
+    toast.success("新用户创建成功！")
+    newUserEmail.value = ''
+    newUserPassword.value = ''
+    fetchUsers()
+  } catch (err) {
+    toast.error("创建用户失败: " + err.message)
+  } finally {
+    creatingUser.value = false
+  }
+}
+
+const handleDeleteUser = async (userId, email) => {
+  if (!confirm(`⚠️ 确定要删除管理员账号 ${email} 吗？`)) return
+
+  try {
+    const { data, error } = await supabase.functions.invoke('create-user', {
+      body: { 
+        action: 'delete',
+        userId 
+      }
+    })
+
+    if (error || data?.error) {
+      throw new Error(error?.message || data?.error)
+    }
+
+    toast.success("用户已成功删除")
+    fetchUsers()
+  } catch (err) {
+    toast.error("删除用户失败: " + err.message)
+  }
+}
 
 // 📊 Upload percentage progress bar state
 const uploadProgress = ref({
@@ -514,6 +630,7 @@ onMounted(() => {
   fetchClasses()
   fetchSchoolWeeks()
   fetchSchoolIdentity()
+  fetchUsers() // Automatically load user list
 })
 
 const saveConfig = () => {
