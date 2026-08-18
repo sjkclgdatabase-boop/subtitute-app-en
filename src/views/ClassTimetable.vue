@@ -144,7 +144,7 @@
                     >
                     <!-- 空格子 -->
                     <div v-if="cell.lessons.length === 0" class="w-full h-full flex items-center justify-center text-slate-300 text-xs bg-white">
-                        -
+                        
                     </div>
 
                     <!-- 有课：自动上下分格 -->
