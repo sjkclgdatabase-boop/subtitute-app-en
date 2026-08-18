@@ -12,6 +12,13 @@ const routes = [
   { path: '/settings', component: () => import('../views/Settings.vue'), meta: { requiresAuth: true } },
   // 🛡️ MMI 干扰记录路由
   { path: '/mmi-interruption', component: () => import('../views/MmiInterruption.vue'), meta: { requiresAuth: true } },
+  // 🏫 新增班级课表路由
+  { 
+    path: '/class-timetable', 
+    name: 'ClassTimetable', 
+    component: () => import('../views/ClassTimetable.vue'), 
+    meta: { requiresAuth: true } 
+  },
   // 📈 新增科目目标分析独立页面路由
   { path: '/subject-analysis', component: () => import('../views/SubjectAnalysis.vue'), meta: { requiresAuth: true } }
 ]

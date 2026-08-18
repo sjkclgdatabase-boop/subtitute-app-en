@@ -151,6 +151,7 @@ const navItems = [
   { name: 'TEACHER LEAVE ENTRY', path: '/leave-entry', icon: '📝' },
   { name: 'TEACHER PROFILES', path: '/teachers', icon: '👩‍🏫' },
   { name: 'MASTER TIMETABLE', path: '/timetable', icon: '📅' },
+  { name: 'CLASS TIMETABLE', path: '/class-timetable', icon: '🏫' }, // 🟢 英文版新增的班级课表选单
   { name: 'SUBSTITUTE RECORDS', path: '/records', icon: '🔄' },
   { name: 'MMI REPORT CENTER', path: '/statistics', icon: '📈' },
   { name: 'MMI INTERRUPTION LOG', path: '/mmi-interruption', icon: '⚠️' }, 
