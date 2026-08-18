@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 sm:p-8 mx-auto min-h-screen space-y-8 min-w-[1024px]">
+  <div class="p-4 sm:p-8 mx-auto min-h-screen space-y-8 min-w-[1024px] print:p-0 print:m-0 print:min-h-0 print:space-y-0 print:min-w-0">
     
     <!-- 🟢 顶部操作区 (100% 对齐其他分页的大标题与渐变风格) -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 print:hidden">
@@ -74,8 +74,7 @@
     </div>
 
     <!-- 🟢 A4 课表渲染区 (纯白无色差、连贯无断开、顶部适当留白) -->
-    <div v-if="selectedClass" class="bg-white p-4 sm:p-8 rounded-3xl shadow-sm ring-1 ring-slate-200 overflow-x-auto print:overflow-visible print:border-none print:shadow-none print:p-0 print:m-0 print-safe-font print:pt-6">
-      
+      <div v-if="selectedClass" class="bg-white p-4 sm:p-8 rounded-3xl shadow-sm ring-1 ring-slate-200 overflow-x-auto print:overflow-visible print:border-none print:shadow-none print:p-0 print:m-0 print-safe-font print:pt-6 print:ring-0 print:rounded-none">      
       <div class="min-w-[1050px] print:min-w-0 print:w-full mx-auto bg-white text-black relative space-y-3">
         
         <!-- 表头 (严格保持标准官方双语格式) -->

@@ -1,6 +1,6 @@
 <template>
   <!-- 锁死整个屏幕，只允许在 main 区域内部出现大滚动条 -->
-  <div class="h-screen w-screen flex bg-slate-50 overflow-hidden">
+  <div class="h-screen w-screen flex bg-slate-50 overflow-hidden print:bg-white">
     
     <!-- 侧边栏固定不动 -->
     <Sidebar v-if="showSidebar" class="shrink-0 h-full z-20" />
@@ -22,4 +22,4 @@ import Toast from './components/Toast.vue'
 
 const route = useRoute()
 const showSidebar = computed(() => !route.path.toLowerCase().includes('/login'))
-</script>
+</script>git add . && git commit -m "修正打印样式与页面布局" && git push
