@@ -378,7 +378,7 @@ const fetchDailyTimetable = async () => {
   }
 }
 
-// 🚀 Core optimization: Conflict-free & Auto-Uppercase Submission Logic
+// 🚀 Core optimization: Conflict-free & Auto-Uppercase Submission Logic (with precise MMI control)
 const submitLeaveRequests = async () => {
   const selectedList = dailyClasses.value.filter(cls => cls.selected)
   if (selectedList.length === 0) {
@@ -452,17 +452,18 @@ const submitLeaveRequests = async () => {
     const { error: leaveError } = await supabase.from('leave_requests').insert(requests)
     if (leaveError) throw leaveError
 
-    // 5. Extract period range and log to MMI
+    // 5. 🌟 Precise MMI Control: Ensure single period selections don't incorrectly span across gaps
     if (periodsForMMI.length > 0) {
       periodsForMMI.sort((a, b) => a - b)
-      const minPeriod = periodsForMMI[0]
-      const maxPeriod = periodsForMMI[periodsForMMI.length - 1]
+      
+      const startP = periodsForMMI[0]
+      const endP = periodsForMMI.length === 1 ? periodsForMMI[0] : periodsForMMI[periodsForMMI.length - 1]
 
       const mmiLogPayload = {
         interruption_date: leaveDate.value,
         type: 'teacher',
-        start_period: minPeriod,
-        end_period: maxPeriod,
+        start_period: startP,
+        end_period: endP,
         reason: formattedReason, // 🌟 Save formatted reason to MMI log
         target_display: `TEACHER: ${teacherName}`,
         remarks: `(INVOLVING SLOTS: ${periodsForMMI.join(', ')} | SUBJECTS: ${requests.map(c => `${c.class_name}(${c.subject})`).join(', ')})`
