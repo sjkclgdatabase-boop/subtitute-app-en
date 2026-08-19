@@ -6,7 +6,7 @@
     <div class="print:hidden bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col gap-6">
       
       <!-- Title & Subtitle -->
-      <div class="space-y-2">
+      <div class="space-y-2 max-w-4xl">
         <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 whitespace-nowrap flex items-center gap-3">
           <UsersRound class="w-8 h-8 text-indigo-700 shrink-0" />
           DAILY SUBSTITUTE TEACHER MANAGEMENT
@@ -19,7 +19,18 @@
       <!-- Action Buttons Bar -->
       <div class="flex flex-wrap items-center gap-4 pt-4 border-t border-slate-100">
         
-        <!-- 1. Session Switcher Tabs (MORNING / AFTERNOON) -->
+        <!-- 1. Smart Auto-Scheduling -->
+        <button 
+          @click="handleAutoAssignAll"
+          :disabled="isAutoAssigning"
+          class="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 whitespace-nowrap"
+        >
+          <span v-if="isAutoAssigning" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          <Zap v-else class="w-4 h-4" />
+          <span>⚡ SMART SUBSTITUTE SCHEDULING</span>
+        </button>
+
+        <!-- 2. Session Switcher Tabs (MORNING / AFTERNOON) -->
         <div class="flex bg-slate-100 p-1.5 rounded-2xl ring-1 ring-slate-900/5 h-11 items-center shrink-0 shadow-inner">
           <button 
             @click="currentSession = 'morning'" 
@@ -37,7 +48,7 @@
           </button>
         </div>
 
-        <!-- 2. Date Picker -->
+        <!-- 3. Date Picker -->
         <div class="flex items-center gap-2 bg-slate-50 px-4 h-11 rounded-2xl border border-slate-200/80 shadow-2xs shrink-0">
           <span class="text-xs font-bold text-slate-500 whitespace-nowrap">SELECT DATE:</span>
           <input 
@@ -46,17 +57,6 @@
             class="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
           />
         </div>
-
-        <!-- 3. Smart Auto-Scheduling -->
-        <button 
-          @click="handleAutoAssignAll"
-          :disabled="isAutoAssigning"
-          class="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 whitespace-nowrap"
-        >
-          <span v-if="isAutoAssigning" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-          <Zap v-else class="w-4 h-4" />
-          <span>SMART SUBSTITUTE SCHEDULING</span>
-        </button>
 
         <!-- 4. Print Button -->
         <button 
@@ -93,7 +93,7 @@
         <table class="w-full border-collapse border-2 border-black text-center text-xs font-serif table-fixed">
           <thead>
             <tr class="bg-slate-100 print:bg-white">
-              <th class="border border-black p-1 w-28 font-bold" colspan="2">MASA</th>
+              <th class="border border-black p-1 font-bold" colspan="2" style="width: 130px; min-width: 130px; max-width: 130px;">MASA</th>
               <th v-for="(time, index) in currentPeriodTimes" :key="index" class="border border-black p-1">
                 <div class="font-bold">{{ index + 1 }}</div>
                 <div class="text-[7px] font-normal mt-0.5 truncate">{{ time }}</div>
@@ -104,26 +104,26 @@
               
               <template v-if="displayTeachersList[slotIndex - 1]">
                 <tr>
-                  <!-- 🌟 智能排版核心：彻底移除 break-words / break-all，应用强力智能缩小 -->
-                  <td class="border border-black p-1 bg-slate-50 print:bg-white align-middle text-center" rowspan="3" style="width: 120px; max-width: 120px;">
+                  <!-- 🌟 第一列：完美保留多排自动缩小引擎 -->
+                  <td class="border border-black p-1 bg-slate-50 print:bg-white align-middle text-center" rowspan="3" style="width: 85px; max-width: 85px;">
                     <div class="flex flex-col items-center justify-center w-full px-0.5">
-                      <span class="uppercase leading-tight font-bold w-full text-center whitespace-normal"
-                            :style="getDynamicStyle(displayTeachersList[slotIndex - 1].name, 10, 10)">
+                      <span class="uppercase font-bold w-full text-center"
+                            :style="getDynamicStyle(displayTeachersList[slotIndex - 1].name, 10)">
                         {{ displayTeachersList[slotIndex - 1].name }}
                       </span>
                       <span v-if="displayTeachersList[slotIndex - 1].reason" 
-                            class="font-normal text-slate-600 w-full text-center tracking-tighter mt-0.5 uppercase whitespace-normal leading-tight"
-                            :style="getDynamicStyle(`(${displayTeachersList[slotIndex - 1].reason})`, 8.5, 9)">
+                            class="font-normal text-slate-600 w-full text-center tracking-tighter mt-0.5 uppercase"
+                            :style="getDynamicStyle(`(${displayTeachersList[slotIndex - 1].reason})`, 8.5)">
                         ({{ displayTeachersList[slotIndex - 1].reason }})
                       </span>
                     </div>
                   </td>
-                  <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
+                  <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 45px; max-width: 45px;">KELAS</td>
                   
+                  <!-- 🌟 右侧格子：恢复正常的文本排版 -->
                   <td v-for="p in currentPeriodTimes.length" :key="p" class="border border-black p-0.5 font-semibold align-middle h-8" style="max-width: 0;">
-                    <div class="w-full h-full flex items-center justify-center px-0.5">
-                      <span class="block w-full text-center tracking-tighter leading-tight text-slate-800 whitespace-normal"
-                            :style="getDynamicStyle(getTeacherPeriodData(displayTeachersList[slotIndex - 1].id, p, 'class_subject'), 10, 6)">
+                    <div class="w-full h-full flex items-center justify-center px-0.5 overflow-hidden">
+                      <span class="block w-full text-center text-[10px] tracking-tighter leading-tight text-slate-800 whitespace-normal">
                         {{ getTeacherPeriodData(displayTeachersList[slotIndex - 1].id, p, 'class_subject') }}
                       </span>
                     </div>
@@ -136,9 +136,8 @@
                       :class="hasLeavePeriod(displayTeachersList[slotIndex - 1].id, p) ? 'cursor-pointer hover:bg-indigo-50 group' : ''"
                       class="print:hover:bg-transparent border border-black p-0.5 font-bold text-indigo-900 align-middle h-8 transition relative" 
                       style="max-width: 0;">
-                    <div class="w-full h-full flex items-center justify-center px-0.5">
-                      <span class="block w-full text-center tracking-tighter leading-tight whitespace-normal"
-                            :style="getDynamicStyle(getTeacherPeriodData(displayTeachersList[slotIndex - 1].id, p, 'substitute_name'), 9, 6)">
+                    <div class="w-full h-full flex items-center justify-center px-0.5 overflow-hidden">
+                      <span class="block w-full text-center text-[9px] tracking-tighter leading-tight whitespace-normal">
                         {{ getTeacherPeriodData(displayTeachersList[slotIndex - 1].id, p, 'substitute_name') }}
                       </span>
                       <span v-if="hasLeavePeriod(displayTeachersList[slotIndex - 1].id, p)" class="print:hidden hidden group-hover:inline-block text-[9px] text-indigo-500 absolute right-1">✏️</span>
@@ -151,22 +150,23 @@
                 </tr>
               </template>
 
-              <!-- 手动填写格同样应用收紧的缩小底线 -->
+              <!-- 手动填写格同步 -->
               <template v-else>
                 <tr>
                   <td contenteditable="true" 
                       @blur="saveManualEntry(slotIndex, 'name', 0, $event)" 
                       v-text="getManualEntry(slotIndex, 'name', 0)" 
-                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors whitespace-pre-wrap leading-tight uppercase" 
-                      :style="[{ width: '120px', maxWidth: '120px' }, getDynamicStyle(getManualEntry(slotIndex, 'name', 0), 10, 10)]"
+                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors uppercase" 
+                      :style="[{ width: '85px', maxWidth: '85px' }, getDynamicStyle(getManualEntry(slotIndex, 'name', 0), 10)]"
                       rowspan="3"></td>
-                  <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
+                  <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 45px; max-width: 45px;">KELAS</td>
+                  <!-- 右侧不套用引擎 -->
                   <td v-for="p in currentPeriodTimes.length" :key="'kelas-'+p" 
                       contenteditable="true" 
                       @blur="saveManualEntry(slotIndex, 'kelas', p, $event)" 
                       v-text="getManualEntry(slotIndex, 'kelas', p)" 
-                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-semibold whitespace-pre-wrap leading-tight text-center"
-                      :style="[{ maxWidth: '0' }, getDynamicStyle(getManualEntry(slotIndex, 'kelas', p), 10, 6)]"></td>
+                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[11px] font-semibold whitespace-pre-wrap leading-tight text-center"
+                      style="max-width: 0;"></td>
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
@@ -176,8 +176,7 @@
                       <div contenteditable="true" 
                           @blur="saveManualEntry(slotIndex, 'ganti', p, $event)" 
                           v-text="getManualEntry(slotIndex, 'ganti', p)" 
-                          class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-bold text-indigo-900 whitespace-pre-wrap leading-tight flex items-center justify-center text-center"
-                          :style="getDynamicStyle(getManualEntry(slotIndex, 'ganti', p), 9, 6)"></div>
+                          class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 whitespace-pre-wrap leading-tight flex items-center justify-center text-center"></div>
                       <button contenteditable="false" @click.stop="openBlankModal(slotIndex, p, null)" class="print:hidden absolute right-0 top-0 hidden group-hover:flex bg-indigo-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-indigo-600 z-10 font-sans tracking-widest font-bold">ASSIGN</button>
                     </div>
                   </td>
@@ -207,7 +206,7 @@
               <h2 class="text-xl font-bold text-slate-900">SUBSTITUTE ASSIGNMENT CENTER</h2>
               <p class="text-sm text-slate-500 mt-1">SUPPORTED BY SMART RECOMMENDATIONS, OR SELECT ANY SAME-SESSION TEACHER MANUALLY BELOW</p>
             </div>
-            <button @click="showModal = false" class="text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition">×</button>
+            <button @click="showModal = false" class="text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition cursor-pointer">×</button>
           </div>
           
           <div class="p-8 bg-slate-50/50 space-y-6 overflow-y-auto">
@@ -231,7 +230,7 @@
                 v-model="assignmentRemark" 
                 type="text" 
                 placeholder="E.G. LIBRARY (IF STUDENTS NEED TO BE BROUGHT TO THE LIBRARY OR CLASSES COMBINED)" 
-                class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
               />
             </div>
 
@@ -240,24 +239,19 @@
                 <span>🛠️ MANUAL ASSIGNMENT (WITHOUT SMART RECOMMENDATION)</span>
               </h3>
               <div class="flex flex-col sm:flex-row items-center gap-3">
-                <div class="relative w-full">
-                  <select 
-                    v-model="manualSelectedTeacherId" 
-                    class="w-full px-3 py-2 bg-white border border-indigo-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none pr-8 truncate"
-                  >
-                    <option value="" disabled>-- PLEASE SELECT A SAME-SESSION TEACHER MANUALLY --</option>
-                    <option v-for="t in allSameSessionTeachers" :key="t.id" :value="t.id">
-                      {{ t.name }}{{ t.subject ? ` (SUBJECT: ${t.subject})` : '' }}
-                    </option>
-                  </select>
-                  <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                  </div>
-                </div>
+                <select 
+                  v-model="manualSelectedTeacherId" 
+                  class="w-full px-3.5 py-2.5 bg-white border border-indigo-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                >
+                  <option value="" disabled>-- PLEASE SELECT A SAME-SESSION TEACHER MANUALLY --</option>
+                  <option v-for="t in allSameSessionTeachers" :key="t.id" :value="t.id">
+                    {{ t.name }} <span v-if="t.subject">(SUBJECT: {{ t.subject }})</span>
+                  </option>
+                </select>
                 <button 
                   @click="assignSubstitute(manualSelectedTeacherId)" 
                   :disabled="!manualSelectedTeacherId"
-                  class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all shrink-0 whitespace-nowrap"
+                  class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl text-xs font-semibold shadow-sm transition-all shrink-0 cursor-pointer whitespace-nowrap"
                 >
                   CONFIRM MANUAL ASSIGNMENT
                 </button>
@@ -284,7 +278,10 @@
               <div v-else class="space-y-3">
                 <div v-for="(teacher, index) in recommendations" 
                     :key="teacher.id" 
-                    class="group flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-white border border-slate-200 rounded-2xl hover:border-indigo-300 hover:shadow-sm transition-all">
+                    :class="[
+                      'group flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-white border border-slate-200 rounded-2xl hover:border-indigo-300 hover:shadow-sm transition-all',
+                      { 'force-page-break': (index + 1) % 5 === 0 }
+                    ]">
                   <div class="flex items-center gap-3 mb-3 sm:mb-0">
                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-700 font-extrabold flex items-center justify-center text-xs">
                       #{{ index + 1 }}
@@ -302,7 +299,7 @@
                       </div>
                     </div>
                   </div>
-                  <button @click="assignSubstitute(teacher.id)" class="bg-slate-900 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all whitespace-nowrap">
+                  <button @click="assignSubstitute(teacher.id)" class="bg-slate-900 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer whitespace-nowrap">
                     SMART ASSIGN
                   </button>
                 </div>
@@ -311,7 +308,7 @@
 
             <div v-if="currentLeaveItem && substituteAssignmentsMap[currentLeaveItem.id]" class="pt-2 border-t border-slate-100 flex justify-between items-center">
               <span class="text-xs text-red-500 font-medium">THIS SLOT ALREADY HAS A SUBSTITUTE / SWAP ASSIGNED</span>
-              <button @click="removeAssignment" class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-1 bg-red-50 rounded-lg whitespace-nowrap">
+              <button @click="removeAssignment" class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-1 bg-red-50 rounded-lg cursor-pointer whitespace-nowrap">
                 CANCEL CURRENT ASSIGNMENT
               </button>
             </div>
@@ -321,12 +318,12 @@
       </div>
     </transition>
 
-    <!-- 动态附加的空白可编辑附页区域 -->
+    <!-- ⭐️ 动态附加的空白可编辑附页区域 -->
     <div v-for="(sheet, sIndex) in extraCustomSheets" :key="sheet.id" class="print-custom-sheet mt-12 print:mt-0 pt-8 print:pt-0 border-t-4 print:border-none border-dashed border-slate-300">
       
       <div class="print:hidden flex justify-between items-center mb-4 bg-amber-50 p-3 rounded-2xl border border-amber-200">
         <span class="text-xs font-bold text-amber-900">📄 ADDITIONAL / MANUAL TIMETABLE #{{ sIndex + 1 }}</span>
-        <button @click="removeCustomSheet(sheet.id)" class="text-xs text-red-600 bg-white hover:bg-red-50 px-3 py-1.5 rounded-xl font-bold shadow-sm transition whitespace-nowrap">
+        <button @click="removeCustomSheet(sheet.id)" class="text-xs text-red-600 bg-white hover:bg-red-50 px-3 py-1.5 rounded-xl font-bold shadow-sm transition cursor-pointer whitespace-nowrap">
           DELETE THIS TIMETABLE
         </button>
       </div>
@@ -355,7 +352,7 @@
           <table class="w-full border-collapse border-2 border-black text-center text-xs font-serif table-fixed">
             <thead>
               <tr class="bg-slate-100 print:bg-white">
-                <th class="border border-black p-1 w-28 font-bold" colspan="2">MASA</th>
+                <th class="border border-black p-1 font-bold" colspan="2" style="width: 130px; min-width: 130px; max-width: 130px;">MASA</th>
                 <th v-for="(time, index) in currentPeriodTimes" :key="index" class="border border-black p-1">
                   <div class="font-bold">{{ index + 1 }}</div>
                   <div class="text-[7px] font-normal mt-0.5 truncate">{{ time }}</div>
@@ -367,16 +364,16 @@
                   <td contenteditable="true" 
                       @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0, $event)"
                       v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0)"
-                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors whitespace-pre-wrap leading-tight uppercase" 
-                      :style="[{ width: '120px', maxWidth: '120px' }, getDynamicStyle(getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0), 10, 10)]"
+                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors uppercase" 
+                      :style="[{ width: '85px', maxWidth: '85px' }, getDynamicStyle(getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0), 10)]"
                       rowspan="3"></td>
-                  <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
+                  <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 45px; max-width: 45px;">KELAS</td>
                   <td v-for="p in currentPeriodTimes.length" :key="'kelas-'+p" 
                       contenteditable="true" 
                       @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'kelas', p, $event)"
                       v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'kelas', p)"
-                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-semibold whitespace-pre-wrap leading-tight text-center"
-                      :style="[{ maxWidth: '0' }, getDynamicStyle(getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'kelas', p), 10, 6)]"></td>
+                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[11px] font-semibold whitespace-pre-wrap leading-tight text-center"
+                      style="max-width: 0;"></td>
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
@@ -386,8 +383,7 @@
                       <div contenteditable="true" 
                           @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p, $event)"
                           v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p)"
-                          class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-bold text-indigo-900 whitespace-pre-wrap leading-tight flex items-center justify-center text-center"
-                          :style="getDynamicStyle(getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p), 9, 6)"></div>
+                          class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 whitespace-pre-wrap leading-tight flex items-center justify-center text-center"></div>
                       <button contenteditable="false" @click.stop="openBlankModal(slotIndex, p, sheet.id)" class="print:hidden absolute right-0 top-0 hidden group-hover:flex bg-indigo-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-indigo-600 z-10 font-sans tracking-widest font-bold">ASSIGN</button>
                     </div>
                   </td>
@@ -408,7 +404,7 @@
 
     <!-- 放置在最底部的增加按钮 -->
     <div class="print:hidden mt-8 mb-12 flex justify-center w-full">
-      <button @click="addBlankSheet" class="flex items-center gap-2 bg-slate-900 hover:bg-indigo-600 text-white px-8 py-3.5 rounded-2xl text-xs font-bold shadow-md transition-all whitespace-nowrap">
+      <button @click="addBlankSheet" class="flex items-center gap-2 bg-slate-900 hover:bg-indigo-600 text-white px-8 py-3.5 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer whitespace-nowrap">
         <span class="text-base font-extrabold">+</span> ADD AN OFFICIAL BLANK TIMETABLE SHEET
       </button>
     </div>
@@ -452,7 +448,7 @@
           </div>
 
           <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
-            <button v-if="hasExistingVirtual" @click="removeBlankAssignment" class="text-xs text-red-600 hover:text-red-800 font-bold px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition">
+            <button v-if="hasExistingVirtual" @click="removeBlankAssignment" class="text-xs text-red-600 hover:text-red-800 font-bold px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition whitespace-nowrap">
               CLEAR CELL
             </button>
             <div v-else></div>
@@ -499,7 +495,7 @@ const afternoonTimes = [
 ]
 
 const currentPeriodTimes = computed(() => currentSession.value === 'morning' ? morningTimes : afternoonTimes)
-const dayNames = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
+const dayNames = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu']
 
 const leaveRequests = ref([])
 const substituteAssignmentsMap = ref({})
@@ -522,8 +518,10 @@ const blankForm = ref({ teacherId: '', remark: '', kiraBeban: true })
 const hasExistingVirtual = ref(false)
 
 // ⭐️ 终极重写：只通过“空格”来拆解文字！
-const getDynamicStyle = (text, baseSize, maxChars) => {
+const getDynamicStyle = (text, baseSize) => {
   if (!text) return { fontSize: `${baseSize}px`, wordBreak: 'normal', overflowWrap: 'normal' }
+  
+  const maxCharsAllowed = 10;
   
   const words = String(text).split(/\s+/).filter(Boolean)
   let maxWordLen = 0
@@ -532,21 +530,23 @@ const getDynamicStyle = (text, baseSize, maxChars) => {
     let charCount = 0
     for (let i = 0; i < w.length; i++) {
       if (w.charCodeAt(i) > 255) charCount += 1.8 
+      else if (/[A-Z]/.test(w[i])) charCount += 1.2 
       else charCount += 1 
     }
     if (charCount > maxWordLen) maxWordLen = charCount
   })
 
-  if (maxWordLen <= maxChars) {
+  if (maxWordLen <= maxCharsAllowed) {
     return {
       fontSize: `${baseSize}px`,
+      lineHeight: '1.15',
       wordBreak: 'normal',
       overflowWrap: 'normal'
     }
   }
 
   // ⭐️ 强力缩小机制
-  const scaledSize = baseSize * (maxChars / maxWordLen) * 0.9
+  const scaledSize = baseSize * (maxCharsAllowed / maxWordLen) * 0.95
   
   return {
     fontSize: `${Math.max(4, scaledSize).toFixed(2)}px`,
@@ -554,22 +554,6 @@ const getDynamicStyle = (text, baseSize, maxChars) => {
     wordBreak: 'normal',
     overflowWrap: 'normal'
   }
-}
-
-// Format Ordinal Number HTML
-const formatOrdinalNumberHtml = (p) => {
-  const num = Number(p)
-  if (isNaN(num)) return `${p}`
-  
-  let suffix = 'th'
-  if (num % 100 < 11 || num % 100 > 13) {
-    switch (num % 10) {
-      case 1: suffix = 'st'; break;
-      case 2: suffix = 'nd'; break;
-      case 3: suffix = 'rd'; break;
-    }
-  }
-  return `${num}<sup style="font-size: 9px; vertical-align: super;">${suffix}</sup>`
 }
 
 const formattedDate = computed(() => {
@@ -587,17 +571,19 @@ const formattedDayName = computed(() => {
 const displayTeachersList = computed(() => {
   const map = {}
   leaveRequests.value.forEach(req => {
+    // ⭐️ 核心过滤：彻底屏蔽我们在后台偷偷建的“虚拟请假(VIRTUAL_CLASS)”记录，不让它们显示在原本的缺席名单中
     if (req.class_name === 'VIRTUAL_CLASS') return;
 
     const teacher = teachersMap.value[req.teacher_id]
     if (teacher && (teacher.session || 'morning') === currentSession.value) {
       
+      // 🌟 核心修改点：在这里把原因里的 [个人请假] 等前缀过滤掉，只保留实际原因
       let cleanReason = (req.reason || '').replace(/\[.*?\]\s*/, '');
       
       map[req.teacher_id] = { 
         id: req.teacher_id, 
         name: teacher.name, 
-        reason: cleanReason 
+        reason: cleanReason // 这里使用清理干净的原因
       }
     }
   })
@@ -933,6 +919,7 @@ const confirmBlankAssignment = async () => {
 
   try {
     if (blankForm.value.kiraBeban) {
+      // 1. Check if the teacher already has a record for this period
       const { data: existingLeave } = await supabase.from('leave_requests')
         .select('id, class_name')
         .eq('teacher_id', blankForm.value.teacherId)
@@ -966,6 +953,7 @@ const confirmBlankAssignment = async () => {
         targetLeaveId = newLeave.id
       }
 
+      // 2. Sync substitute_assignments
       const { data: existingSub } = await supabase.from('substitute_assignments')
         .select('id')
         .eq('leave_request_id', targetLeaveId)
@@ -984,6 +972,7 @@ const confirmBlankAssignment = async () => {
         })
       }
 
+      // 3. Garbage Collection for old teacher
       if (existingVirtualLeaveId && existingVirtualLeaveId !== targetLeaveId) {
         await supabase.from('substitute_assignments').delete().eq('leave_request_id', existingVirtualLeaveId)
         await supabase.from('leave_requests').delete().eq('id', existingVirtualLeaveId)
