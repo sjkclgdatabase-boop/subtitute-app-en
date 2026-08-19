@@ -52,42 +52,61 @@
         exact-active-class="!text-white !bg-indigo-600 shadow-md shadow-indigo-600/20"
         :title="isSidebarCollapsed ? item.name : ''"
       >
-        <span class="text-base shrink-0 group-hover/item:scale-110 transition-transform">{{ item.icon }}</span>
+        <component
+          :is="item.icon"
+          class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110"
+        />
         <span v-show="!isSidebarCollapsed" class="truncate">{{ item.name }}</span>
       </router-link>
     </div>
 
-    <!-- Bottom Actions Area: Multi-language Switch + Logout -->
+    <!-- Bottom Actions Area: Multi-language Switch (2-column layout) + Logout -->
     <div class="p-3 border-t border-slate-800 bg-slate-950/40 space-y-1.5">
       
-      <!-- 1. Switch to Chinese Version -->
-      <button 
-        @click="switchToLanguage('https://subtitute-app.vercel.app')" 
-        class="w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors cursor-pointer"
-        :title="isSidebarCollapsed ? '中文' : ''"
-      >
-        <span class="text-base shrink-0">🇨🇳</span>
-        <span v-show="!isSidebarCollapsed" class="truncate">中文</span>
-      </button>
+      <!-- Language Switcher: Chinese + Bahasa Melayu (左右并排两列，无国旗) -->
+      <div class="flex gap-1.5">
 
-      <!-- 2. Switch to Malay Version -->
-      <button 
-        @click="switchToLanguage('https://subtitute-app-bm.vercel.app')" 
-        class="w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300 transition-colors cursor-pointer"
-        :title="isSidebarCollapsed ? 'Bahasa Melayu' : ''"
-      >
-        <span class="text-base shrink-0">🇲🇾</span>
-        <span v-show="!isSidebarCollapsed" class="truncate">Bahasa Melayu</span>
-      </button>
+        <!-- Chinese -->
+        <button
+          @click="switchToLanguage('https://subtitute-app.vercel.app')"
+          class="flex-1 min-w-0 flex items-center justify-center gap-2 px-2 py-2.5 rounded-2xl text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors cursor-pointer"
+          title="中文"
+        >
+          <Languages class="w-4 h-4 shrink-0" />
+          <span v-show="!isSidebarCollapsed" class="truncate font-semibold">
+            中文
+          </span>
+          <span v-show="isSidebarCollapsed" class="text-[10px] font-black">
+            中
+          </span>
+        </button>
 
-      <!-- 3. Logout Button -->
+        <!-- Bahasa Melayu -->
+        <button
+          @click="switchToLanguage('https://subtitute-app-bm.vercel.app')"
+          class="flex-1 min-w-0 flex items-center justify-center gap-2 px-2 py-2.5 rounded-2xl text-xs font-bold text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300 transition-colors cursor-pointer"
+          title="Bahasa Melayu"
+        >
+          <Languages class="w-4 h-4 shrink-0" />
+          <span v-show="!isSidebarCollapsed" class="truncate">
+            BM
+          </span>
+          <span v-show="isSidebarCollapsed" class="text-[10px] font-black">
+            BM
+          </span>
+        </button>
+
+      </div>
+
+      <!-- Logout Button -->
       <button 
         @click="logout" 
         class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors cursor-pointer"
-        :title="isSidebarCollapsed ? 'Logout' : ''"
+        :class="isSidebarCollapsed ? 'justify-center' : ''"
+        title="Logout"
       >
-        <div class="flex items-center gap-3.5 truncate">
-          <span class="text-base shrink-0">🚪</span>
+        <div class="flex items-center gap-3 truncate">
+          <LogOut class="w-5 h-5 shrink-0" />
           <span v-show="!isSidebarCollapsed" class="truncate">LOGOUT</span>
         </div>
         <svg v-show="!isSidebarCollapsed" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -101,6 +120,20 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import {
+  LayoutDashboard,
+  CalendarCheck2,
+  UsersRound,
+  CalendarDays,
+  Table2,
+  ArrowLeftRight,
+  ChartNoAxesCombined,
+  TriangleAlert,
+  ChartColumnBig,
+  Settings2,
+  Languages,
+  LogOut
+} from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
@@ -147,20 +180,24 @@ onMounted(() => {
 })
 
 const navItems = [
-  { name: 'DASHBOARD OVERVIEW', path: '/', icon: '📊' },
-  { name: 'TEACHER LEAVE ENTRY', path: '/leave-entry', icon: '📝' },
-  { name: 'TEACHER PROFILES', path: '/teachers', icon: '👩‍🏫' },
-  { name: 'MASTER TIMETABLE', path: '/timetable', icon: '📅' },
-  { name: 'CLASS TIMETABLE', path: '/class-timetable', icon: '🏫' }, // 🟢 英文版新增的班级课表选单
-  { name: 'SUBSTITUTE RECORDS', path: '/records', icon: '🔄' },
-  { name: 'MMI REPORT CENTER', path: '/statistics', icon: '📈' },
-  { name: 'MMI INTERRUPTION LOG', path: '/mmi-interruption', icon: '⚠️' }, 
-  { name: 'ANALYSIS CENTER', path: '/subject-analysis', icon: '🎯' },
-  { name: 'SYSTEM SETTINGS', path: '/settings', icon: '⚙️' } 
+  { name: 'DASHBOARD', path: '/', icon: LayoutDashboard },
+  { name: 'TEACHER LEAVE', path: '/leave-entry', icon: CalendarCheck2 },
+  { name: 'TEACHER PROFILES', path: '/teachers', icon: UsersRound },
+  { name: 'MASTER TIMETABLE', path: '/timetable', icon: CalendarDays },
+  { name: 'CLASS TIMETABLE', path: '/class-timetable', icon: Table2 },
+  { name: 'SUBSTITUTE RECORDS', path: '/records', icon: ArrowLeftRight },
+  { name: 'MMI REPORT CENTER', path: '/statistics', icon: ChartNoAxesCombined },
+  { name: 'MMI INTERRUPTION LOG', path: '/mmi-interruption', icon: TriangleAlert },
+  { name: 'SUBJECT ANALYTICS', path: '/subject-analysis', icon: ChartColumnBig },
+  { name: 'SYSTEM SETTINGS', path: '/settings', icon: Settings2 }
 ]
 
-// Unified cross-domain seamless jump with Token forwarding
+// 跨域语言切换：携带 Token 跳转，若已在当前环境则拦截
 const switchToLanguage = async (targetUrl) => {
+  if (window.location.origin === targetUrl || window.location.href.includes(targetUrl)) {
+    return
+  }
+
   try {
     const { data: { session } } = await supabase.auth.getSession()
     if (session) {

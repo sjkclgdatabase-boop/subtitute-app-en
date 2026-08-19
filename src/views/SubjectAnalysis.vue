@@ -6,7 +6,8 @@
       
       <!-- Part 1: Main Title & Subtitle -->
       <div class="space-y-2 max-w-4xl">
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 flex items-center gap-3">
+          <GraduationCap class="w-8 h-8 text-indigo-700 shrink-0" />
           SUBJECT TARGET & ACHIEVEMENT RATE ANALYSIS CENTER
         </h1>
         <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
@@ -24,28 +25,29 @@
             class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap"
             :class="activeTab === 'table' ? 'bg-slate-900 text-white shadow-md' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'"
           >
-            <span>📊 DETAILED DATA REPORT</span>
+            <BarChart3 class="w-4 h-4" /> DETAILED DATA REPORT
           </button>
           <button 
             @click="activeTab = 'chart'" 
             class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap"
             :class="activeTab === 'chart' ? 'bg-slate-900 text-white shadow-md' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'"
           >
-            <span>📈 VISUAL CHART DASHBOARD</span>
+            <PieChart class="w-4 h-4" /> VISUAL CHART DASHBOARD
           </button>
         </div>
 
         <!-- Right: Action Buttons -->
         <div class="flex flex-wrap items-center gap-3">
           <button @click="exportPdfReport" class="no-print bg-emerald-600 hover:bg-emerald-700 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer whitespace-nowrap">
-            <span>📥 PRINT / PDF</span>
+            <Printer class="w-4 h-4" /> PRINT / PDF
           </button>
-          <button @click="showManageModal = true" class="no-print bg-slate-900 hover:bg-slate-800 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer whitespace-nowrap">
-            ⚙️ MANAGE TARGETS
+          <button @click="showManageModal = true" class="no-print bg-slate-900 hover:bg-slate-800 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer whitespace-nowrap flex items-center gap-2">
+            <Settings class="w-4 h-4" /> MANAGE TARGETS
           </button>
           <button @click="loadAnalyticsData" :disabled="loading" class="no-print bg-indigo-600 hover:bg-indigo-700 text-white px-5 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer flex items-center gap-2 whitespace-nowrap">
             <span v-if="loading" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-            <span>{{ loading ? 'CALCULATING...' : '🔄 REFRESH' }}</span>
+            <RotateCw v-else class="w-4 h-4" />
+            <span>{{ loading ? 'CALCULATING...' : 'REFRESH' }}</span>
           </button>
         </div>
 
@@ -89,7 +91,9 @@
       </div>
 
       <div class="relative w-full">
-        <label class="block text-xs font-bold text-indigo-600 mb-2 uppercase tracking-wider">👨‍🏫 FILTER BY SUBJECT TEACHER</label>
+        <label class="block text-xs font-bold text-indigo-600 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+          <Users class="w-4 h-4 text-indigo-600" /> FILTER BY SUBJECT TEACHER
+        </label>
         <select v-model="filterTeacher" class="w-full bg-indigo-50/50 border border-indigo-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none pr-8 cursor-pointer truncate">
           <option value="all">ALL SCHOOL TEACHERS</option>
           <option v-for="tch in allTeachers" :key="tch.id" :value="tch.name">{{ tch.name }}</option>
@@ -110,9 +114,12 @@
         <div class="text-xs font-bold text-emerald-600 uppercase tracking-wider">TARGET MET (PASSED)</div>
         <div class="text-3xl font-black text-emerald-700 mt-2">{{ analysisSummary.met }}</div>
       </div>
-      <div class="bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5">
-        <div class="text-xs font-bold text-red-600 uppercase tracking-wider">⚠️ NOT MET (WARNING)</div>
-        <div class="text-3xl font-black text-red-700 mt-2">{{ analysisSummary.unmet }}</div>
+      <div class="bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5 flex items-center justify-between">
+        <div>
+          <div class="text-xs font-bold text-red-600 uppercase tracking-wider">NOT MET (WARNING)</div>
+          <div class="text-3xl font-black text-red-700 mt-2">{{ analysisSummary.unmet }}</div>
+        </div>
+        <AlertTriangle class="w-8 h-8 text-red-500/80 shrink-0" />
       </div>
     </div>
 
@@ -196,7 +203,9 @@
       <div class="grid grid-cols-2 gap-6">
         <div class="bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-4">
           <div class="flex justify-between items-center">
-            <h3 class="text-sm font-bold text-slate-800">🎯 OVERALL SUBJECT ACHIEVEMENT HEALTH RATE</h3>
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <Target class="w-4 h-4 text-indigo-600" /> OVERALL SUBJECT ACHIEVEMENT HEALTH RATE
+            </h3>
             <span class="text-xs text-indigo-600 font-bold bg-indigo-50 px-2.5 py-1 rounded-lg">REAL-TIME CALCULATION</span>
           </div>
           
@@ -214,7 +223,9 @@
 
         <div class="bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-4">
           <div class="flex justify-between items-center">
-            <h3 class="text-sm font-bold text-slate-800">📊 ACHIEVEMENT DISTRIBUTION BY GRADE</h3>
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <BarChart3 class="w-4 h-4 text-indigo-600" /> ACHIEVEMENT DISTRIBUTION BY GRADE
+            </h3>
             <span class="text-xs text-slate-400 font-semibold">MET VS NOT MET</span>
           </div>
 
@@ -236,7 +247,9 @@
       <div class="bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-6">
         <div class="flex justify-between items-center">
           <div>
-            <h3 class="text-sm font-bold text-slate-800">⚠️ RANKING OF SUBJECTS WITH MOST SLOT LOSSES DUE TO MMI INTERRUPTIONS</h3>
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <AlertTriangle class="w-4 h-4 text-amber-500" /> RANKING OF SUBJECTS WITH MOST SLOT LOSSES DUE TO MMI INTERRUPTIONS
+            </h3>
             <p class="text-xs text-slate-400 mt-0.5 font-medium">SHOWING TEACHING SLOT LOSSES BY SUBJECT DUE TO LEAVE OR OFFICIAL BUSINESS</p>
           </div>
           <span class="text-xs bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-bold">INTERRUPTION WARNING</span>
@@ -268,8 +281,12 @@
     <div v-if="showManageModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
       <div class="bg-white rounded-3xl max-w-3xl w-full p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center border-b border-slate-100 pb-4">
-          <h3 class="text-base font-bold text-slate-800">⚙️ ONLINE SUBJECT TARGET MAINTENANCE</h3>
-          <button @click="showManageModal = false" class="text-slate-400 hover:text-slate-700 font-bold text-sm cursor-pointer">✕ CLOSE</button>
+          <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+            <Settings class="w-4 h-4 text-indigo-600" /> ONLINE SUBJECT TARGET MAINTENANCE
+          </h3>
+          <button @click="showManageModal = false" class="text-slate-400 hover:text-slate-700 font-bold text-sm cursor-pointer flex items-center gap-1">
+            <X class="w-4 h-4" /> CLOSE
+          </button>
         </div>
 
         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 grid grid-cols-4 gap-3 items-end">
@@ -290,8 +307,8 @@
             <label class="block text-[11px] font-bold text-slate-600 mb-1">TOTAL PLANNED SLOTS</label>
             <input type="number" v-model.number="newTarget.planned_periods" placeholder="E.G. 215" class="w-full bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold" />
           </div>
-          <button @click="addTarget" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs font-bold shadow-sm transition cursor-pointer">
-            ➕ ADD NEW TARGET
+          <button @click="addTarget" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs font-bold shadow-sm transition cursor-pointer flex items-center justify-center gap-1.5">
+            <Plus class="w-3.5 h-3.5" /> ADD NEW TARGET
           </button>
         </div>
 
@@ -304,8 +321,8 @@
                 <span class="text-slate-900 font-bold">{{ t.subject_name }}</span>
                 <span class="text-slate-500">TARGET: <strong>{{ t.planned_periods }}</strong> SLOTS</span>
               </div>
-              <button @click="deleteTarget(t.id)" class="text-slate-400 hover:text-red-600 text-xs font-bold px-2 py-1 transition cursor-pointer">
-                🗑️ DELETE
+              <button @click="deleteTarget(t.id)" class="text-slate-400 hover:text-red-600 text-xs font-bold px-2 py-1 transition cursor-pointer flex items-center gap-1">
+                <Trash2 class="w-3.5 h-3.5" /> DELETE
               </button>
             </div>
           </div>
@@ -326,6 +343,20 @@
 import { ref, computed, onMounted, onActivated } from 'vue'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
+import { 
+  GraduationCap, 
+  BarChart3, 
+  PieChart, 
+  Printer, 
+  Settings, 
+  RotateCw, 
+  Users, 
+  AlertTriangle, 
+  Target, 
+  X, 
+  Plus, 
+  Trash2 
+} from 'lucide-vue-next'
 
 const toast = useToast()
 const loading = ref(false)

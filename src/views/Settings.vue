@@ -2,7 +2,8 @@
   <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
     
     <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 space-y-2">
-      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 flex items-center gap-3">
+        <Wrench class="w-8 h-8 text-indigo-700 shrink-0" />
         SYSTEM SETTINGS & OVERALL MAINTENANCE
       </h1>
       <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
@@ -12,7 +13,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">👤</span>
+        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs"><UserCog class="w-4 h-4" /></span>
         ADMIN ACCOUNT MANAGEMENT
       </h2>
       
@@ -50,7 +51,9 @@
 
         <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4 flex flex-col">
           <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900">📋 EXISTING USER LIST</h3>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+              <ClipboardList class="w-4 h-4 text-indigo-600" /> EXISTING USER LIST
+            </h3>
             <button @click="fetchUsers" class="text-xs text-indigo-600 font-bold hover:underline cursor-pointer">REFRESH</button>
           </div>
 
@@ -75,7 +78,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold text-xs">🖼️</span>
+        <span class="w-8 h-8 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold text-xs"><Image class="w-4 h-4" /></span>
         SCHOOL LOGO & DISPLAY SETTINGS
       </h2>
       <p class="text-slate-500 text-xs font-medium">UPDATE SCHOOL LOGO & NAME. ONCE SAVED, THE MENU BAR AND LOGIN PAGE WILL BE UPDATED IN REAL-TIME.</p>
@@ -122,7 +125,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">🏫</span>
+        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs"><Clock class="w-4 h-4" /></span>
         SCHOOL HOURS CONFIGURATION
       </h2>
       
@@ -164,7 +167,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs">📅</span>
+        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs"><Calendar class="w-4 h-4" /></span>
         SCHOOL CALENDAR & HOLIDAYS CONFIGURATION
       </h2>
       <p class="text-slate-500 text-xs font-medium mb-6">Enter school weeks and holidays throughout the year. The system will automatically exclude holiday periods to accurately calculate annual targets.</p>
@@ -176,7 +179,7 @@
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <button @click="downloadWeekTemplate" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer">
-            📥 DOWNLOAD CALENDAR TEMPLATE
+            <Download class="w-4 h-4 text-indigo-600" /> DOWNLOAD CALENDAR TEMPLATE
           </button>
           
           <label class="relative cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2">
@@ -239,7 +242,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center font-bold text-xs">📚</span>
+        <span class="w-8 h-8 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center font-bold text-xs"><School class="w-4 h-4" /></span>
         SCHOOL BASIC CLASS MANAGEMENT
       </h2>
       <p class="text-slate-500 text-xs font-medium mb-6">MAINTAIN STANDARD SCHOOL CLASSES FOR TIMETABLES, LEAVES & MMI INTERRUPTION RECORDS.</p>
@@ -322,7 +325,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">📊</span>
+        <span class="w-8 h-8 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs"><BarChart3 class="w-4 h-4" /></span>
         MMI SUBJECT TARGETS BULK CONFIGURATION
       </h2>
       <p class="text-slate-500 text-xs font-medium mb-6">DOWNLOAD STANDARD TEMPLATE, FILL IN SLOT TARGETS AND BASES FOR EACH GRADE AND SUBJECT, BULK IMPORT.</p>
@@ -334,7 +337,7 @@
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <button @click="downloadTemplate" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer">
-            📥 DOWNLOAD TEMPLATE
+            <Download class="w-4 h-4 text-indigo-600" /> DOWNLOAD TEMPLATE
           </button>
           
           <label class="relative cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2">
@@ -347,7 +350,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">💾</span>
+        <span class="w-8 h-8 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs"><Database class="w-4 h-4" /></span>
         LOCAL DATA BACKUP & RECOVERY
       </h2>
       <p class="text-slate-500 text-xs font-medium mb-6">Create regular backups of all core school data and store them on your local computer to ensure data safety.</p>
@@ -358,8 +361,8 @@
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">EXPORT FULL SYSTEM BACKUP</h3>
             <p class="text-slate-500 text-xs mt-1 font-medium">DOWNLOAD A JSON BACKUP FILE CONTAINING MAIN SCHOOL DATA.</p>
           </div>
-          <button @click="exportFullBackup" class="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer">
-            📤 EXPORT FULL SYSTEM BACKUP
+          <button @click="exportFullBackup" class="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer flex items-center justify-center gap-2">
+            <UploadCloud class="w-4 h-4 text-slate-300" /> EXPORT FULL SYSTEM BACKUP
           </button>
         </div>
 
@@ -368,8 +371,8 @@
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">RESTORE SYSTEM DATA</h3>
             <p class="text-slate-500 text-xs mt-1 font-medium">RESTORE SCHOOL DATA VIA PREVIOUS JSON BACKUP FILE.</p>
           </div>
-          <label class="relative block w-full text-center cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center justify-center">
-            <span>📥 CHOOSE BACKUP FILE & RESTORE</span>
+          <label class="relative block w-full text-center cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-2">
+            <DownloadCloud class="w-4 h-4 text-indigo-200" /> <span>CHOOSE BACKUP FILE & RESTORE</span>
             <input type="file" accept=".json" @change="importFullBackup" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
           </label>
         </div>
@@ -378,7 +381,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-xs">🛠️</span>
+        <span class="w-8 h-8 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-xs"><Wrench class="w-4 h-4" /></span>
         OFFICIAL LAUNCH DATA CLEANING & MAINTENANCE
       </h2>
       <p class="text-slate-500 text-xs font-medium mb-6">TO CLEAN TEST DATA BEFORE OFFICIAL LAUNCH, ONE-CLICK BACKUP IS SUPPORTED.</p>
@@ -409,8 +412,8 @@
             <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900">BACKUP & CLEAR MMI INTERRUPTION HISTORY DATA</h3>
             <p class="text-slate-500 text-xs mt-1 font-medium">DOWNLOAD JSON BACKUP, THEN SAFELY DELETE ALL MMI INTERRUPTION LOGS.</p>
           </div>
-          <button @click="backupAndClearMmi" :disabled="loading" class="w-full sm:w-80 h-11 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs rounded-2xl transition shadow-sm border border-indigo-200 disabled:opacity-50 shrink-0 cursor-pointer flex items-center justify-center">
-            📥 BACKUP & CLEAR MMI DATA
+          <button @click="backupAndClearMmi" :disabled="loading" class="w-full sm:w-80 h-11 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs rounded-2xl transition shadow-sm border border-indigo-200 disabled:opacity-50 shrink-0 cursor-pointer flex items-center justify-center gap-2">
+            <UploadCloud class="w-4 h-4 text-indigo-500" /> BACKUP & CLEAR MMI DATA
           </button>
         </div>
 
@@ -477,6 +480,20 @@
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
+import { 
+  Wrench, 
+  UserCog, 
+  Image, 
+  Clock, 
+  Calendar, 
+  School, 
+  BarChart3, 
+  Database,
+  ClipboardList,
+  Download,
+  UploadCloud,
+  DownloadCloud
+} from 'lucide-vue-next'
 
 const toast = useToast()
 const config = ref({ daysPerWeek: 5, periodsPerDay: 8 })

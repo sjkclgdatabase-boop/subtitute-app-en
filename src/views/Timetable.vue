@@ -5,7 +5,8 @@
     <!-- Header Section -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       <div class="space-y-2 max-w-3xl">
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 flex items-center gap-3">
+          <CalendarDays class="w-8 h-8 text-indigo-700 shrink-0" />
           TEACHER TIMETABLE MANAGEMENT
         </h1>
         <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
@@ -16,14 +17,14 @@
        <!-- Right Action Area: Upload & Download -->
       <div class="flex flex-col sm:flex-row items-center gap-3 shrink-0">
         <!-- Download Template Button -->
-        <button @click="downloadTemplate" class="w-full sm:w-auto whitespace-nowrap inline-flex items-center justify-center px-4 h-11 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-2xl hover:bg-indigo-100 transition-all shadow-sm cursor-pointer">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+        <button @click="downloadTemplate" class="w-full sm:w-auto whitespace-nowrap inline-flex items-center justify-center px-4 h-11 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-2xl hover:bg-indigo-100 transition-all shadow-sm cursor-pointer gap-2">
+          <Download class="w-4 h-4" />
           DOWNLOAD TEMPLATE
         </button>
         
         <!-- Upload CSV Button -->
-        <label class="w-full sm:w-auto whitespace-nowrap cursor-pointer inline-flex items-center justify-center px-4 h-11 text-xs font-bold text-white bg-slate-900 rounded-2xl hover:bg-slate-800 hover:shadow-md transition-all shadow-sm">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+        <label class="w-full sm:w-auto whitespace-nowrap cursor-pointer inline-flex items-center justify-center px-4 h-11 text-xs font-bold text-white bg-slate-900 rounded-2xl hover:bg-slate-800 hover:shadow-md transition-all shadow-sm gap-2">
+          <Upload class="w-4 h-4" />
           BULK IMPORT
           <input type="file" accept=".csv" class="hidden" @change="handleCsvUpload" />
         </label>
@@ -37,23 +38,23 @@
         <button 
           @click="currentSession = 'morning'; selectedTeacherId = ''; currentTimetable = []" 
           :class="currentSession === 'morning' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
-          class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+          class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2"
         >
-          ☀️ MORNING SESSION
+          <Sun class="w-4 h-4 text-amber-500" /> MORNING SESSION
         </button>
         <button 
           @click="currentSession = 'afternoon'; selectedTeacherId = ''; currentTimetable = []" 
           :class="currentSession === 'afternoon' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
-          class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+          class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2"
         >
-          🌙 AFTERNOON SESSION
+          <Moon class="w-4 h-4 text-indigo-400" /> AFTERNOON SESSION
         </button>
       </div>
 
       <!-- Teacher Selector -->
       <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-2xl px-4 h-11 shrink-0 w-[300px] sm:w-[320px] shadow-sm hover:border-slate-300 transition overflow-hidden">
-        <div class="w-7 h-7 rounded-xl bg-white flex items-center justify-center text-base mr-3 shrink-0 shadow-xs">
-          👩‍🏫
+        <div class="w-7 h-7 rounded-xl bg-white flex items-center justify-center mr-3 shrink-0 shadow-xs text-indigo-600">
+          <GraduationCap class="w-4 h-4" />
         </div>
         <select 
           v-model="selectedTeacherId" 
@@ -72,8 +73,10 @@
     </div>
 
     <!-- Unselected Status Prompt -->
-    <div v-if="!selectedTeacherId" class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-16 text-center flex flex-col items-center justify-center">
-      <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-3xl mb-4 ring-1 ring-slate-100 shadow-inner">👆</div>
+    <div v-if="!selectedTeacherId" class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-16 text-center flex flex-col items-center justify-center space-y-3">
+      <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-indigo-600 mb-1 ring-1 ring-slate-100 shadow-inner">
+        <Clock3 class="w-8 h-8" />
+      </div>
       <h3 class="text-base font-bold text-slate-900">PLEASE SELECT A TEACHER ABOVE</h3>
       <p class="text-slate-500 mt-1 text-xs font-medium">ONCE SELECTED, VIEW AND EDIT THE TEACHER'S TIMETABLE HERE</p>
     </div>
@@ -126,8 +129,8 @@
 
               <!-- Break Time Insertion Row (Rehat) -->
               <tr v-else-if="row.type === 'break'" class="bg-amber-50/75">
-                <td class="p-3 text-amber-800 font-bold border-r-2 border-slate-100 bg-amber-100/60 text-xs">
-                  ☕ RECESS
+                <td class="p-3 text-amber-800 font-bold border-r-2 border-slate-100 bg-amber-100/60 text-xs flex items-center justify-center gap-1.5">
+                  <Coffee class="w-4 h-4 text-amber-700" /> RECESS
                 </td>
                 <td :colspan="config.daysPerWeek" class="p-3 text-center text-amber-900 font-bold text-xs tracking-wider uppercase">
                   {{ row.title }} <span class="ml-2 font-semibold text-amber-700">({{ row.time }})</span>
@@ -187,10 +190,10 @@
       <div v-if="uploadProgress.show" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 select-none">
         <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 text-center space-y-6">
           
-          <div class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl transition-all duration-300"
+          <div class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center transition-all duration-300"
                :class="uploadProgress.percent === 100 ? 'bg-emerald-100 text-emerald-600' : 'bg-indigo-50 text-indigo-600 animate-bounce'">
-            <span v-if="uploadProgress.percent < 100">📅</span>
-            <span v-else>🎉</span>
+            <CalendarDays v-if="uploadProgress.percent < 100" class="w-8 h-8" />
+            <Sparkles v-else class="w-8 h-8" />
           </div>
 
           <div>
@@ -228,6 +231,17 @@ import { ref, computed, onMounted } from 'vue'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
 import { parseCSV } from '../utils/importCsv'
+import { 
+  CalendarDays, 
+  Download, 
+  Upload, 
+  Sun, 
+  Moon, 
+  GraduationCap, 
+  Clock3, 
+  Coffee, 
+  Sparkles 
+} from 'lucide-vue-next'
 
 const toast = useToast()
 const dayNames = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']

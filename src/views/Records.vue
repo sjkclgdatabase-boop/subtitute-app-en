@@ -7,7 +7,8 @@
       
       <!-- Title & Subtitle -->
       <div class="space-y-2">
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 whitespace-nowrap">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 whitespace-nowrap flex items-center gap-3">
+          <UsersRound class="w-8 h-8 text-indigo-700 shrink-0" />
           DAILY SUBSTITUTE TEACHER MANAGEMENT
         </h1>
         <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed whitespace-nowrap">
@@ -23,16 +24,16 @@
           <button 
             @click="currentSession = 'morning'" 
             :class="currentSession === 'morning' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
-            class="px-5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap"
+            class="px-5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
           >
-            <span>☀️ MORNING SESSION</span>
+            <Sun class="w-4 h-4 text-amber-500" /> MORNING SESSION
           </button>
           <button 
             @click="currentSession = 'afternoon'" 
             :class="currentSession === 'afternoon' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
-            class="px-5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap"
+            class="px-5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
           >
-            <span>🌙 AFTERNOON SESSION</span>
+            <Moon class="w-4 h-4 text-indigo-400" /> AFTERNOON SESSION
           </button>
         </div>
 
@@ -53,7 +54,8 @@
           class="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 whitespace-nowrap"
         >
           <span v-if="isAutoAssigning" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-          <span>⚡ SMART SUBSTITUTE SCHEDULING</span>
+          <Zap v-else class="w-4 h-4" />
+          <span>SMART SUBSTITUTE SCHEDULING</span>
         </button>
 
         <!-- 4. Print Button -->
@@ -61,7 +63,7 @@
           @click="handlePrint"
           class="bg-slate-900 hover:bg-slate-800 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0 whitespace-nowrap"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+          <Printer class="w-4 h-4" />
           <span>PRINT TIMETABLE</span>
         </button>
 
@@ -255,7 +257,10 @@
             <hr class="border-slate-200" />
 
             <div>
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">✨ SMART RECOMMENDATION CANDIDATES (TOP 6)</h3>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
+                <Sparkles class="w-4 h-4 text-indigo-600" />
+                SMART RECOMMENDATION CANDIDATES (TOP 6)
+              </h3>
               
               <div v-if="loadingRecs" class="flex flex-col items-center justify-center py-6 space-y-3">
                 <div class="w-6 h-6 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin"></div>
@@ -459,6 +464,14 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { supabase } from '../services/supabase'
 import { recommendSubstitute } from '../utils/algorithm'
 import { useToast } from '../utils/toast'
+import { 
+  UsersRound, 
+  Sun, 
+  Moon, 
+  Zap, 
+  Printer, 
+  Sparkles 
+} from 'lucide-vue-next'
 
 const toast = useToast()
 const targetDate = ref(new Date().toISOString().split('T')[0])
@@ -511,12 +524,20 @@ const formattedDayName = computed(() => {
 const displayTeachersList = computed(() => {
   const map = {}
   leaveRequests.value.forEach(req => {
-    // ⭐️ 过滤虚拟记录
+    // ⭐️ 核心过滤：彻底屏蔽我们在后台偷偷建的“虚拟请假(VIRTUAL_CLASS)”记录，不让它们显示在原本的缺席名单中
     if (req.class_name === 'VIRTUAL_CLASS') return;
 
     const teacher = teachersMap.value[req.teacher_id]
     if (teacher && (teacher.session || 'morning') === currentSession.value) {
-      map[req.teacher_id] = { id: req.teacher_id, name: teacher.name, reason: req.reason }
+      
+      // 🌟 核心修改点：在这里把原因里的 [个人请假] 等前缀过滤掉，只保留实际原因
+      let cleanReason = (req.reason || '').replace(/\[.*?\]\s*/, '');
+      
+      map[req.teacher_id] = { 
+        id: req.teacher_id, 
+        name: teacher.name, 
+        reason: cleanReason // 这里使用清理干净的原因
+      }
     }
   })
   return Object.values(map)

@@ -4,7 +4,8 @@
     
     <!-- Header Section: Unified card style, typography, and gradient title -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 space-y-2">
-      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+      <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 flex items-center gap-3">
+        <GraduationCap class="w-8 h-8 text-indigo-700 shrink-0" />
         MMI INTERRUPTION RECORD CENTER
       </h1>
       <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
@@ -25,14 +26,14 @@
           :class="activeTab === 'class' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'"
           class="px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
-          <span>🏫 CLASS RECORDS</span>
+          <School class="w-4 h-4" /> CLASS RECORDS
         </button>
         <button 
           @click="activeTab = 'teacher'" 
           :class="activeTab === 'teacher' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'"
           class="px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
-          <span>👩‍🏫 TEACHER RECORDS</span>
+          <Users class="w-4 h-4" /> TEACHER RECORDS
         </button>
       </div>
     </div>
@@ -46,7 +47,9 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">📅 INTERRUPTION DATE:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+            <CalendarDays class="w-4 h-4 text-indigo-600" /> INTERRUPTION DATE:
+          </label>
           <input 
             type="date" 
             v-model="classForm.date" 
@@ -55,7 +58,9 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">⚠️ REASON FOR INTERRUPTION:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+            <AlertTriangle class="w-4 h-4 text-amber-500" /> REASON FOR INTERRUPTION:
+          </label>
           <!-- 🌟 2. 修复所有的 select：相对定位 + SVG 箭头 + truncate 防溢出 -->
           <div class="relative w-full mb-3">
             <select 
@@ -86,7 +91,9 @@
       </div>
 
       <div class="mb-6 bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
-        <label class="block text-xs font-bold text-slate-700">🎯 Affected Scope:</label>
+        <label class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+          <Target class="w-4 h-4 text-indigo-600" /> Affected Scope:
+        </label>
         
         <div class="flex flex-wrap gap-4">
           <label class="inline-flex items-center gap-2 cursor-pointer">
@@ -108,11 +115,11 @@
             <span class="font-bold text-slate-500">Please select affected classes:</span>
             <div class="space-x-3">
               <button type="button" @click="selectAllClasses" class="text-indigo-600 hover:text-indigo-800 font-bold cursor-pointer">
-                ☑️ Select All
+                Select All
               </button>
               <span class="text-slate-300">|</span>
               <button type="button" @click="clearAllClasses" class="text-slate-500 hover:text-slate-700 font-bold cursor-pointer">
-                ❌ Clear
+                Clear
               </button>
             </div>
           </div>
@@ -159,7 +166,9 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div class="relative w-full">
-          <label class="block text-xs font-bold text-slate-700 mb-2">⏰ START TIME SLOT:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+            <Clock class="w-4 h-4 text-indigo-600" /> START TIME SLOT:
+          </label>
           <select v-model="classForm.startPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-bold text-slate-800 appearance-none pr-8 cursor-pointer">
             <option v-for="p in 11" :key="p" :value="p">PERIOD {{ p }}</option>
           </select>
@@ -168,7 +177,9 @@
           </div>
         </div>
         <div class="relative w-full">
-          <label class="block text-xs font-bold text-slate-700 mb-2">⏰ END TIME SLOT:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+            <Clock class="w-4 h-4 text-indigo-600" /> END TIME SLOT:
+          </label>
           <select v-model="classForm.endPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-bold text-slate-800 appearance-none pr-8 cursor-pointer">
             <option v-for="p in 11" :key="p" :value="p">PERIOD {{ p }}</option>
           </select>
@@ -179,7 +190,9 @@
       </div>
 
       <div class="mb-6">
-        <label class="block text-xs font-bold text-slate-700 mb-2">📝 DESCRIPTION & INTERVENTION</label>
+        <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+          <FileText class="w-4 h-4 text-indigo-600" /> DESCRIPTION & INTERVENTION
+        </label>
         <input 
           v-model="classForm.remarks" 
           type="text" 
@@ -190,9 +203,9 @@
 
       <button 
         @click="submitClassInterruption" 
-        class="bg-slate-900 hover:bg-slate-800 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer"
+        class="bg-slate-900 hover:bg-slate-800 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer flex items-center gap-2"
       >
-        💾 SAVE CLASS INTERRUPTION RECORD
+        <Save class="w-4 h-4" /> SAVE CLASS INTERRUPTION RECORD
       </button>
     </div>
 
@@ -205,7 +218,9 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">📅 INTERRUPTION DATE:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+            <CalendarDays class="w-4 h-4 text-violet-600" /> INTERRUPTION DATE:
+          </label>
           <input 
             type="date" 
             v-model="teacherForm.date" 
@@ -215,7 +230,9 @@
         </div>
 
         <div class="relative w-full">
-          <label class="block text-xs font-bold text-slate-700 mb-2">👩‍🏫 SELECT AFFECTED / LEAVING TEACHER</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+            <Users class="w-4 h-4 text-violet-600" /> SELECT AFFECTED / LEAVING TEACHER
+          </label>
           <select 
             v-model="teacherForm.teacherId" 
             @change="loadTeacherSubjects"
@@ -231,7 +248,9 @@
       </div>
 
       <div class="mb-6">
-        <label class="block text-xs font-bold text-slate-700 mb-2">⚠️ REASON FOR INTERRUPTION (E.G. OFFICIAL / COURSE / SICK LEAVE):</label>
+        <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+          <AlertTriangle class="w-4 h-4 text-amber-500" /> REASON FOR INTERRUPTION (E.G. OFFICIAL / COURSE / SICK LEAVE):
+        </label>
         <input 
           v-model="teacherForm.reason" 
           type="text" 
@@ -271,19 +290,19 @@
       <button 
         @click="submitTeacherInterruption" 
         :disabled="exportedSubjects.length === 0"
-        class="bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer"
+        class="bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer flex items-center gap-2"
       >
-        💾 CONFIRM AND SAVE TEACHER INTERRUPTION RECORD
+        <Save class="w-4 h-4" /> CONFIRM AND SAVE TEACHER INTERRUPTION RECORD
       </button>
     </div>
 
     <!-- Interruption Log History Table Area -->
-    <!-- 🌟 这里去掉了溢出滚动，外层圆角保护 -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5">
       
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-4">
         <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <span>📊 MMI INTERRUPTION HISTORY SCHEDULE</span>
+          <History class="w-5 h-5 text-indigo-600" />
+          <span>MMI INTERRUPTION HISTORY SCHEDULE</span>
           <span class="text-xs bg-slate-100 px-2.5 py-1 rounded-full text-slate-600 font-semibold">
             TOTAL {{ filteredLogs.length }} RECORDS
           </span>
@@ -291,13 +310,13 @@
 
         <button 
           @click="exportLogsToExcel" 
-          class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 cursor-pointer shrink-0"
         >
-          <span>📥 EXPORT EXCEL SCHEDULE</span>
+          <FileSpreadsheet class="w-4 h-4" /> EXPORT EXCEL SCHEDULE
         </button>
       </div>
 
-      <!-- Filters (全部换成了完美的 SVG + appearance-none 下拉框) -->
+      <!-- Filters -->
       <div class="flex flex-wrap items-center gap-3 mb-6">
         <div class="relative min-w-[140px]">
           <select v-model="typeFilter" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none appearance-none pr-8 cursor-pointer">
@@ -341,7 +360,7 @@
         </div>
       </div>
 
-      <!-- 🌟 3. 表格核心修复：去掉 table-fixed，去掉僵硬的 w-xx，全部依靠 whitespace-nowrap 自动排开 -->
+      <!-- Table -->
       <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
         <thead>
           <tr class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-200 select-none">
@@ -409,7 +428,6 @@
               </span>
             </td>
 
-            <!-- 针对选择多班级过长的情况，单独允许它换行，并限制最大宽度 -->
             <td class="py-4 px-4 font-semibold text-slate-800 text-left whitespace-normal min-w-[200px]" :title="formatTargetDisplay(log.target_display)">
               {{ formatTargetDisplay(log.target_display) }}
             </td>
@@ -428,13 +446,13 @@
                 class="text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5 text-xs cursor-pointer"
               >
                 <span>VIEW DETAILS</span> 
-                <span>🔍</span>
+                <Eye class="w-3.5 h-3.5" />
               </button>
             </td>
 
             <td class="py-4 px-4 text-center">
-              <button @click="deleteLog(log)" class="text-xs text-red-600 hover:text-red-800 font-bold px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition">
-                DELETE
+              <button @click="deleteLog(log)" class="text-xs text-red-600 hover:text-red-800 font-bold px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition inline-flex items-center gap-1.5">
+                <Trash2 class="w-3.5 h-3.5" /> DELETE
               </button>
             </td>
           </tr>
@@ -450,7 +468,7 @@
             <span>📝 MMI INTERRUPTION DETAILS</span>
           </h3>
           <button @click="showDetailModal = false" class="text-slate-400 hover:text-slate-600 font-bold text-sm bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center cursor-pointer">
-            ✕
+            <X class="w-4 h-4" />
           </button>
         </div>
 
@@ -498,6 +516,22 @@
 import { ref, computed, onMounted, onActivated } from 'vue'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
+import { 
+  GraduationCap, 
+  School, 
+  Users, 
+  CalendarDays, 
+  Clock, 
+  Save, 
+  FileSpreadsheet, 
+  Eye, 
+  Trash2, 
+  X,
+  Target,
+  FileText,
+  History,
+  AlertTriangle
+} from 'lucide-vue-next'
 
 const toast = useToast()
 const activeTab = ref('class')
