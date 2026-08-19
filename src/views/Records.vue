@@ -87,7 +87,6 @@
         </div>
       </div>
 
-      <!-- 表格外层正常铺满，靠父级的 min-w-[1024px] 约束 -->
       <div class="w-full">
         <table class="w-full border-collapse border-2 border-black text-center text-xs font-serif table-fixed">
           <thead>
@@ -161,11 +160,15 @@
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
                   <td v-for="p in currentPeriodTimes.length" :key="'ganti-'+p" 
-                      contenteditable="true" 
-                      @blur="saveManualEntry(slotIndex, 'ganti', p, $event)" 
-                      v-text="getManualEntry(slotIndex, 'ganti', p)" 
-                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-pre-wrap break-words leading-tight"
-                      style="max-width: 0;"></td>
+                      class="border border-black p-0.5 align-middle h-8 relative group" style="max-width: 0;">
+                    <div class="w-full h-full relative flex items-center justify-center">
+                      <div contenteditable="true" 
+                          @blur="saveManualEntry(slotIndex, 'ganti', p, $event)" 
+                          v-text="getManualEntry(slotIndex, 'ganti', p)" 
+                          class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-pre-wrap break-words leading-tight flex items-center justify-center"></div>
+                      <button contenteditable="false" @click.stop="openBlankModal(slotIndex, p, null)" class="print:hidden absolute right-0 top-0 hidden group-hover:flex bg-indigo-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-indigo-600 z-10 font-sans tracking-widest font-bold">ASSIGN</button>
+                    </div>
+                  </td>
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[8px] whitespace-nowrap">T/TANGAN</td>
@@ -362,11 +365,15 @@
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
                   <td v-for="p in currentPeriodTimes.length" :key="'ganti-'+p" 
-                      contenteditable="true" 
-                      @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p, $event)"
-                      v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p)"
-                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-pre-wrap break-words leading-tight"
-                      style="max-width: 0;"></td>
+                      class="border border-black p-0.5 align-middle h-8 relative group" style="max-width: 0;">
+                    <div class="w-full h-full relative flex items-center justify-center">
+                      <div contenteditable="true" 
+                          @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p, $event)"
+                          v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p)"
+                          class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-pre-wrap break-words leading-tight flex items-center justify-center"></div>
+                      <button contenteditable="false" @click.stop="openBlankModal(slotIndex, p, sheet.id)" class="print:hidden absolute right-0 top-0 hidden group-hover:flex bg-indigo-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-indigo-600 z-10 font-sans tracking-widest font-bold">ASSIGN</button>
+                    </div>
+                  </td>
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[8px] whitespace-nowrap">T/TANGAN</td>
@@ -388,6 +395,61 @@
         <span class="text-base font-extrabold">+</span> ADD AN OFFICIAL BLANK TIMETABLE SHEET
       </button>
     </div>
+
+    <!-- ⭐️ 新增弹窗：简易空白行代课指派 (支持虚拟负荷记录) (ENGLISH VERSION) -->
+    <transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100" leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+      <div v-if="showBlankModal" class="print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+        <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" @click="showBlankModal = false"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden ring-1 ring-slate-900/10">
+          
+          <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <div>
+              <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2"><span>📝 QUICK ASSIGN</span><span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">SPECIAL TASK</span></h2>
+            </div>
+            <button @click="showBlankModal = false" class="text-slate-400 hover:text-slate-600 bg-white hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer font-bold">✕</button>
+          </div>
+          
+          <div class="p-6 space-y-5">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-2">🧑‍🏫 SELECT SUBSTITUTE TEACHER (SAME SESSION):</label>
+              <select v-model="blankForm.teacherId" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                <option value="">-- NONE (LEAVE BLANK / TEXT ONLY) --</option>
+                <option v-for="t in allSameSessionTeachers" :key="t.id" :value="t.id">
+                  {{ t.name }} <span v-if="t.subject">({{ t.subject }})</span>
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-2">📍 REMARK (LOCATION/TASK E.G. DUTY):</label>
+              <input v-model="blankForm.remark" type="text" placeholder="E.G.: PERPUSTAKAAN / LATIHAN SUKAN" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50" />
+            </div>
+
+            <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 flex items-start gap-3">
+              <input type="checkbox" v-model="blankForm.kiraBeban" id="kiraBebanCb" class="mt-0.5 w-4 h-4 text-indigo-600 rounded cursor-pointer" />
+              <div class="flex-1">
+                <label for="kiraBebanCb" class="text-sm font-bold text-slate-800 cursor-pointer block mb-1">INCLUDE IN TEACHER'S WORKLOAD (KIRA BEBAN)</label>
+                <p class="text-[10px] text-slate-500 font-medium leading-relaxed">If checked, the system will create a virtual record (does not affect MMI loss reports) and increase the teacher's daily class count by +1 in the background.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+            <button v-if="hasExistingVirtual" @click="removeBlankAssignment" class="text-xs text-red-600 hover:text-red-800 font-bold px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition">
+              CLEAR CELL
+            </button>
+            <div v-else></div>
+            <div class="flex gap-3">
+              <button @click="showBlankModal = false" class="text-slate-500 hover:text-slate-700 px-4 py-2 text-xs font-bold transition cursor-pointer">CANCEL</button>
+              <button @click="confirmBlankAssignment" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer">
+                CONFIRM
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </transition>
 
   </div>
 </template>
@@ -419,7 +481,6 @@ const substituteAssignmentsMap = ref({})
 const teachersMap = ref({})
 const allSameSessionTeachers = ref([])
 
-// 弹窗状态
 const showModal = ref(false)
 const loadingRecs = ref(false)
 const recommendations = ref([])
@@ -428,6 +489,12 @@ const assignmentRemark = ref('')
 const assignmentType = ref('substitute')
 const manualSelectedTeacherId = ref('')
 const isAutoAssigning = ref(false)
+
+// ⭐️ 新增：简易空白行弹窗状态
+const showBlankModal = ref(false)
+const blankTarget = ref({ slot: null, period: null, sheetId: null })
+const blankForm = ref({ teacherId: '', remark: '', kiraBeban: true })
+const hasExistingVirtual = ref(false)
 
 const formattedDate = computed(() => {
   if (!targetDate.value) return ''
@@ -444,6 +511,9 @@ const formattedDayName = computed(() => {
 const displayTeachersList = computed(() => {
   const map = {}
   leaveRequests.value.forEach(req => {
+    // ⭐️ 过滤虚拟记录
+    if (req.class_name === 'VIRTUAL_CLASS') return;
+
     const teacher = teachersMap.value[req.teacher_id]
     if (teacher && (teacher.session || 'morning') === currentSession.value) {
       map[req.teacher_id] = { id: req.teacher_id, name: teacher.name, reason: req.reason }
@@ -452,7 +522,6 @@ const displayTeachersList = computed(() => {
   return Object.values(map)
 })
 
-// ================= 草稿本与附加表【云端同步】逻辑 =================
 const manualEntries = ref({})
 const sessionCustomSheets = ref({
   morning: [],
@@ -478,7 +547,7 @@ const fetchManualDrafts = async () => {
       }
     }
   } catch (err) {
-    console.error("读取草稿失败:", err)
+    console.error("Failed to fetch drafts:", err)
   }
 }
 
@@ -493,7 +562,7 @@ const saveCustomSheetsToCloud = async () => {
         draft_data: manualEntries.value
       }, { onConflict: 'target_date,session' }) 
   } catch (err) {
-    console.error("保存附页到云端失败:", err)
+    console.error("Failed to save custom sheets:", err)
   }
 }
 
@@ -513,7 +582,7 @@ const saveManualEntry = async (slotIndex, type, period, event) => {
         draft_data: manualEntries.value
       }, { onConflict: 'target_date,session' }) 
   } catch (err) {
-    console.error("保存临时草稿失败:", err)
+    console.error("Failed to save entry:", err)
   }
 }
 
@@ -521,7 +590,6 @@ const getManualEntry = (slotIndex, type, period) => {
   const key = `${slotIndex}-${type}-${period}`
   return manualEntries.value[key] || ''
 }
-// =================================================================
 
 const fetchData = async () => {
   await fetchManualDrafts()
@@ -559,11 +627,11 @@ const fetchData = async () => {
 }
 
 const hasLeavePeriod = (teacherId, periodNum) => {
-  return leaveRequests.value.some(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum))
+  return leaveRequests.value.some(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum) && r.class_name !== 'VIRTUAL_CLASS')
 }
 
 const getTeacherPeriodData = (teacherId, periodNum, type) => {
-  const leaveItem = leaveRequests.value.find(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum))
+  const leaveItem = leaveRequests.value.find(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum) && r.class_name !== 'VIRTUAL_CLASS')
   if (!leaveItem) return ''
 
   if (type === 'class_subject') {
@@ -586,10 +654,21 @@ const getTeacherPeriodData = (teacherId, periodNum, type) => {
   return ''
 }
 
+const loadSameSessionTeachers = async () => {
+  if (allSameSessionTeachers.value.length === 0) {
+    const { data } = await supabase
+      .from('teachers')
+      .select('*')
+      .eq('is_active', true)
+      .eq('session', currentSession.value)
+    allSameSessionTeachers.value = data || []
+  }
+}
+
 const handleCellClick = async (teacherId, periodNum) => {
-  const leaveItem = leaveRequests.value.find(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum))
+  const leaveItem = leaveRequests.value.find(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum) && r.class_name !== 'VIRTUAL_CLASS')
   if (!leaveItem) {
-    toast.error("该节课该老师没有请假记录！")
+    toast.error("No leave record found for this period!")
     return
   }
 
@@ -610,21 +689,9 @@ const handleCellClick = async (teacherId, periodNum) => {
 
   try {
     recommendations.value = await recommendSubstitute(leaveItem)
-
-    const absentTeacher = teachersMap.value[leaveItem.teacher_id]
-    const session = absentTeacher?.session || currentSession.value
-
-    const { data: teachersData } = await supabase
-      .from('teachers')
-      .select('*')
-      .eq('is_active', true)
-      .eq('session', session)
-      .neq('id', leaveItem.teacher_id)
-
-    allSameSessionTeachers.value = teachersData || []
-
+    await loadSameSessionTeachers()
   } catch (err) {
-    toast.error("加载排课数据失败: " + err.message)
+    toast.error("Failed to load scheduling data: " + err.message)
     recommendations.value = []
   } finally {
     loadingRecs.value = false
@@ -661,11 +728,11 @@ const assignSubstitute = async (teacherId) => {
 
     await supabase.from('leave_requests').update({ status: 'assigned' }).eq('id', leaveId)
 
-    toast.success(assignmentType.value === 'swap' ? "换课指派成功！" : "代课指派成功！")
+    toast.success(assignmentType.value === 'swap' ? "Swap assigned successfully!" : "Substitute assigned successfully!")
     showModal.value = false
     fetchData()
   } catch (err) {
-    toast.error("指派失败: " + err.message)
+    toast.error("Assignment failed: " + err.message)
   }
 }
 
@@ -677,17 +744,19 @@ const removeAssignment = async () => {
     if (existing) {
       await supabase.from('substitute_assignments').delete().eq('id', existing.id)
       await supabase.from('leave_requests').update({ status: 'pending' }).eq('id', leaveId)
-      toast.success("已取消指派")
+      toast.success("Assignment cancelled successfully")
       showModal.value = false
       fetchData()
     }
   } catch (err) {
-    toast.error("操作失败: " + err.message)
+    toast.error("Operation failed: " + err.message)
   }
 }
 
 const handleAutoAssignAll = async () => {
   const pendingRequests = leaveRequests.value.filter(req => {
+    if (req.class_name === 'VIRTUAL_CLASS') return false; 
+
     const teacher = teachersMap.value[req.teacher_id]
     const inCurrentSession = teacher && (teacher.session || 'morning') === currentSession.value
     const notAssigned = !substituteAssignmentsMap.value[req.id] || !substituteAssignmentsMap.value[req.id].sub_teacher_id
@@ -695,7 +764,7 @@ const handleAutoAssignAll = async () => {
   })
 
   if (pendingRequests.length === 0) {
-    toast.success("当前班次没有需要自动指派的待办课程！")
+    toast.success("No pending assignments for the current session!")
     return
   }
 
@@ -721,14 +790,170 @@ const handleAutoAssignAll = async () => {
         }
       }
     }
-    toast.success(`自动排课完成！成功为您智能指派了 ${successCount} 节课。`)
+    toast.success(`Success! Auto-assigned ${successCount} classes.`)
     fetchData()
   } catch (err) {
-    toast.error("一键自动排课过程中出错: " + err.message)
+    toast.error("Error during auto-assignment: " + err.message)
   } finally {
     isAutoAssigning.value = false
   }
 }
+
+// ================= ⭐️ 新增：空白行与虚拟负荷指派逻辑 =================
+const openBlankModal = async (slot, period, sheetId) => {
+  blankTarget.value = { slot, period, sheetId }
+  blankForm.value = { teacherId: '', remark: '', kiraBeban: true }
+  
+  const prefix = sheetId ? `sheet_${sheetId}_${slot}` : slot
+  const virtualLeaveId = manualEntries.value[`${prefix}_virtual_leave_${period}`]
+  
+  hasExistingVirtual.value = !!virtualLeaveId
+
+  if (virtualLeaveId) {
+    const existingSub = substituteAssignmentsMap.value[virtualLeaveId]
+    if (existingSub) {
+      blankForm.value.teacherId = existingSub.sub_teacher_id || ''
+      blankForm.value.remark = existingSub.remark || ''
+      blankForm.value.kiraBeban = true
+    }
+  }
+
+  await loadSameSessionTeachers()
+  showBlankModal.value = true
+}
+
+const confirmBlankAssignment = async () => {
+  const { slot, period, sheetId } = blankTarget.value
+  const prefix = sheetId ? `sheet_${sheetId}_${slot}` : slot
+  const textKey = `${prefix}-ganti-${period}`
+  const virtualLeaveKey = `${prefix}_virtual_leave_${period}`
+
+  if (!blankForm.value.teacherId && blankForm.value.kiraBeban) {
+    return toast.error('Please select a teacher to include in the workload calculation!')
+  }
+
+  let teacherName = ''
+  if (blankForm.value.teacherId) {
+    const t = allSameSessionTeachers.value.find(x => x.id === blankForm.value.teacherId) || teachersMap.value[blankForm.value.teacherId]
+    teacherName = t ? t.name : ''
+  }
+  
+  let displayText = teacherName
+  if (blankForm.value.remark) {
+    displayText = teacherName ? `${teacherName} (${blankForm.value.remark})` : blankForm.value.remark
+  }
+  
+  const existingVirtualLeaveId = manualEntries.value[virtualLeaveKey]
+
+  const dateObj = new Date(targetDate.value)
+  const dayNum = dateObj.getDay()
+  const weekdayCalc = dayNum === 0 ? 7 : dayNum
+
+  try {
+    if (blankForm.value.kiraBeban) {
+      // 1. Check if the teacher already has a record for this period
+      const { data: existingLeave } = await supabase.from('leave_requests')
+        .select('id, class_name')
+        .eq('teacher_id', blankForm.value.teacherId)
+        .eq('leave_date', targetDate.value)
+        .eq('period', period)
+        .maybeSingle()
+
+      let targetLeaveId = null
+
+      if (existingLeave) {
+        if (existingLeave.class_name !== 'VIRTUAL_CLASS') {
+          return toast.error('This teacher already has an official leave record for this period!')
+        }
+        targetLeaveId = existingLeave.id
+        await supabase.from('leave_requests')
+          .update({ reason: blankForm.value.remark || 'TUGAS KHAS' })
+          .eq('id', targetLeaveId)
+      } else {
+        const { data: newLeave, error: leaveErr } = await supabase.from('leave_requests').insert({
+          teacher_id: blankForm.value.teacherId, 
+          leave_date: targetDate.value,
+          weekday: weekdayCalc,
+          period: period,
+          reason: blankForm.value.remark || 'TUGAS KHAS',
+          class_name: 'VIRTUAL_CLASS',
+          subject: 'VIRTUAL_SUB',
+          status: 'assigned'
+        }).select().single()
+        
+        if (leaveErr) throw leaveErr
+        targetLeaveId = newLeave.id
+      }
+
+      // 2. Sync substitute_assignments
+      const { data: existingSub } = await supabase.from('substitute_assignments')
+        .select('id')
+        .eq('leave_request_id', targetLeaveId)
+        .maybeSingle()
+
+      if (existingSub) {
+        await supabase.from('substitute_assignments')
+          .update({ sub_teacher_id: blankForm.value.teacherId, remark: blankForm.value.remark })
+          .eq('id', existingSub.id)
+      } else {
+        await supabase.from('substitute_assignments').insert({
+          leave_request_id: targetLeaveId,
+          sub_teacher_id: blankForm.value.teacherId,
+          assignment_type: 'substitute',
+          remark: blankForm.value.remark
+        })
+      }
+
+      // 3. Garbage Collection for old teacher
+      if (existingVirtualLeaveId && existingVirtualLeaveId !== targetLeaveId) {
+        await supabase.from('substitute_assignments').delete().eq('leave_request_id', existingVirtualLeaveId)
+        await supabase.from('leave_requests').delete().eq('id', existingVirtualLeaveId)
+      }
+
+      manualEntries.value[virtualLeaveKey] = targetLeaveId
+    } else {
+      if (existingVirtualLeaveId) {
+        await supabase.from('substitute_assignments').delete().eq('leave_request_id', existingVirtualLeaveId)
+        await supabase.from('leave_requests').delete().eq('id', existingVirtualLeaveId)
+        delete manualEntries.value[virtualLeaveKey]
+      }
+    }
+
+    manualEntries.value[textKey] = displayText
+    await saveCustomSheetsToCloud() 
+    
+    toast.success(blankForm.value.kiraBeban ? 'Assigned successfully! Recorded in workload stats.' : 'Text saved successfully! Excluded from workload.')
+    showBlankModal.value = false
+    fetchData() 
+  } catch (err) {
+    toast.error('Save failed: ' + err.message)
+  }
+}
+
+const removeBlankAssignment = async () => {
+  const { slot, period, sheetId } = blankTarget.value
+  const prefix = sheetId ? `sheet_${sheetId}_${slot}` : slot
+  const virtualLeaveKey = `${prefix}_virtual_leave_${period}`
+  const textKey = `${prefix}-ganti-${period}`
+  const existingVirtualLeaveId = manualEntries.value[virtualLeaveKey]
+
+  try {
+    if (existingVirtualLeaveId) {
+        await supabase.from('substitute_assignments').delete().eq('leave_request_id', existingVirtualLeaveId)
+        await supabase.from('leave_requests').delete().eq('id', existingVirtualLeaveId)
+        delete manualEntries.value[virtualLeaveKey]
+    }
+    manualEntries.value[textKey] = ''
+    await saveCustomSheetsToCloud()
+    
+    toast.success('Cell cleared and workload assignment cancelled!')
+    showBlankModal.value = false
+    fetchData()
+  } catch(err) {
+    toast.error('Clear failed: ' + err.message)
+  }
+}
+// =================================================================
 
 watch([targetDate, currentSession], () => {
   fetchData()
