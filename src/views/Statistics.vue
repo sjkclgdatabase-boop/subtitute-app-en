@@ -486,12 +486,7 @@ const selectedGradeFilter = ref('')
 const selectedClassFilter = ref('')
 
 const gradeOrderMap = {
-  'YEAR 1': 1,
-  'YEAR 2': 2,
-  'YEAR 3': 3,
-  'YEAR 4': 4,
-  'YEAR 5': 5,
-  'YEAR 6': 6
+  'YEAR 1': 1, 'YEAR 2': 2, 'YEAR 3': 3, 'YEAR 4': 4, 'YEAR 5': 5, 'YEAR 6': 6
 };
 
 const sortGrgradesHelper = (setObj) => {
@@ -508,12 +503,7 @@ const getGradeFromClass = (cName) => {
   if (match) {
     const gradeNum = match[1];
     const gradeMap = {
-      '1': 'YEAR 1',
-      '2': 'YEAR 2',
-      '3': 'YEAR 3',
-      '4': 'YEAR 4',
-      '5': 'YEAR 5',
-      '6': 'YEAR 6'
+      '1': 'YEAR 1', '2': 'YEAR 2', '3': 'YEAR 3', '4': 'YEAR 4', '5': 'YEAR 5', '6': 'YEAR 6'
     };
     return gradeMap[gradeNum] || `YEAR ${gradeNum}`;
   }
@@ -691,14 +681,67 @@ const expandClassNames = (rawStr) => {
   }
 };
 
+// ========================================================================
+// 💡 1. Helper Functions (Must be before loadAllData)
+// ========================================================================
+const fetchAllRows = async (tableName, queryBuilder = null) => {
+  let allData = []
+  let from = 0
+  const limit = 1000 
+  
+  while (true) {
+    let query = supabase.from(tableName).select('*').range(from, from + limit - 1)
+    if (queryBuilder) query = queryBuilder(query) 
+    
+    const { data, error } = await query
+    if (error) throw error
+    if (data) allData.push(...data)
+    if (!data || data.length < limit) break
+    from += limit
+  }
+  return allData
+}
+
+const cleanString = (str) => {
+  if (!str) return ''
+  return String(str).trim().toUpperCase().replace(/[^A-Z0-9\u4e00-\u9fa5]/g, '')
+}
+
+const standardizeSubjectName = (name) => {
+  const clean = cleanString(name)
+  if (!clean) return ''
+  if (['BI', 'ENGLISH', 'BAHASAINGGERIS', 'ENG', '英文'].includes(clean)) return 'BAHASA INGGERIS'
+  if (['BM', 'MELAYU', 'BAHASAMELAYU', 'MALAY', '国文', '马来文'].includes(clean)) return 'BAHASA MELAYU'
+  if (['BC', 'CINA', 'BAHASACINA', 'CHINESE', '华文', '华语'].includes(clean)) return 'BAHASA CINA'
+  if (['MATEMATIK', 'MATH', 'MT', 'MM', '数学'].includes(clean)) return 'MATEMATIK'
+  if (['SN', 'SAINS', 'SCIENCE', 'SC', '科学'].includes(clean)) return 'SAINS'
+  if (['PJ', 'PENDIDIKANJASMANI', 'JASMANI', 'PE', '体育'].includes(clean)) return 'PENDIDIKAN JASMANI'
+  if (['PM', 'PENDIDIKANMORAL', 'MORAL', '道德'].includes(clean)) return 'PENDIDIKAN MORAL'
+  if (['PI', 'PENDIDIKANISLAM', 'ISLAM', '宗教'].includes(clean)) return 'PENDIDIKAN ISLAM'
+  if (['PSV', 'PENDIDIKANSENIVISUAL', 'SENI', 'VISUAL', 'ART', '美术'].includes(clean)) return 'PENDIDIKAN SENI VISUAL'
+  if (['MZ', 'PMUZIK', 'PENDIDIKANMUZIK', 'MUZIK', 'MUSIC', '音乐'].includes(clean)) return 'PENDIDIKAN MUZIK'
+  if (['PK', 'PENDIDIKANKESIHATAN', 'KESIHATAN', 'HEALTH', '健教', '健康教育'].includes(clean)) return 'PENDIDIKAN KESIHATAN'
+  if (['SEJARAH', 'SEJ', 'HIST', '历史'].includes(clean)) return 'SEJARAH'
+  if (['RBT', 'REKABENTUKDANTEKNOLOGI', 'REKABENTUK', '设计与工艺'].includes(clean)) return 'REKA BENTUK DAN TEKNOLOGI'
+  return clean
+}
+
+const isSubjectMatch = (subjA, subjB) => {
+  if (!subjA || !subjB) return false
+  const stdA = standardizeSubjectName(subjA)
+  const stdB = standardizeSubjectName(subjB)
+  if (stdA && stdB && stdA === stdB) return true
+  const cA = cleanString(subjA)
+  const cB = cleanString(subjB)
+  return cA === cB || cA.includes(cB) || cB.includes(cA)
+}
+
+// ========================================================================
+// 💡 2. Core Data Loading Function
+// ========================================================================
 const loadAllData = async () => {
   try {
-    const { data: schoolData } = await supabase
-      .from('school_settings')
-      .select('*')
-      .limit(1)
-      .single()
-
+    const { data: schoolData } = await supabase.from('school_settings').select('*').limit(1).single()
     if (schoolData) {
       if (schoolData.school_name) schoolName.value = schoolData.school_name
       if (schoolData.logo_url) schoolLogoUrl.value = schoolData.logo_url
@@ -715,38 +758,32 @@ const loadAllData = async () => {
     }
   }
 
+  const { data: dbClasses } = await supabase.from('classes').select('*')
+  const { data: dbTargets } = await supabase.from('subject_targets').select('*')
   const { data: teachers } = await supabase.from('teachers').select('*')
+
+  const timetables = await fetchAllRows('timetable')
   
-  let assignQuery = supabase
-    .from('substitute_assignments')
-    .select('sub_teacher_id, assignment_type, leave_request_id, leave_requests!inner(leave_date)')
-
-  if (startDate.value) assignQuery = assignQuery.gte('leave_requests.leave_date', startDate.value)
-  if (endDate.value) assignQuery = assignQuery.lte('leave_requests.leave_date', endDate.value)
-
-  const { data: assignments } = await assignQuery
-
-  const swapLeaveIds = new Set()
-  assignments?.forEach(a => {
-    if (a.assignment_type === 'swap' && a.leave_request_id) {
-      swapLeaveIds.add(a.leave_request_id)
-    }
+  const mmiData = await fetchAllRows('mmi_interruptions', (query) => {
+    if (startDate.value) query = query.gte('interruption_date', startDate.value)
+    if (endDate.value) query = query.lte('interruption_date', endDate.value)
+    return query
+  })
+  
+  const leaveData = await fetchAllRows('leave_requests', (query) => {
+    if (startDate.value) query = query.gte('leave_date', startDate.value)
+    if (endDate.value) query = query.lte('leave_date', endDate.value)
+    return query
   })
 
-  let mmiQuery = supabase.from('mmi_interruptions').select('*')
-  if (startDate.value) mmiQuery = mmiQuery.gte('interruption_date', startDate.value)
-  if (endDate.value) mmiQuery = mmiQuery.lte('interruption_date', endDate.value)
-  const { data: mmiData } = await mmiQuery
+  let assignQuery = supabase.from('substitute_assignments').select('sub_teacher_id, assignment_type, leave_request_id, leave_requests!inner(leave_date)')
+  if (startDate.value) assignQuery = assignQuery.gte('leave_requests.leave_date', startDate.value)
+  if (endDate.value) assignQuery = assignQuery.lte('leave_requests.leave_date', endDate.value)
+  const { data: assignments } = await assignQuery
 
-  if (mmiData) interruptionLogs.value = mmiData
+  interruptionLogs.value = mmiData || []
 
-  let leaveQuery = supabase.from('leave_requests').select('*')
-  if (startDate.value) leaveQuery = leaveQuery.gte('leave_date', startDate.value)
-  if (endDate.value) leaveQuery = leaveQuery.lte('leave_date', endDate.value)
-  const { data: leaveData } = await leaveQuery
-
-  const { data: timetables } = await supabase.from('timetable').select('*')
-
+  // Calculate Overview & Reasons Data
   const teacherMap = {}
   const teacherNameSet = new Set()
   
@@ -810,117 +847,166 @@ const loadAllData = async () => {
     }))
   }
 
-  const classMap = {}
-  const subjectDetailMap = {} 
-  let totalClassPeriods = 0
+  // Calculate Target-Based Class and Subject Loss (Deduplication Logic)
+  const teacherMapForMatch = {}
+  teachers?.forEach(tch => {
+    if (tch.id) teacherMapForMatch[String(tch.id)] = tch
+    if (tch.name) teacherMapForMatch[cleanString(tch.name)] = tch
+  })
 
-  mmiData?.forEach(l => { 
-    let rawTarget = (l.target_display || '').trim(); 
-    if (/^GURU:/i.test(rawTarget) || /^TEACHER:/i.test(rawTarget) || rawTarget.includes('教师') || teacherNameSet.has(rawTarget.toUpperCase()) || /VIRTUAL_CLASS/i.test(rawTarget)) return; 
-    const pCount = (l.end_period || 0) - (l.start_period || 0) + 1; 
+  const enrichedTimetables = (timetables || []).map(item => {
+    const tIdKey = item.teacher_id ? String(item.teacher_id) : ''
+    const tNameKey = item.teacher_name ? cleanString(item.teacher_name) : ''
+    const teacherObj = teacherMapForMatch[tIdKey] || teacherMapForMatch[tNameKey] || {}
+    return {
+      ...item,
+      teacher_info: teacherObj,
+      resolved_teacher_name: teacherObj.name || item.teacher_name || item.teacher || ''
+    }
+  })
+
+  const classLostSets = {}
+  const tempSubjectStats = []
+
+  for (const cls of (dbClasses || [])) {
+    const clsName = cleanString(cls.class_name)
+    if (!classLostSets[cls.class_name]) classLostSets[cls.class_name] = new Set()
     
-    const splitClasses = expandClassNames(rawTarget);
-    splitClasses.forEach(cName => {
-      classMap[cName] = (classMap[cName] || 0) + pCount;
-      totalClassPeriods += pCount;
-    });
-  })
+    const gradeTargets = (dbTargets || []).filter(t => Number(t.grade) === Number(cls.grade))
 
-  leaveData?.forEach(req => {
-    if (swapLeaveIds.has(req.id)) return;
+    for (const t of gradeTargets) {
+      const standardizedTargetSubject = standardizeSubjectName(t.subject_name)
+      const lostSlotSet = new Set()
 
-    const splitClasses = expandClassNames(req.class_name);
-    splitClasses.forEach(cName => {
-      classMap[cName] = (classMap[cName] || 0) + 1;
-      totalClassPeriods += 1;
-    });
+      const matchedEntries = enrichedTimetables.filter(item => {
+        const itemClass = cleanString(item.class_name)
+        const isClassMatched = itemClass === clsName || itemClass.includes(clsName) || clsName.includes(itemClass)
+        if (!isClassMatched) return false
+        const rawSubj = item.subject || item.subject_name || item.teacher_info?.subject_name || ''
+        return isSubjectMatch(rawSubj, standardizedTargetSubject)
+      })
 
-    const sub = req.subject ? req.subject.trim().toUpperCase() : 'UNKNOWN';
-    if (sub && sub !== 'UNKNOWN' && !sub.includes('VIRTUAL_SUB')) {
-      splitClasses.forEach(cleanC => {
-        const grade = getGradeFromClass(cleanC);
-        const compositeKey = `${grade}_${cleanC}_${sub}`;
-        if (!subjectDetailMap[compositeKey]) {
-          subjectDetailMap[compositeKey] = {
-            id: compositeKey,
-            grade: grade,
-            className: cleanC,
-            subjectName: sub,
-            totalPeriods: 0
-          };
-        }
-        subjectDetailMap[compositeKey].totalPeriods += 1;
-      });
-    }
-  })
+      const assignedTeacherNames = [...new Set(matchedEntries.map(e => e.resolved_teacher_name).filter(Boolean))]
+      const assignedTeacherIds = [...new Set(matchedEntries.map(e => e.teacher_id || e.teacher_info?.id).filter(Boolean))]
 
-  mmiData?.forEach(int => {
-    if (int.type === 'class' && timetables && timetables.length > 0) {
-      const startP = Number(int.start_period) || 1;
-      const endP = Number(int.end_period) || 1;
-      const targetDisp = (int.target_display || '').trim();
+      leaveData?.forEach(req => {
+        const reqClass = cleanString(req.class_name)
+        const isClassMatched = reqClass === clsName || reqClass.includes(clsName) || clsName.includes(reqClass)
+        const isSubjMatched = isSubjectMatch(req.subject, standardizedTargetSubject)
+        
+        const reqTeacherNameClean = cleanString(req.teacher_name)
+        const isTeacherMatched = 
+          assignedTeacherIds.some(id => req.teacher_id && String(req.teacher_id) === String(id)) ||
+          assignedTeacherNames.some(name => reqTeacherNameClean && cleanString(name) === reqTeacherNameClean)
 
-      const intDate = new Date(int.interruption_date);
-      const wd = intDate.getDay();
-      const weekdayNum = wd === 0 ? 7 : wd;
-
-      timetables.forEach(t => {
-        if (Number(t.weekday) !== weekdayNum) return;
-        const p = Number(t.period);
-        if (p < startP || p > endP) return;
-
-        const splitClasses = expandClassNames(t.class_name);
-        if (splitClasses.length === 0) return;
-
-        let isAffected = false;
-        if (targetDisp.includes('全校') || targetDisp.includes('SELURUH SEKOLAH') || targetDisp.includes('ALL CLASSES')) {
-          isAffected = true;
-        } else if (targetDisp.includes('全年级') || targetDisp.includes('Tahun') || targetDisp.includes('TAHUN') || targetDisp.includes('Year') || targetDisp.includes('YEAR')) {
-          const match = targetDisp.match(/Tahun\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/) || targetDisp.match(/Year\s*(\d)/i);
-          const gradeNum = match ? match[1] : null;
-          if (gradeNum) {
-            isAffected = splitClasses.some(cName => cName.startsWith(gradeNum) || getGradeFromClass(cName).includes(gradeNum));
-          } else {
-            isAffected = true;
-          }
-        } else {
-          const targetList = targetDisp.split(/,|、|\//).map(s => cleanClassName(s));
-          isAffected = targetList.some(tc => tc && splitClasses.some(cName => cName === tc || cName.includes(tc) || cName.includes(cName)));
-        }
-
-        if (isAffected) {
-          const sub = t.subject ? t.subject.trim().toUpperCase() : 'UNKNOWN';
-          if (sub && sub !== 'UNKNOWN' && !sub.includes('VIRTUAL_SUB')) {
-            splitClasses.forEach(cName => {
-              const grade = getGradeFromClass(cName);
-              const compositeKey = `${grade}_${cName}_${sub}`;
-              if (!subjectDetailMap[compositeKey]) {
-                subjectDetailMap[compositeKey] = {
-                  id: compositeKey,
-                  grade: grade,
-                  className: cName,
-                  subjectName: sub,
-                  totalPeriods: 0
-                };
+        if (isTeacherMatched && isClassMatched && isSubjMatched) {
+          if (req.leave_date) {
+            const leaveDateObj = new Date(req.leave_date)
+            const leaveWeekday = leaveDateObj.getDay()
+            
+            enrichedTimetables.forEach(item => {
+              const itemClass = cleanString(item.class_name)
+              const itemSubj = item.subject || item.subject_name || item.teacher_info?.subject_name || ''
+              const itemWeekday = Number(item.weekday)
+              
+              const matchCls = itemClass === clsName || itemClass.includes(clsName) || clsName.includes(itemClass)
+              const matchSubj = isSubjectMatch(itemSubj, standardizedTargetSubject)
+              const matchWd = itemWeekday === leaveWeekday || itemWeekday === (leaveWeekday === 0 ? 7 : leaveWeekday)
+              const matchPeriod = Number(item.period) === Number(req.period)
+              
+              if (matchCls && matchSubj && matchWd && matchPeriod) {
+                const slotKey = `${req.leave_date}-P${item.period}`
+                lostSlotSet.add(slotKey)
+                classLostSets[cls.class_name].add(slotKey)
               }
-              subjectDetailMap[compositeKey].totalPeriods += 1;
-            });
+            })
+          } else {
+            const randomSlot = `NODATE-${Math.random()}`
+            lostSlotSet.add(randomSlot)
+            classLostSets[cls.class_name].add(randomSlot)
           }
         }
-      });
+      })
+
+      mmiData?.forEach(int => {
+        if (int.type === 'class') {
+          const startP = Number(int.start_period) || 1
+          const endP = Number(int.end_period) || 1
+          const intScope = int.scope ? int.scope.trim() : ''
+          const targetDisp = int.target_display ? int.target_display.trim() : ''
+          const intGrade = Number(int.grade)
+          const intClass = cleanString(int.class_name)
+
+          const intDate = new Date(int.interruption_date)
+          const intWeekday = intDate.getDay()
+
+          let isClassAffected = false;
+          if (intScope === 'all' || targetDisp.includes('全校') || targetDisp.includes('SELURUH SEKOLAH') || targetDisp.includes('ALL CLASSES')) {
+            isClassAffected = true;
+          } else if (intScope === 'grade' && intGrade === Number(cls.grade)) {
+            isClassAffected = true;
+          } else if (targetDisp.includes('全年级') || targetDisp.includes('Tahun') || targetDisp.includes('TAHUN') || targetDisp.includes('Year') || targetDisp.includes('YEAR')) {
+            const match = targetDisp.match(/Tahun\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/) || targetDisp.match(/Year\s*(\d)/i);
+            const gradeNum = match ? match[1] : null;
+            if (gradeNum) {
+              isClassAffected = clsName.startsWith(gradeNum);
+            } else {
+              isClassAffected = true;
+            }
+          } else {
+            const targetList = targetDisp.split(/,|、|\//).map(s => cleanClassName(s));
+            isClassAffected = targetList.some(tc => tc && (clsName === tc || clsName.includes(tc) || tc.includes(clsName)));
+          }
+
+          if (isClassAffected) {
+            enrichedTimetables.forEach(item => {
+              const itemClass = cleanString(item.class_name)
+              const itemPeriod = Number(item.period)
+              const rawSubj = item.subject || item.subject_name || item.teacher_info?.subject_name || ''
+              const itemWeekday = Number(item.weekday)
+
+              const matchClass = itemClass === clsName || itemClass.includes(clsName) || clsName.includes(itemClass)
+              const matchPeriod = itemPeriod >= startP && itemPeriod <= endP
+              const matchSubject = isSubjectMatch(rawSubj, standardizedTargetSubject)
+              const matchWeekday = itemWeekday === intWeekday || itemWeekday === (intWeekday === 0 ? 7 : intWeekday)
+
+              if (matchClass && matchPeriod && matchSubject && matchWeekday) {
+                const slotKey = `${int.interruption_date}-P${item.period}`
+                lostSlotSet.add(slotKey)
+                classLostSets[cls.class_name].add(slotKey)
+              }
+            })
+          }
+        }
+      })
+
+      if (lostSlotSet.size > 0) {
+        tempSubjectStats.push({
+          id: `${cls.grade}_${cls.class_name}_${t.subject_name}`,
+          grade: String(cls.grade),
+          className: cls.class_name,
+          subjectName: t.subject_name,
+          totalPeriods: lostSlotSet.size
+        })
+      }
     }
-  });
+  }
 
-  classStats.value = Object.entries(classMap)
-    .map(([className, totalPeriods]) => ({ 
-      className, 
-      totalPeriods, 
-      percentage: totalClassPeriods > 0 ? ((totalPeriods / totalClassPeriods) * 100).toFixed(1) : 0 
-    }))
+  let totalClassPeriods = Object.values(classLostSets).reduce((sum, set) => sum + set.size, 0)
+  
+  classStats.value = Object.keys(classLostSets)
+    .map(cName => {
+      const count = classLostSets[cName].size
+      return {
+        className: cName,
+        totalPeriods: count,
+        percentage: totalClassPeriods > 0 ? ((count / totalClassPeriods) * 100).toFixed(1) : 0
+      }
+    })
+    .filter(c => c.totalPeriods > 0)
     .sort((a, b) => b.totalPeriods - a.totalPeriods)
 
-  subjectStats.value = Object.values(subjectDetailMap)
-    .sort((a, b) => b.totalPeriods - a.totalPeriods)
+  subjectStats.value = tempSubjectStats.sort((a, b) => b.totalPeriods - a.totalPeriods)
 }
 
 onMounted(loadAllData)
@@ -933,12 +1019,11 @@ const exportSinglePdf = async () => {
  const REPORT_TITLES = {
     overview: 'RINGKASAN OPERASI & BEBAN GURU GANTI',
     reason: 'ANALISIS PUNCA KETIDAKHADIRAN & GANGGUAN PDPC',
-    trend: 'STATISTIK TREND & PUNCAK HARI GANGGUAN KELAS',
+    trend: 'STATISTIK TREND & PUNCAK GANGGUAN KELAS',
     class: 'ANALISIS GANGGUAN MENGIKUT KELAS',
     subject: 'ANALISIS GANGGUAN MENGIKUT SUBJEK & KELAS',
     teacher: 'PROFIL PENUGASAN GURU GANTI & GANGGUAN'
   }
-
 
   const title = REPORT_TITLES[currentTab.value] || REPORT_TITLES.overview
   const safeFileName = title
@@ -1298,43 +1383,3 @@ const exportSinglePdf = async () => {
   }
 }
 </script>
-
-<style scoped>
-.print-header {
-  display: none;
-}
-
-@media print {
-  @page {
-    size: portrait; 
-    margin: 10mm;
-  }
-  .no-print {
-    display: none !important;
-  }
-  .print-header {
-    display: block !important;
-    margin-bottom: 20px;
-  }
-  body, * {
-    font-family: "Microsoft YaHei", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei", Arial, sans-serif !important;
-    background: white !important;
-    color: black !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  .print-table {
-    width: 100% !important;
-    border-collapse: collapse !important;
-    font-size: 11px !important;
-  }
-  .print-table th, .print-table td {
-    border: 1px solid #cbd5e1 !important;
-    padding: 8px 10px !important;
-  }
-  .print-table th {
-    background-color: #f1f5f9 !important;
-    color: #0f172a !important;
-  }
-}
-</style>
