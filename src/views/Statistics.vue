@@ -647,7 +647,7 @@ const categorizedReasons = computed(() => {
     const targetDisp = log.target_display ? log.target_display.trim() : ''
     
     const isSchoolLevel = intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL')
-    const isGradeLevel = intScope === 'grade' || /TAHUN/i.test(targetDisp) || /YEAR/i.test(targetDisp) || /年级/.test(targetDisp)
+    const isGradeLevel = intScope === 'grade' || /TAHUN/i.test(targetDisp) || /YEAR/i.test(targetDisp) || /GRADE/i.test(targetDisp) || /年级/.test(targetDisp)
     const hasEventTag = rawReason.includes('[AKADEMIK]') || rawReason.includes('[ACADEMIC]') || rawReason.includes('[学术]') ||
                         rawReason.includes('[ACARA]') || rawReason.includes('[EVENT]') || rawReason.includes('[节庆]') ||
                         rawReason.includes('[CERAMAH]') || rawReason.includes('[SEMINAR]') || rawReason.includes('[讲座]') ||
@@ -725,7 +725,7 @@ const largeScaleStats = computed(() => {
     const rawReason = (log.reason || 'NO NAME').toUpperCase()
 
     const isSchoolLevel = intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL')
-    const isGradeLevel = intScope === 'grade' || /TAHUN/i.test(targetDisp) || /YEAR/i.test(targetDisp) || /年级/.test(targetDisp)
+    const isGradeLevel = intScope === 'grade' || /TAHUN/i.test(targetDisp) || /YEAR/i.test(targetDisp) || /GRADE/i.test(targetDisp) || /年级/.test(targetDisp)
     const hasEventTag = rawReason.includes('[AKADEMIK]') || rawReason.includes('[ACADEMIC]') || rawReason.includes('[学术]') ||
                         rawReason.includes('[ACARA]') || rawReason.includes('[EVENT]') || rawReason.includes('[节庆]') ||
                         rawReason.includes('[CERAMAH]') || rawReason.includes('[SEMINAR]') || rawReason.includes('[讲座]') ||
@@ -927,10 +927,11 @@ const loadAllData = async () => {
   mmiData?.forEach(l => {
     let rawTarget = (l.target_display || '').trim()
     let tName = ''
-    if (rawTarget.includes('TEACHER:')) tName = rawTarget.replace('TEACHER:', '').trim()
-    else if (rawTarget.includes('GURU:')) tName = rawTarget.replace('GURU:', '').trim()
-    else if (rawTarget.includes('教师:')) tName = rawTarget.replace('教师:', '').trim()
-    else if (teacherNameSet.has(rawTarget.toUpperCase())) tName = rawTarget
+    if (/(?:GURU|TEACHER|教师)[:：]?\s*/i.test(rawTarget)) {
+      tName = rawTarget.replace(/(?:GURU|TEACHER|教师)[:：]?\s*/i, '').trim()
+    } else if (teacherNameSet.has(rawTarget.toUpperCase())) {
+      tName = rawTarget
+    }
 
     if (tName) {
       const pCount = (l.end_period || 0) - (l.start_period || 0) + 1
