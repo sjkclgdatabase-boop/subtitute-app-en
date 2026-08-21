@@ -219,7 +219,7 @@
       </div>
     </div>
 
-    <!-- TAB: 班级活动/大型干扰分析 -->
+    <!-- TAB 3: 班级活动/大型干扰分析 -->
     <div v-if="currentTab === 'large-scale'" class="bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-8 animate-fadeIn">
       <div class="flex justify-between items-center">
         <div>
@@ -304,7 +304,7 @@
       </div>
     </div>
 
-    <!-- TAB 3: 日期高峰 -->
+    <!-- TAB 4: 日期高峰 -->
     <div v-if="currentTab === 'trend'" class="bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-6 animate-fadeIn">
       <div class="flex justify-between items-center">
         <div>
@@ -328,7 +328,7 @@
       </div>
     </div>
 
-    <!-- TAB 4: 班级干扰分析 -->
+    <!-- TAB 5: 班级干扰分析 -->
     <div v-if="currentTab === 'class'" class="bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-6 animate-fadeIn">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -352,7 +352,7 @@
           </span>
           <select 
             v-model="selectedClassGradeFilter" 
-            class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none cursor-pointer"
+            class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none cursor-pointer uppercase"
           >
             <option value="">ALL GRADES</option>
             <option v-for="g in availableClassGrades" :key="g" :value="g">{{ g }}</option>
@@ -385,7 +385,7 @@
           </thead>
           <tbody class="divide-y divide-slate-100 font-medium text-slate-800">
             <tr v-if="filteredClassStats.length === 0">
-              <td colspan="3" class="p-8 text-center text-slate-400 font-medium">NO RECORDS FOUND FOR THE SELECTED FILTER.</td>
+              <td colspan="3" class="p-8 text-center text-slate-400 font-medium uppercase">NO RECORDS FOUND FOR THIS FILTER.</td>
             </tr>
             <tr v-for="c in filteredClassStats" :key="c.className" class="hover:bg-slate-50/60">
               <td class="p-4 font-bold text-slate-900">{{ c.className }}</td>
@@ -397,7 +397,7 @@
       </div>
     </div>
 
-    <!-- TAB 5: 被影响最多的科目与班级明细排行 -->
+    <!-- TAB 6: 被影响最多的科目与班级明细排行 -->
     <div v-if="currentTab === 'subject'" class="bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-6 animate-fadeIn">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -422,7 +422,7 @@
           <select 
             v-model="selectedGradeFilter" 
             @change="selectedClassFilter = ''"
-            class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none cursor-pointer"
+            class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none cursor-pointer uppercase"
           >
             <option value="">ALL GRADES</option>
             <option v-for="g in availableGrades" :key="g" :value="g">{{ g }}</option>
@@ -436,7 +436,7 @@
           </span>
           <select 
             v-model="selectedClassFilter" 
-            class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none cursor-pointer"
+            class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none cursor-pointer uppercase"
           >
             <option value="">ALL CLASSES</option>
             <option v-for="cls in availableClassesForFilter" :key="cls" :value="cls">{{ cls }}</option>
@@ -472,10 +472,10 @@
           </thead>
           <tbody class="divide-y divide-slate-100 font-medium text-slate-800">
             <tr v-if="filteredSubjectStats.length === 0">
-              <td colspan="4" class="p-8 text-center text-slate-400 font-medium">NO RECORDS FOUND FOR THE SELECTED FILTER.</td>
+              <td colspan="4" class="p-8 text-center text-slate-400 font-medium uppercase">NO RECORDS FOUND FOR THE SELECTED FILTER.</td>
             </tr>
             <tr v-for="s in filteredSubjectStats" :key="s.id" class="hover:bg-slate-50/60">
-              <td class="p-4 font-bold text-slate-600">{{ s.grade }}</td>
+              <td class="p-4 font-bold text-slate-600 uppercase">{{ s.grade }}</td>
               <td class="p-4 font-bold text-slate-900">{{ s.className }}</td>
               <td class="p-4 font-bold text-indigo-600">{{ s.subjectName }}</td>
               <td class="p-4 font-bold text-amber-600">{{ s.totalPeriods }} SLOTS</td>
@@ -522,7 +522,7 @@
           <tbody class="divide-y divide-slate-100 font-medium text-slate-800">
             <tr v-for="stat in sortedTeacherStats" :key="stat.name" class="hover:bg-slate-50/60">
               <td class="p-4 font-bold text-slate-900">{{ stat.name }}</td>
-              <td class="p-4 text-slate-600">{{ stat.subject || '-' }}</td>
+              <td class="p-4 text-slate-600 uppercase">{{ stat.subject || '-' }}</td>
               <td class="p-4 font-bold text-indigo-600">{{ stat.count }} SLOTS</td>
               <td class="p-4 font-bold text-amber-600">{{ stat.interruptedCount }} SLOTS</td>
             </tr>
@@ -539,61 +539,32 @@ import { ref, computed, onMounted, onActivated } from 'vue'
 import { supabase } from '../services/supabase'
 import jsPDF from 'jspdf'
 import { 
-  ChartNoAxesCombined, 
-  CalendarDays, 
-  RefreshCw, 
-  LayoutDashboard, 
-  TriangleAlert, 
-  School, 
-  BookOpen, 
-  UsersRound, 
-  Clock3, 
-  ArrowLeftRight, 
-  FileText, 
-  Scale, 
-  Printer, 
-  Filter,
-  CalendarCheck,
-  BriefcaseBusiness,
-  Building2,
-  FolderOpen,
-  PartyPopper,
-  Mic,
-  Umbrella
+  ChartNoAxesCombined, CalendarDays, RefreshCw, LayoutDashboard, TriangleAlert, 
+  School, BookOpen, UsersRound, Clock3, ArrowLeftRight, FileText, Scale, Printer, 
+  Filter, CalendarCheck, BriefcaseBusiness, Building2, FolderOpen,
+  PartyPopper, Mic, Umbrella
 } from 'lucide-vue-next'
 
 const currentTab = ref('overview')
-
 const schoolName = ref('SJK (C) LADANG GRISEK')
 const schoolLogoUrl = ref('/logo.png')
-
 const startDate = ref('')
 const endDate = ref('')
-
 const stats = ref([])
 const interruptionLogs = ref([])
-const reasonStats = ref([])
 const dayOfWeekStats = ref([])
 const classStats = ref([])
 const subjectStats = ref([])
+const selectedClassGradeFilter = ref('') 
+const selectedGradeFilter = ref('')      
+const selectedClassFilter = ref('')      
 
-const selectedClassGradeFilter = ref('')
-const selectedGradeFilter = ref('')
-const selectedClassFilter = ref('')
-
-const gradeOrderMap = {
-  'YEAR 1': 1, 'YEAR 2': 2, 'YEAR 3': 3, 'YEAR 4': 4, 'YEAR 5': 5, 'YEAR 6': 6,
-  'TAHUN 1': 1, 'TAHUN 2': 2, 'TAHUN 3': 3, 'TAHUN 4': 4, 'TAHUN 5': 5, 'TAHUN 6': 6,
-  '一年级': 1, '二年级': 2, '三年级': 3, '四年级': 4, '五年级': 5, '六年级': 6
-};
-
-const sortGrgradesHelper = (setObj) => {
-  return Array.from(setObj).sort((a, b) => {
-    const wA = gradeOrderMap[a] !== undefined ? gradeOrderMap[a] : 99;
-    const wB = gradeOrderMap[b] !== undefined ? gradeOrderMap[b] : 99;
-    return wA - wB;
-  });
-};
+const gradeOrderMap = { 'YEAR 1': 1, 'YEAR 2': 2, 'YEAR 3': 3, 'YEAR 4': 4, 'YEAR 5': 5, 'YEAR 6': 6, 'TAHUN 1': 1, 'TAHUN 2': 2, 'TAHUN 3': 3, 'TAHUN 4': 4, 'TAHUN 5': 5, 'TAHUN 6': 6, '一年级': 1, '二年级': 2, '三年级': 3, '四年级': 4, '五年级': 5, '六年级': 6 };
+const sortGrgradesHelper = (setObj) => Array.from(setObj).sort((a, b) => {
+  const wA = gradeOrderMap[a] !== undefined ? gradeOrderMap[a] : 99;
+  const wB = gradeOrderMap[b] !== undefined ? gradeOrderMap[b] : 99;
+  return wA - wB;
+});
 
 const getGradeFromClass = (cName) => {
   if (!cName) return 'OTHERS';
@@ -642,15 +613,12 @@ const availableClassesForFilter = computed(() => {
 
 const filteredSubjectStats = computed(() => {
   let list = subjectStats.value
-  if (selectedGradeFilter.value) {
-    list = list.filter(s => s.grade === selectedGradeFilter.value)
-  }
-  if (selectedClassFilter.value) {
-    list = list.filter(s => s.className === selectedClassFilter.value)
-  }
+  if (selectedGradeFilter.value) list = list.filter(s => s.grade === selectedGradeFilter.value)
+  if (selectedClassFilter.value) list = list.filter(s => s.className === selectedClassFilter.value)
   return [...list].sort((a, b) => smartSort(a[subjectSortKey.value], b[subjectSortKey.value], subjectSortAsc.value))
 })
 
+// --- 🌟 Split Engine: Teacher Absence vs. Class Events (English Version) ---
 const categorizedReasons = computed(() => {
   const teacher = {
     personal: { title: 'PERSONAL LEAVE', icon: CalendarCheck, items: {}, total: 0, badge: 'bg-orange-100 text-orange-700', bar: 'bg-orange-500' },
@@ -686,6 +654,7 @@ const categorizedReasons = computed(() => {
                         rawReason.includes('[CUTI KHAS]') || rawReason.includes('[HOLIDAY]') || rawReason.includes('[假期]')
     const isLikelyEvent = isSchoolLevel || isGradeLevel || hasEventTag || log.type === 'class'
     
+    // 1. Precise match using bilingual tags
     if (rawReason.includes('[PERSONAL LEAVE]') || rawReason.includes('[CUTI PERIBADI]') || rawReason.includes('[个人请假]')) {
       teacher.personal.items[cleanReason] = (teacher.personal.items[cleanReason] || 0) + pCount
       teacher.personal.total += pCount; teacherTotalAll += pCount
@@ -708,6 +677,7 @@ const categorizedReasons = computed(() => {
       events.holiday.items[cleanReason] = (events.holiday.items[cleanReason] || 0) + pCount
       events.holiday.total += pCount; eventTotalAll += pCount
     } else {
+      // 2. Fallback routing for records without clear tags
       if (isLikelyEvent && !log.target_display?.includes('GURU:') && !log.target_display?.includes('TEACHER:') && !log.target_display?.includes('教师:')) {
         events.others.items[cleanReason] = (events.others.items[cleanReason] || 0) + pCount
         events.others.total += pCount; eventTotalAll += pCount
@@ -745,6 +715,7 @@ const categorizedReasons = computed(() => {
   }
 })
 
+// --- Detailed Large Scale Event Stats ---
 const largeScaleStats = computed(() => {
   const statsMap = {}
 
@@ -785,56 +756,30 @@ const largeScaleStats = computed(() => {
 const smartSort = (valA, valB, asc) => {
   const a = valA ?? '';
   const b = valB ?? '';
-  
-  if (typeof a === 'number' && typeof b === 'number') {
-    return asc ? a - b : b - a
-  }
-  const strA = String(a).toLowerCase();
-  const strB = String(b).toLowerCase();
-  return asc ? strA.localeCompare(strB) : strB.localeCompare(strA)
+  if (typeof a === 'number' && typeof b === 'number') return asc ? a - b : b - a
+  return asc ? String(a).toLowerCase().localeCompare(String(b).toLowerCase()) : String(b).toLowerCase().localeCompare(String(a).toLowerCase())
 }
 
-const classSortKey = ref('totalPeriods')
-const classSortAsc = ref(false)
-const sortClassTable = (key) => {
-  if (classSortKey.value === key) classSortAsc.value = !classSortAsc.value
-  else { classSortKey.value = key; classSortAsc.value = true }
-}
+const classSortKey = ref('totalPeriods'); const classSortAsc = ref(false)
+const sortClassTable = (key) => { if (classSortKey.value === key) classSortAsc.value = !classSortAsc.value; else { classSortKey.value = key; classSortAsc.value = true } }
 
-const subjectSortKey = ref('totalPeriods')
-const subjectSortAsc = ref(false)
-const sortSubjectTable = (key) => {
-  if (subjectSortKey.value === key) subjectSortAsc.value = !subjectSortAsc.value
-  else { subjectSortKey.value = key; subjectSortAsc.value = true }
-}
+const subjectSortKey = ref('totalPeriods'); const subjectSortAsc = ref(false)
+const sortSubjectTable = (key) => { if (subjectSortKey.value === key) subjectSortAsc.value = !subjectSortAsc.value; else { subjectSortKey.value = key; subjectSortAsc.value = true } }
 
-const teacherSortKey = ref('count')
-const teacherSortAsc = ref(false)
-const sortTeacherTable = (key) => {
-  if (teacherSortKey.value === key) teacherSortAsc.value = !teacherSortAsc.value
-  else { teacherSortKey.value = key; teacherSortAsc.value = true }
-}
+const teacherSortKey = ref('count'); const teacherSortAsc = ref(false)
+const sortTeacherTable = (key) => { if (teacherSortKey.value === key) teacherSortAsc.value = !teacherSortAsc.value; else { teacherSortKey.value = key; teacherSortAsc.value = true } }
+
+const largeScaleSortKey = ref('totalPeriods'); const largeScaleSortAsc = ref(false)
+const sortLargeScaleTable = (key) => { if (largeScaleSortKey.value === key) largeScaleSortAsc.value = !largeScaleSortAsc.value; else { largeScaleSortKey.value = key; largeScaleSortAsc.value = true } }
+
 const sortedTeacherStats = computed(() => [...stats.value].sort((a, b) => smartSort(a[teacherSortKey.value], b[teacherSortKey.value], teacherSortAsc.value)))
-
-const largeScaleSortKey = ref('totalPeriods')
-const largeScaleSortAsc = ref(false)
-const sortLargeScaleTable = (key) => {
-  if (largeScaleSortKey.value === key) largeScaleSortAsc.value = !largeScaleSortAsc.value
-  else { largeScaleSortKey.value = key; largeScaleSortAsc.value = true }
-}
 const sortedLargeScaleStats = computed(() => [...largeScaleStats.value].sort((a, b) => smartSort(a[largeScaleSortKey.value], b[largeScaleSortKey.value], largeScaleSortAsc.value)))
-
 const totalSubstituteCount = computed(() => stats.value.reduce((acc, cur) => acc + (cur.count || 0), 0))
 const totalInterruptionPeriods = computed(() => interruptionLogs.value.reduce((acc, cur) => acc + ((cur.end_period || 0) - (cur.start_period || 0) + 1), 0))
 const sortedSubstituteStats = computed(() => [...stats.value].sort((a, b) => (b.count || 0) - (a.count || 0)))
 
 const resetDateFilter = () => {
-  startDate.value = ''
-  endDate.value = ''
-  selectedClassGradeFilter.value = ''
-  selectedGradeFilter.value = ''
-  selectedClassFilter.value = ''
-  loadAllData()
+  startDate.value = ''; endDate.value = ''; selectedClassGradeFilter.value = ''; selectedGradeFilter.value = ''; selectedClassFilter.value = ''; loadAllData()
 }
 
 const cleanClassName = (rawStr) => {
@@ -849,16 +794,13 @@ const expandClassNames = (rawStr) => {
   if (!rawStr) return [];
   let cleaned = rawStr.replace(/^(KELAS|CLASS|班级|班級)\s*[:：]\s*/i, '').trim();
   if (!cleaned || /VIRTUAL_CLASS/i.test(cleaned)) return [];
-
   const separators = /,|、|\//;
   if (separators.test(cleaned)) {
     const parts = cleaned.split(separators);
     const results = [];
     parts.forEach(p => {
       let subClean = cleanClassName(p);
-      if (subClean && subClean !== 'VIRTUAL_CLASS') {
-        results.push(subClean);
-      }
+      if (subClean && subClean !== 'VIRTUAL_CLASS') results.push(subClean);
     });
     return results;
   } else {
@@ -867,15 +809,16 @@ const expandClassNames = (rawStr) => {
   }
 };
 
+// ========================================================================
+// 💡 1. Core Fetching Functions
+// ========================================================================
 const fetchAllRows = async (tableName, queryBuilder = null) => {
   let allData = []
   let from = 0
   const limit = 1000 
-  
   while (true) {
     let query = supabase.from(tableName).select('*').range(from, from + limit - 1)
     if (queryBuilder) query = queryBuilder(query) 
-    
     const { data, error } = await query
     if (error) throw error
     if (data) allData.push(...data)
@@ -919,6 +862,9 @@ const isSubjectMatch = (subjA, subjB) => {
   return cA === cB || cA.includes(cB) || cB.includes(cA)
 }
 
+// ========================================================================
+// 💡 2. Main Data Loader
+// ========================================================================
 const loadAllData = async () => {
   try {
     const { data: schoolData } = await supabase.from('school_settings').select('*').limit(1).single()
@@ -981,9 +927,9 @@ const loadAllData = async () => {
   mmiData?.forEach(l => {
     let rawTarget = (l.target_display || '').trim()
     let tName = ''
-    if (rawTarget.includes('教师:')) tName = rawTarget.replace('教师:', '').trim()
+    if (rawTarget.includes('TEACHER:')) tName = rawTarget.replace('TEACHER:', '').trim()
     else if (rawTarget.includes('GURU:')) tName = rawTarget.replace('GURU:', '').trim()
-    else if (rawTarget.includes('TEACHER:')) tName = rawTarget.replace('TEACHER:', '').trim()
+    else if (rawTarget.includes('教师:')) tName = rawTarget.replace('教师:', '').trim()
     else if (teacherNameSet.has(rawTarget.toUpperCase())) tName = rawTarget
 
     if (tName) {
@@ -1105,7 +1051,7 @@ const loadAllData = async () => {
           const intWeekday = intDate.getDay()
 
           let isClassAffected = false;
-          if (intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('WHOLE SCHOOL') || targetDisp.includes('全校') || targetDisp.includes('ALL CLASSES')) {
+          if (intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL') || targetDisp.includes('ALL CLASSES')) {
             isClassAffected = true;
           } else if (intScope === 'grade' && intGrade === Number(cls.grade)) {
             isClassAffected = true;
@@ -1173,14 +1119,11 @@ const loadAllData = async () => {
   subjectStats.value = tempSubjectStats.sort((a, b) => b.totalPeriods - a.totalPeriods)
 }
 
-onMounted(loadAllData)
-
-onActivated(() => {
-  loadAllData()
-})
-
+// ========================================================================
+// 💡 3. PDF Export (Preserving Malay Official Headers & Translated Tables)
+// ========================================================================
 const exportSinglePdf = async () => {
- const REPORT_TITLES = {
+  const REPORT_TITLES = {
     overview: 'RINGKASAN OPERASI & BEBAN GURU GANTI',
     reason: 'ANALISIS PUNCA KETIDAKHADIRAN GURU',
     'large-scale': 'ANALISIS GANGGUAN ACARA & AKTIVITI KELAS',
@@ -1191,10 +1134,7 @@ const exportSinglePdf = async () => {
   }
 
   const title = REPORT_TITLES[currentTab.value] || REPORT_TITLES.overview
-  const safeFileName = title
-    .replace(/[^A-Z0-9À-ÿ _-]/gi, '')
-    .replace(/\s+/g, '_')
-    .slice(0, 120)
+  const safeFileName = title.replace(/[^A-Z0-9À-ÿ _-]/gi, '').replace(/\s+/g, '_').slice(0, 120)
 
   const PAGE_W = 1240
   const PAGE_H = 1754
@@ -1231,7 +1171,6 @@ const exportSinglePdf = async () => {
       })
       return img
     } catch (e) {
-      console.warn('PDF Logo loading failed.', e)
       return null
     }
   }
