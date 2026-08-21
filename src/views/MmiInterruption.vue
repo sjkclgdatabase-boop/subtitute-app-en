@@ -628,7 +628,14 @@ const openDetailModal = async (log) => {
   if (log.type === 'class') {
     loadingDetail.value = true
     try {
-      const { data: timetables, error } = await supabase.from('timetable').select('*')
+      const logDate = new Date(log.interruption_date)
+      const weekdayNum = logDate.getDay() 
+      const queryWeekday = weekdayNum === 0 ? 7 : weekdayNum
+
+      const { data: timetables, error } = await supabase
+        .from('timetable')
+        .select('*')
+        .eq('weekday', queryWeekday)
       if (error) throw error
 
       if (timetables && timetables.length > 0) {
@@ -646,19 +653,27 @@ const openDetailModal = async (log) => {
           const p = Number(t.period)
           if (p < startP || p > endP) return false
 
-          if (targetDisp.includes('SEMUA') || targetDisp.includes('ALL')) return true
+          // 1. 如果影响范围是全校 (SEMUA / ALL / 全校)
+          if (targetDisp.includes('SEMUA') || targetDisp.includes('ALL' ) || targetDisp.includes('全校')) return true
           
-          if (targetDisp.includes('TAHUN') || targetDisp.includes('GRADE')) {
-            const match = targetDisp.match(/(?:TAHUN|Grade)\s*(\d)/i)
+          // 2. 如果影响范围是整个年级 (TAHUN / GRADE / 全年级 / Tahun)
+          if (targetDisp.includes('TAHUN') || targetDisp.includes('GRADE') || targetDisp.includes('全年级') || targetDisp.includes('Tahun')) {
+            const match = targetDisp.match(/(?:TAHUN|Grade|Tahun)\s*(\d)/i)
             const grade = match ? match[1] : null
             return grade && String(t.class_name).startsWith(grade)
           }
           
-          if (targetDisp.includes('KELAS:') || targetDisp.includes('CLASS:')) {
-            const classesStr = targetDisp.replace(/(?:KELAS|CLASS)[:：]/i, '').trim()
-            const classList = classesStr.split(',').map(c => c.trim())
-            return classList.some(c => t.class_name === c || t.class_name.includes(c) || c.includes(t.class_name))
-          }
+          // 3. 针对个别班级：无论是带 "KELAS: / CLASS: / 班级:" 前缀，还是直接写班级名称（如 "6B, 6C" 或 "4D"）都能完美匹配
+          const cleanTarget = targetDisp.replace(/^(?:KELAS|CLASS|班级)[:：]\s*/i, '').trim()
+          const classList = cleanTarget.split(',').map(c => c.trim())
+          
+          return classList.some(c => 
+            t.class_name === c || 
+            t.class_name.toLowerCase() === c.toLowerCase() || 
+            t.class_name.includes(c) || 
+            c.includes(t.class_name)
+          )
+          
           return false
         })
 
