@@ -57,35 +57,26 @@
           />
         </div>
 
+        <!-- 🌟 2. English Category Selection -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
-            <AlertTriangle class="w-4 h-4 text-amber-500" /> REASON FOR INTERRUPTION:
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+            <AlertTriangle class="w-4 h-4 text-amber-500" /> INTERRUPTION CATEGORY (AUTO TAGGED):
           </label>
-          <!-- 🌟 2. 修复所有的 select：相对定位 + SVG 箭头 + truncate 防溢出 -->
-          <div class="relative w-full mb-3">
-            <select 
-              v-model="classForm.reason" 
-              class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none pr-8 truncate cursor-pointer"
-            >
-              <option value="Perhimpunan">ASSEMBLY</option>
-              <option value="Program Sekolah">SCHOOL PROGRAM</option>
-              <option value="Ceramah">TALK / LECTURE</option>
-              <option value="Latihan Sukan">SPORTS PRACTICE</option>
-              <option value="Pertandingan">COMPETITION</option>
-              <option value="Urusan Rasmi">OFFICIAL BUSINESS</option>
-              <option value="Lain-lain">OTHERS (PLEASE SPECIFY)</option>
-            </select>
-            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </div>
+          
+          <div class="flex flex-wrap gap-2 mb-3">
+            <label v-for="cat in ['[ACADEMIC]', '[EVENT]', '[SEMINAR]', '[HOLIDAY]', '[UNCATEGORIZED]']" :key="cat" class="cursor-pointer">
+              <input type="radio" v-model="classForm.category" :value="cat" class="hidden" />
+              <span :class="classForm.category === cat ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all inline-block">
+                {{ cat }}
+              </span>
+            </label>
           </div>
 
           <input 
-            v-if="classForm.reason === 'Lain-lain'"
             type="text" 
-            v-model="classForm.customReason" 
-            placeholder="PLEASE SPECIFY REASON HERE..." 
-            class="w-full bg-white border border-indigo-300 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+            v-model="classForm.eventName" 
+            placeholder="PLEASE SPECIFY EVENT NAME (E.G. ANTI-DRUG CAMPAIGN, YEAR-END EXAM)..." 
+            class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
           />
         </div>
       </div>
@@ -197,7 +188,7 @@
           v-model="classForm.remarks" 
           type="text" 
           placeholder="E.G. DENGUE FEVER TALK IN THE MAIN HALL." 
-          class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-800 uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
 
@@ -247,15 +238,26 @@
         </div>
       </div>
 
+      <!-- 🌟 3. English Teacher Category Selection -->
       <div class="mb-6">
         <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
-          <AlertTriangle class="w-4 h-4 text-amber-500" /> REASON FOR INTERRUPTION (E.G. OFFICIAL / COURSE / SICK LEAVE):
+          <AlertTriangle class="w-4 h-4 text-amber-500" /> ABSENCE CATEGORY (AUTO TAGGED):
         </label>
+        
+        <div class="flex flex-wrap gap-2 mb-3">
+          <label v-for="cat in ['[PERSONAL LEAVE]', '[OFFICIAL DUTY]', '[INTERNAL TASK]', '[UNCATEGORIZED]']" :key="cat" class="cursor-pointer">
+            <input type="radio" v-model="teacherForm.category" :value="cat" class="hidden" />
+            <span :class="teacherForm.category === cat ? 'bg-violet-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all inline-block">
+              {{ cat }}
+            </span>
+          </label>
+        </div>
+
         <input 
-          v-model="teacherForm.reason" 
+          v-model="teacherForm.eventName" 
           type="text" 
-          placeholder="E.G. ACCOMPANYING TEAM, MEETING, WORKSHOP, SICK LEAVE" 
-          class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-800"
+          placeholder="PLEASE SPECIFY DETAILS (E.G. ACCOMPANYING TEAM, CURRICULUM MEETING, SICK LEAVE)..." 
+          class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-semibold text-slate-800 uppercase shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
         />
       </div>
 
@@ -361,103 +363,105 @@
       </div>
 
       <!-- Table -->
-      <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
-        <thead>
-          <tr class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-200 select-none">
-            <th @click="handleSort('interruption_date')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-left">
-              <div class="flex items-center gap-1">
-                <span>DATE</span>
-                <span class="text-[10px] text-indigo-600 font-bold">
-                  {{ sortField === 'interruption_date' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+          <thead>
+            <tr class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-200 select-none">
+              <th @click="handleSort('interruption_date')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-left">
+                <div class="flex items-center gap-1">
+                  <span>DATE</span>
+                  <span class="text-[10px] text-indigo-600 font-bold">
+                    {{ sortField === 'interruption_date' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
+                  </span>
+                </div>
+              </th>
+
+              <th @click="handleSort('type')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-center">
+                <div class="flex items-center justify-center gap-1">
+                  <span>TYPE</span>
+                  <span class="text-[10px] text-indigo-600 font-bold">
+                    {{ sortField === 'type' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
+                  </span>
+                </div>
+              </th>
+
+              <th @click="handleSort('target_display')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-left">
+                <div class="flex items-center gap-1">
+                  <span>TARGET / SCOPE</span>
+                  <span class="text-[10px] text-indigo-600 font-bold">
+                    {{ sortField === 'target_display' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
+                  </span>
+                </div>
+              </th>
+
+              <th @click="handleSort('start_period')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-center">
+                <div class="flex items-center justify-center gap-1">
+                  <span>TIME SLOT</span>
+                  <span class="text-[10px] text-indigo-600 font-bold">
+                    {{ sortField === 'start_period' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
+                  </span>
+                </div>
+              </th>
+
+              <th @click="handleSort('reason')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-center">
+                <div class="flex items-center justify-center gap-1">
+                  <span>REASON</span>
+                  <span class="text-[10px] text-indigo-600 font-bold">
+                    {{ sortField === 'reason' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
+                  </span>
+                </div>
+              </th>
+
+              <th class="py-4 px-4 text-center">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 font-medium text-slate-800">
+            <tr v-if="filteredLogs.length === 0">
+              <td colspan="6" class="py-12 text-center text-slate-400 font-medium">
+                NO MMI INTERRUPTION RECORDS DETECTED
+              </td>
+            </tr>
+            <tr v-for="log in filteredLogs" :key="log.id" class="hover:bg-slate-50/50 transition">
+              
+              <td class="py-4 px-4 font-bold text-slate-900 text-left">{{ log.interruption_date }}</td>
+              
+              <td class="py-4 px-4 text-center">
+                <span :class="log.type === 'class' ? 'bg-indigo-50 text-indigo-700' : 'bg-violet-50 text-violet-700'" class="px-2.5 py-1 rounded-full text-xs font-bold inline-block">
+                  {{ log.type === 'class' ? 'CLASS' : 'TEACHER' }}
                 </span>
-              </div>
-            </th>
+              </td>
 
-            <th @click="handleSort('type')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-center">
-              <div class="flex items-center justify-center gap-1">
-                <span>TYPE</span>
-                <span class="text-[10px] text-indigo-600 font-bold">
-                  {{ sortField === 'type' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
+              <td class="py-4 px-4 font-semibold text-slate-800 text-left whitespace-normal min-w-[200px]" :title="formatTargetDisplay(log.target_display)">
+                {{ formatTargetDisplay(log.target_display) }}
+              </td>
+
+              <td class="py-4 px-4 text-center">
+                <span class="bg-slate-100 px-2.5 py-1 rounded-lg text-xs text-slate-700 font-bold inline-block">
+                  PERIOD {{ log.start_period }} - {{ log.end_period }}
                 </span>
-              </div>
-            </th>
+              </td>
 
-            <th @click="handleSort('target_display')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-left">
-              <div class="flex items-center gap-1">
-                <span>TARGET / SCOPE</span>
-                <span class="text-[10px] text-indigo-600 font-bold">
-                  {{ sortField === 'target_display' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
-                </span>
-              </div>
-            </th>
+              <td class="py-4 px-4 text-center">
+                <span v-if="!log.reason || log.reason === '-'">-</span>
+                <button 
+                  v-else 
+                  @click="openDetailModal(log)" 
+                  class="text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5 text-xs cursor-pointer"
+                >
+                  <span>VIEW DETAILS</span> 
+                  <Eye class="w-3.5 h-3.5" />
+                </button>
+              </td>
 
-            <th @click="handleSort('start_period')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-center">
-              <div class="flex items-center justify-center gap-1">
-                <span>TIME SLOT</span>
-                <span class="text-[10px] text-indigo-600 font-bold">
-                  {{ sortField === 'start_period' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
-                </span>
-              </div>
-            </th>
-
-            <th @click="handleSort('reason')" class="py-4 px-4 cursor-pointer hover:bg-slate-100 transition text-center">
-              <div class="flex items-center justify-center gap-1">
-                <span>REASON</span>
-                <span class="text-[10px] text-indigo-600 font-bold">
-                  {{ sortField === 'reason' ? (sortOrder === 'asc' ? '▲' : '▼') : '↕' }}
-                </span>
-              </div>
-            </th>
-
-            <th class="py-4 px-4 text-center">ACTIONS</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100 font-medium text-slate-800">
-          <tr v-if="filteredLogs.length === 0">
-            <td colspan="6" class="py-12 text-center text-slate-400 font-medium">
-              NO MMI INTERRUPTION RECORDS DETECTED
-            </td>
-          </tr>
-          <tr v-for="log in filteredLogs" :key="log.id" class="hover:bg-slate-50/50 transition">
-            
-            <td class="py-4 px-4 font-bold text-slate-900 text-left">{{ log.interruption_date }}</td>
-            
-            <td class="py-4 px-4 text-center">
-              <span :class="log.type === 'class' ? 'bg-indigo-50 text-indigo-700' : 'bg-violet-50 text-violet-700'" class="px-2.5 py-1 rounded-full text-xs font-bold inline-block">
-                {{ log.type === 'class' ? 'CLASS' : 'TEACHER' }}
-              </span>
-            </td>
-
-            <td class="py-4 px-4 font-semibold text-slate-800 text-left whitespace-normal min-w-[200px]" :title="formatTargetDisplay(log.target_display)">
-              {{ formatTargetDisplay(log.target_display) }}
-            </td>
-
-            <td class="py-4 px-4 text-center">
-              <span class="bg-slate-100 px-2.5 py-1 rounded-lg text-xs text-slate-700 font-bold inline-block">
-                PERIOD {{ log.start_period }} - {{ log.end_period }}
-              </span>
-            </td>
-
-            <td class="py-4 px-4 text-center">
-              <span v-if="!log.reason || log.reason === '-'">-</span>
-              <button 
-                v-else 
-                @click="openDetailModal(log)" 
-                class="text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5 text-xs cursor-pointer"
-              >
-                <span>VIEW DETAILS</span> 
-                <Eye class="w-3.5 h-3.5" />
-              </button>
-            </td>
-
-            <td class="py-4 px-4 text-center">
-              <button @click="deleteLog(log)" class="text-xs text-red-600 hover:text-red-800 font-bold px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition inline-flex items-center gap-1.5">
-                <Trash2 class="w-3.5 h-3.5" /> DELETE
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              <td class="py-4 px-4 text-center">
+                <button @click="deleteLog(log)" class="text-xs text-red-600 hover:text-red-800 font-bold px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition inline-flex items-center gap-1.5">
+                  <Trash2 class="w-3.5 h-3.5" /> DELETE
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Remark Details Modal -->
@@ -546,8 +550,8 @@ const getLocalToday = () => {
 
 const classForm = ref({
   date: getLocalToday(),
-  reason: 'Perhimpunan',
-  customReason: '',
+  category: '[SEMINAR]', 
+  eventName: '',         
   scopeType: 'specific',
   selectedClasses: [],
   selectedGrade: 1,
@@ -589,7 +593,8 @@ const fetchClasses = async () => {
 const teacherForm = ref({
   date: getLocalToday(),
   teacherId: '',
-  reason: ''
+  category: '[OFFICIAL DUTY]', 
+  eventName: ''              
 })
 
 const teachersList = ref([])
@@ -639,8 +644,6 @@ const openDetailModal = async (log) => {
       if (error) throw error
 
       if (timetables && timetables.length > 0) {
-        const logDate = new Date(log.interruption_date)
-        const weekdayNum = logDate.getDay() 
         const startP = Number(log.start_period)
         const endP = Number(log.end_period)
         const targetDisp = log.target_display || ''
@@ -653,17 +656,17 @@ const openDetailModal = async (log) => {
           const p = Number(t.period)
           if (p < startP || p > endP) return false
 
-          // 1. 如果影响范围是全校 (SEMUA / ALL / 全校)
-          if (targetDisp.includes('SEMUA') || targetDisp.includes('ALL' ) || targetDisp.includes('全校')) return true
+          // 1. 全校影响 (三语兼容)
+          if (targetDisp.includes('SEMUA') || targetDisp.includes('ALL') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL')) return true
           
-          // 2. 如果影响范围是整个年级 (TAHUN / GRADE / 全年级 / Tahun)
-          if (targetDisp.includes('TAHUN') || targetDisp.includes('GRADE') || targetDisp.includes('全年级') || targetDisp.includes('Tahun')) {
-            const match = targetDisp.match(/(?:TAHUN|Grade|Tahun)\s*(\d)/i)
+          // 2. 年级影响 (三语兼容)
+          if (targetDisp.includes('TAHUN') || targetDisp.includes('GRADE') || targetDisp.includes('全年级') || targetDisp.includes('Tahun') || targetDisp.includes('YEAR') || targetDisp.includes('年级')) {
+            const match = targetDisp.match(/(?:TAHUN|GRADE|Tahun|YEAR|Year)\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/)
             const grade = match ? match[1] : null
             return grade && String(t.class_name).startsWith(grade)
           }
           
-          // 3. 针对个别班级：无论是带 "KELAS: / CLASS: / 班级:" 前缀，还是直接写班级名称（如 "6B, 6C" 或 "4D"）都能完美匹配
+          // 3. 班级影响 (三语兼容)
           const cleanTarget = targetDisp.replace(/^(?:KELAS|CLASS|班级)[:：]\s*/i, '').trim()
           const classList = cleanTarget.split(',').map(c => c.trim())
           
@@ -673,8 +676,6 @@ const openDetailModal = async (log) => {
             t.class_name.includes(c) || 
             c.includes(t.class_name)
           )
-          
-          return false
         })
 
         if (matched.length > 0) {
@@ -791,6 +792,10 @@ const loadTeacherSubjects = async () => {
 }
 
 const submitClassInterruption = async () => {
+  if (!classForm.value.eventName.trim()) {
+    return toast.error("PLEASE SPECIFY THE EVENT NAME!")
+  }
+
   let targetDisplay = ''
   if (classForm.value.scopeType === 'specific') {
     if (classForm.value.selectedClasses.length === 0) return toast.error("PLEASE SELECT AT LEAST ONE CLASS!")
@@ -801,13 +806,10 @@ const submitClassInterruption = async () => {
     targetDisplay = 'ALL CLASSES IN SCHOOL'
   }
 
-  const finalReason = classForm.value.reason === 'Lain-lain' 
-    ? (classForm.value.customReason ? classForm.value.customReason.trim().toUpperCase() : 'OTHERS')
-    : classForm.value.reason.toUpperCase()
-
-  if (classForm.value.reason === 'Lain-lain' && !classForm.value.customReason) {
-    return toast.error("PLEASE SPECIFY THE REASON FOR INTERRUPTION!")
-  }
+  let finalCategory = classForm.value.category
+  if (finalCategory === '[UNCATEGORIZED]') finalCategory = ''
+  
+  const finalReason = `${finalCategory} ${classForm.value.eventName.trim()}`.trim().toUpperCase()
 
   try {
     const { error } = await supabase.from('mmi_interruptions').insert({
@@ -824,7 +826,7 @@ const submitClassInterruption = async () => {
 
     toast.success("CLASS INTERRUPTION RECORD SAVED SUCCESSFULLY!")
     fetchLogs()
-    classForm.value.customReason = ''
+    classForm.value.eventName = ''
   } catch (err) {
     toast.error("FAILED TO SAVE: " + err.message)
   }
@@ -833,12 +835,21 @@ const submitClassInterruption = async () => {
 const submitTeacherInterruption = async () => {
   if (exportedSubjects.value.length === 0) return
 
+  if (!teacherForm.value.eventName.trim()) {
+    return toast.error("PLEASE SPECIFY ABSENCE DETAILS!")
+  }
+
   const teacher = teachersList.value.find(t => t.id === teacherForm.value.teacherId)
   const periods = exportedSubjects.value.map(s => Number(s.period)).sort((a,b) => a-b)
   const startP = periods[0] || 1
   const endP = periods[periods.length - 1] || 1
 
   const subjectSummary = exportedSubjects.value.map(s => `${s.class_name}(${s.subject})`).join(', ')
+
+  let finalCategory = teacherForm.value.category
+  if (finalCategory === '[UNCATEGORIZED]') finalCategory = ''
+  
+  const finalReason = `${finalCategory} ${teacherForm.value.eventName.trim()}`.trim().toUpperCase()
 
   try {
     const { error } = await supabase.from('mmi_interruptions').insert({
@@ -847,7 +858,7 @@ const submitTeacherInterruption = async () => {
       target_display: `TEACHER: ${teacher?.name || ''}`,
       start_period: startP,
       end_period: endP,
-      reason: teacherForm.value.reason ? teacherForm.value.reason.toUpperCase() : 'TEACHER ABSENT / AFFECTED',
+      reason: finalReason,
       remarks: `(INVOLVING SLOTS: PERIOD ${periods.join(', ')} | SUBJECTS: ${subjectSummary})`
     })
 
@@ -855,6 +866,7 @@ const submitTeacherInterruption = async () => {
 
     toast.success("TEACHER INTERRUPTION RECORD SAVED SUCCESSFULLY!")
     fetchLogs()
+    teacherForm.value.eventName = ''
   } catch (err) {
     toast.error("FAILED TO SAVE: " + err.message)
   }
@@ -899,9 +911,10 @@ const exportLogsToExcel = () => {
   toast.success("REPORT EXPORTED SUCCESSFULLY!")
 }
 
+// 🌟 三语兼容的表格格式化
 const formatTargetDisplay = (text) => {
   if (!text) return ''
-  return text.replace(/^(KELAS|CLASS)[:：]\s*/i, '').trim()
+  return text.replace(/^(KELAS|CLASS|班级)[:：]\s*/i, '').trim()
 }
 
 const deleteLog = async (log) => {
@@ -915,10 +928,11 @@ const deleteLog = async (log) => {
 
     if (mmiErr) throw mmiErr
 
-    if (log.type === 'teacher' || (log.target_display && (log.target_display.includes('GURU:') || log.target_display.includes('TEACHER')))) {
+    // 🌟 三语兼容的教师判断
+    if (log.type === 'teacher' || (log.target_display && (log.target_display.includes('GURU') || log.target_display.includes('TEACHER') || log.target_display.includes('教师')))) {
       let teacherName = ''
       if (log.target_display) {
-        teacherName = log.target_display.replace(/(?:GURU|TEACHER)[:：]?\s*/i, '').trim()
+        teacherName = log.target_display.replace(/(?:GURU|TEACHER|教师)[:：]?\s*/i, '').trim()
       }
 
       if (teacherName) {

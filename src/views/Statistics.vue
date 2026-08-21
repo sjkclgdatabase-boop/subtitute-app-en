@@ -70,7 +70,15 @@
         class="px-4 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2"
       >
         <TriangleAlert class="w-4 h-4" />
-        REASON ANALYSIS
+        TEACHER ABSENCES
+      </button>
+      <button 
+        @click="currentTab = 'large-scale'" 
+        :class="currentTab === 'large-scale' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'"
+        class="px-4 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2"
+      >
+        <Building2 class="w-4 h-4" />
+        CLASS / EVENT INTERRUPTIONS
       </button>
       <button 
         @click="currentTab = 'trend'" 
@@ -106,11 +114,11 @@
       </button>
     </div>
 
-    <!-- 打印报表抬头 -->
+    <!-- 打印报表抬头 (保留马来文) -->
     <div class="print-header hidden mb-6 text-center">
-      <h2 class="text-2xl font-extrabold text-slate-900">MMI EVALUATION & ACADEMIC DATA REPORT</h2>
+      <h2 class="text-2xl font-extrabold text-slate-900">LAPORAN PENILAIAN MMI & ANALISIS DATA AKADEMIK</h2>
       <p class="text-xs text-slate-600 mt-1">
-        PERIOD: [{{ startDate || 'ALL TIME' }} TO {{ endDate || 'ALL TIME' }}]
+        TEMPOH: [{{ startDate || 'TIADA HAD' }} HINGGA {{ endDate || 'TIADA HAD' }}]
       </p>
     </div>
 
@@ -166,15 +174,15 @@
       </div>
     </div>
 
-    <!-- TAB 2: 项目分析 -->
+    <!-- TAB 2: 教师缺课分析 -->
     <div v-if="currentTab === 'reason'" class="bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-6 animate-fadeIn">
       <div class="flex justify-between items-center">
         <div>
           <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
             <TriangleAlert class="w-5 h-5 text-orange-600" />
-            INTERRUPTION CATEGORY STATISTICS
+            TEACHER ABSENCE REASON STATISTICS
           </h2>
-          <p class="text-xs text-slate-500 mt-1 font-medium">CATEGORIZED BY PERSONAL LEAVE, OFFICIAL DUTY, INTERNAL TASKS, AND HISTORICAL DATA.</p>
+          <p class="text-xs text-slate-500 mt-1 font-medium">ANALYZING TEACHER ABSENCES BASED ON PERSONAL LEAVE, OFFICIAL DUTY, AND INTERNAL TASKS.</p>
         </div>
         <button @click="exportSinglePdf" class="no-print px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm">
           <Printer class="w-4 h-4" />
@@ -182,16 +190,16 @@
         </button>
       </div>
       
-      <div v-if="groupedReasonStats.length === 0" class="text-xs text-slate-400 py-12 text-center border border-dashed rounded-2xl font-medium">NO INTERRUPTION RECORDS FOUND IN THIS PERIOD.</div>
+      <div v-if="categorizedReasons.teacher.length === 0" class="text-xs text-slate-400 py-12 text-center border border-dashed rounded-2xl font-medium">NO TEACHER ABSENCE RECORDS FOUND IN THIS PERIOD.</div>
       
       <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div v-for="group in groupedReasonStats" :key="group.id" class="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col hover:shadow-sm transition-shadow">
+        <div v-for="group in categorizedReasons.teacher" :key="group.title" class="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col hover:shadow-sm transition-shadow">
           <div class="flex justify-between items-center mb-5 pb-4 border-b border-slate-200/80">
             <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
-              <component :is="group.iconComponent" class="w-4 h-4 text-slate-600" />
+              <component :is="group.icon" class="w-4 h-4 text-slate-600" />
               {{ group.title }}
             </h3>
-            <span class="text-[11px] font-bold px-3 py-1 rounded-full shadow-sm" :class="group.badgeClass">
+            <span class="text-[11px] font-bold px-3 py-1 rounded-full shadow-sm" :class="group.badge">
               TOTAL {{ group.total }} SLOTS
             </span>
           </div>
@@ -203,10 +211,95 @@
                 <span class="whitespace-nowrap">{{ item.count }} SLOTS ({{ item.percentage }}%)</span>
               </div>
               <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                <div class="h-full rounded-full transition-all duration-500" :class="group.barClass" :style="{ width: item.percentage + '%' }"></div>
+                <div class="h-full rounded-full transition-all duration-500" :class="group.bar" :style="{ width: item.percentage + '%' }"></div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: 班级活动/大型干扰分析 -->
+    <div v-if="currentTab === 'large-scale'" class="bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-8 animate-fadeIn">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <Building2 class="w-5 h-5 text-indigo-600" />
+            CLASS & EVENT INTERRUPTION ANALYSIS
+          </h2>
+          <p class="text-xs text-slate-500 mt-1 font-medium">ANALYZING THE IMPACT OF ACADEMIC EVENTS, FESTIVALS, SEMINARS, AND HOLIDAYS ON CLASS PERIODS.</p>
+        </div>
+        <button @click="exportSinglePdf" class="no-print px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm">
+          <Printer class="w-4 h-4" />
+          DOWNLOAD PDF
+        </button>
+      </div>
+
+      <!-- 四大分类卡片矩阵 -->
+      <div v-if="categorizedReasons.events.length > 0" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div v-for="group in categorizedReasons.events" :key="group.title" class="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col hover:shadow-sm transition-shadow">
+          <div class="flex justify-between items-center mb-5 pb-4 border-b border-slate-200/80">
+            <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+              <component :is="group.icon" class="w-4 h-4 text-slate-600" />
+              {{ group.title }}
+            </h3>
+            <span class="text-[11px] font-bold px-3 py-1 rounded-full shadow-sm" :class="group.badge">
+              LOST {{ group.total }} SLOTS
+            </span>
+          </div>
+          
+          <div class="space-y-4 flex-1">
+            <div v-for="item in group.items" :key="item.reason" class="space-y-1.5">
+              <div class="flex justify-between text-xs font-bold text-slate-700">
+                <span class="truncate pr-4" :title="item.reason">{{ item.reason }}</span>
+                <span class="whitespace-nowrap">{{ item.count }} SLOTS ({{ item.percentage }}%)</span>
+              </div>
+              <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-500" :class="group.bar" :style="{ width: item.percentage + '%' }"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-else class="text-xs text-slate-400 py-12 text-center border border-dashed rounded-2xl font-medium">NO CLASS/EVENT INTERRUPTION RECORDS FOUND.</div>
+
+      <!-- 下半部分：活动明细排行榜 -->
+      <div class="space-y-4">
+        <h3 class="text-sm font-bold text-slate-800">DETAILED EVENT INTERRUPTION LIST</h3>
+        <div class="overflow-x-auto rounded-2xl border border-slate-200/80 shadow-sm">
+          <table class="w-full text-left text-xs border-collapse print-table">
+            <thead>
+              <tr class="bg-indigo-50/60 text-indigo-900 uppercase tracking-wider select-none font-bold border-b border-indigo-100">
+                <th @click="sortLargeScaleTable('reason')" class="p-4 cursor-pointer hover:bg-indigo-100/50 transition">
+                  ACTIVITY / EVENT NAME <span class="text-indigo-600">{{ largeScaleSortKey === 'reason' ? (largeScaleSortAsc ? '▲' : '▼') : '↕' }}</span>
+                </th>
+                <th @click="sortLargeScaleTable('scope')" class="p-4 cursor-pointer hover:bg-indigo-100/50 transition">
+                  IMPACT SCOPE <span class="text-indigo-600">{{ largeScaleSortKey === 'scope' ? (largeScaleSortAsc ? '▲' : '▼') : '↕' }}</span>
+                </th>
+                <th @click="sortLargeScaleTable('frequency')" class="p-4 cursor-pointer hover:bg-indigo-100/50 transition">
+                  FREQUENCY <span class="text-indigo-600">{{ largeScaleSortKey === 'frequency' ? (largeScaleSortAsc ? '▲' : '▼') : '↕' }}</span>
+                </th>
+                <th @click="sortLargeScaleTable('totalPeriods')" class="p-4 cursor-pointer hover:bg-indigo-100/50 transition">
+                  TOTAL LOST SLOTS (AVG) <span class="text-indigo-600">{{ largeScaleSortKey === 'totalPeriods' ? (largeScaleSortAsc ? '▲' : '▼') : '↕' }}</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 font-medium text-slate-800">
+              <tr v-if="sortedLargeScaleStats.length === 0">
+                <td colspan="4" class="p-8 text-center text-slate-400 font-medium">NO DETAILED DATA FOR LARGE-SCALE ACTIVITIES</td>
+              </tr>
+              <tr v-for="(stat, index) in sortedLargeScaleStats" :key="index" class="hover:bg-slate-50/60">
+                <td class="p-4 font-bold text-slate-900">{{ stat.reason }}</td>
+                <td class="p-4">
+                  <span :class="stat.type === 'school' ? 'bg-rose-100 text-rose-700' : 'bg-blue-100 text-blue-700'" class="px-2 py-1 rounded-md text-[11px] font-bold">
+                    {{ stat.scope }}
+                  </span>
+                </td>
+                <td class="p-4 text-slate-600">{{ stat.frequency }} TIMES</td>
+                <td class="p-4 font-bold text-amber-600">{{ stat.totalPeriods }} SLOTS</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -463,7 +556,10 @@ import {
   CalendarCheck,
   BriefcaseBusiness,
   Building2,
-  FolderOpen
+  FolderOpen,
+  PartyPopper,
+  Mic,
+  Umbrella
 } from 'lucide-vue-next'
 
 const currentTab = ref('overview')
@@ -486,7 +582,9 @@ const selectedGradeFilter = ref('')
 const selectedClassFilter = ref('')
 
 const gradeOrderMap = {
-  'YEAR 1': 1, 'YEAR 2': 2, 'YEAR 3': 3, 'YEAR 4': 4, 'YEAR 5': 5, 'YEAR 6': 6
+  'YEAR 1': 1, 'YEAR 2': 2, 'YEAR 3': 3, 'YEAR 4': 4, 'YEAR 5': 5, 'YEAR 6': 6,
+  'TAHUN 1': 1, 'TAHUN 2': 2, 'TAHUN 3': 3, 'TAHUN 4': 4, 'TAHUN 5': 5, 'TAHUN 6': 6,
+  '一年级': 1, '二年级': 2, '三年级': 3, '四年级': 4, '五年级': 5, '六年级': 6
 };
 
 const sortGrgradesHelper = (setObj) => {
@@ -502,10 +600,7 @@ const getGradeFromClass = (cName) => {
   const match = cName.match(/^([0-9]+)/);
   if (match) {
     const gradeNum = match[1];
-    const gradeMap = {
-      '1': 'YEAR 1', '2': 'YEAR 2', '3': 'YEAR 3', '4': 'YEAR 4', '5': 'YEAR 5', '6': 'YEAR 6'
-    };
-    return gradeMap[gradeNum] || `YEAR ${gradeNum}`;
+    return `YEAR ${gradeNum}`;
   }
   return 'WHOLE SCHOOL / OTHERS';
 };
@@ -556,53 +651,136 @@ const filteredSubjectStats = computed(() => {
   return [...list].sort((a, b) => smartSort(a[subjectSortKey.value], b[subjectSortKey.value], subjectSortAsc.value))
 })
 
-const groupedReasonStats = computed(() => {
-  if (!reasonStats.value.length) return [];
+const categorizedReasons = computed(() => {
+  const teacher = {
+    personal: { title: 'PERSONAL LEAVE', icon: CalendarCheck, items: {}, total: 0, badge: 'bg-orange-100 text-orange-700', bar: 'bg-orange-500' },
+    official: { title: 'OFFICIAL DUTY', icon: BriefcaseBusiness, items: {}, total: 0, badge: 'bg-blue-100 text-blue-700', bar: 'bg-blue-500' },
+    internal: { title: 'INTERNAL TASKS', icon: Building2, items: {}, total: 0, badge: 'bg-emerald-100 text-emerald-700', bar: 'bg-emerald-500' },
+    others:   { title: 'UNCATEGORIZED / OTHERS', icon: FolderOpen, items: {}, total: 0, badge: 'bg-slate-200 text-slate-700', bar: 'bg-slate-400' }
+  }
+  
+  const events = {
+    academic: { title: 'ACADEMIC & EXAMS', icon: BookOpen, items: {}, total: 0, badge: 'bg-indigo-100 text-indigo-700', bar: 'bg-indigo-500' },
+    festival: { title: 'EVENTS & FESTIVALS', icon: PartyPopper, items: {}, total: 0, badge: 'bg-pink-100 text-pink-700', bar: 'bg-pink-500' },
+    seminar:  { title: 'SEMINARS & ASSEMBLIES', icon: Mic, items: {}, total: 0, badge: 'bg-purple-100 text-purple-700', bar: 'bg-purple-500' },
+    holiday:  { title: 'HOLIDAYS & EMERGENCIES', icon: Umbrella, items: {}, total: 0, badge: 'bg-teal-100 text-teal-700', bar: 'bg-teal-500' },
+    others:   { title: 'UNCATEGORIZED / OTHERS', icon: FolderOpen, items: {}, total: 0, badge: 'bg-slate-200 text-slate-700', bar: 'bg-slate-400' }
+  }
 
-  const groups = {
-    personal: { id: 'personal', title: 'PERSONAL LEAVE', iconComponent: CalendarCheck, items: [], total: 0, badgeClass: 'bg-orange-100 text-orange-700', barClass: 'bg-orange-500' },
-    official: { id: 'official', title: 'OFFICIAL DUTY', iconComponent: BriefcaseBusiness, items: [], total: 0, badgeClass: 'bg-blue-100 text-blue-700', barClass: 'bg-blue-500' },
-    internal: { id: 'internal', title: 'INTERNAL TASK', iconComponent: Building2, items: [], total: 0, badgeClass: 'bg-emerald-100 text-emerald-700', barClass: 'bg-emerald-500' },
-    others:   { id: 'others', title: 'HISTORY / OTHERS', iconComponent: FolderOpen, items: [], total: 0, badgeClass: 'bg-slate-200 text-slate-700', barClass: 'bg-slate-400' }
-  };
+  let teacherTotalAll = 0
+  let eventTotalAll = 0
 
-  const totalPAll = reasonStats.value.reduce((acc, cur) => acc + cur.count, 0);
+  interruptionLogs.value.forEach(log => {
+    const pCount = (log.end_period || 0) - (log.start_period || 0) + 1
+    const rawReason = (log.reason || 'NO DATA').trim().toUpperCase().replace(/^(教师请假:\s*|CUTI GURU:\s*|TEACHER LEAVE:\s*)/i, '')
+    const cleanReason = rawReason.replace(/\[.*?\]\s*/, '').trim() || rawReason
 
-  reasonStats.value.forEach(item => {
-    let cleanReason = item.reason.replace(/\[.*?\]\s*/, '');
-    let targetGroup = 'others';
-
-    if (item.reason.includes('[PERSONAL LEAVE]') || item.reason.includes('[个人请假]') || item.reason.includes('[CUTI PERIBADI]')) targetGroup = 'personal';
-    else if (item.reason.includes('[OFFICIAL DUTY]') || item.reason.includes('[离校公干]') || item.reason.includes('[TUGAS RASMI]')) targetGroup = 'official';
-    else if (item.reason.includes('[INTERNAL TASK]') || item.reason.includes('[校内任务]') || item.reason.includes('[TUGAS DALAMAN]')) targetGroup = 'internal';
-
-    groups[targetGroup].items.push({
-      reason: cleanReason,
-      count: item.count,
-      percentage: totalPAll > 0 ? ((item.count / totalPAll) * 100).toFixed(1) : 0
-    });
-    groups[targetGroup].total += item.count;
-  });
-
-  Object.values(groups).forEach(g => {
-    if (g.items.length > 8) {
-      const top8 = g.items.slice(0, 8);
-      const remaining = g.items.slice(8);
-      const remainingCount = remaining.reduce((sum, r) => sum + r.count, 0);
-      
-      top8.push({
-        reason: 'OTHERS (MERGED)',
-        count: remainingCount,
-        percentage: totalPAll > 0 ? ((remainingCount / totalPAll) * 100).toFixed(1) : 0
-      });
-      g.items = top8;
+    const intScope = log.scope ? log.scope.trim() : ''
+    const targetDisp = log.target_display ? log.target_display.trim() : ''
+    
+    const isSchoolLevel = intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL')
+    const isGradeLevel = intScope === 'grade' || /TAHUN/i.test(targetDisp) || /YEAR/i.test(targetDisp) || /年级/.test(targetDisp)
+    const hasEventTag = rawReason.includes('[AKADEMIK]') || rawReason.includes('[ACADEMIC]') || rawReason.includes('[学术]') ||
+                        rawReason.includes('[ACARA]') || rawReason.includes('[EVENT]') || rawReason.includes('[节庆]') ||
+                        rawReason.includes('[CERAMAH]') || rawReason.includes('[SEMINAR]') || rawReason.includes('[讲座]') ||
+                        rawReason.includes('[CUTI KHAS]') || rawReason.includes('[HOLIDAY]') || rawReason.includes('[假期]')
+    const isLikelyEvent = isSchoolLevel || isGradeLevel || hasEventTag || log.type === 'class'
+    
+    if (rawReason.includes('[PERSONAL LEAVE]') || rawReason.includes('[CUTI PERIBADI]') || rawReason.includes('[个人请假]')) {
+      teacher.personal.items[cleanReason] = (teacher.personal.items[cleanReason] || 0) + pCount
+      teacher.personal.total += pCount; teacherTotalAll += pCount
+    } else if (rawReason.includes('[OFFICIAL DUTY]') || rawReason.includes('[URUSAN RASMI]') || rawReason.includes('[离校公干]')) {
+      teacher.official.items[cleanReason] = (teacher.official.items[cleanReason] || 0) + pCount
+      teacher.official.total += pCount; teacherTotalAll += pCount
+    } else if (rawReason.includes('[INTERNAL TASK]') || rawReason.includes('[TUGAS DALAMAN]') || rawReason.includes('[校内任务]')) {
+      teacher.internal.items[cleanReason] = (teacher.internal.items[cleanReason] || 0) + pCount
+      teacher.internal.total += pCount; teacherTotalAll += pCount
+    } else if (rawReason.includes('[ACADEMIC]') || rawReason.includes('[AKADEMIK]') || rawReason.includes('[学术]')) {
+      events.academic.items[cleanReason] = (events.academic.items[cleanReason] || 0) + pCount
+      events.academic.total += pCount; eventTotalAll += pCount
+    } else if (rawReason.includes('[EVENT]') || rawReason.includes('[ACARA]') || rawReason.includes('[节庆]')) {
+      events.festival.items[cleanReason] = (events.festival.items[cleanReason] || 0) + pCount
+      events.festival.total += pCount; eventTotalAll += pCount
+    } else if (rawReason.includes('[SEMINAR]') || rawReason.includes('[CERAMAH]') || rawReason.includes('[讲座]')) {
+      events.seminar.items[cleanReason] = (events.seminar.items[cleanReason] || 0) + pCount
+      events.seminar.total += pCount; eventTotalAll += pCount
+    } else if (rawReason.includes('[HOLIDAY]') || rawReason.includes('[CUTI KHAS]') || rawReason.includes('[假期]')) {
+      events.holiday.items[cleanReason] = (events.holiday.items[cleanReason] || 0) + pCount
+      events.holiday.total += pCount; eventTotalAll += pCount
+    } else {
+      if (isLikelyEvent && !log.target_display?.includes('GURU:') && !log.target_display?.includes('TEACHER:') && !log.target_display?.includes('教师:')) {
+        events.others.items[cleanReason] = (events.others.items[cleanReason] || 0) + pCount
+        events.others.total += pCount; eventTotalAll += pCount
+      } else {
+        teacher.others.items[cleanReason] = (teacher.others.items[cleanReason] || 0) + pCount
+        teacher.others.total += pCount; teacherTotalAll += pCount
+      }
     }
-  });
+  })
 
-  return Object.values(groups)
-    .filter(g => g.total > 0)
-    .sort((a, b) => b.total - a.total);
-});
+  const formatGroup = (groupObj, totalAll) => {
+    return Object.values(groupObj).map(g => {
+      let sortedItems = Object.entries(g.items)
+        .map(([reason, count]) => ({ reason, count, percentage: totalAll > 0 ? ((count / totalAll) * 100).toFixed(1) : 0 }))
+        .sort((a, b) => b.count - a.count)
+      
+      if (sortedItems.length > 8) {
+        const top8 = sortedItems.slice(0, 8)
+        const remaining = sortedItems.slice(8)
+        const remainingCount = remaining.reduce((sum, r) => sum + r.count, 0)
+        top8.push({
+          reason: 'OTHERS (MERGED)',
+          count: remainingCount,
+          percentage: totalAll > 0 ? ((remainingCount / totalAll) * 100).toFixed(1) : 0
+        })
+        sortedItems = top8
+      }
+      return { ...g, items: sortedItems }
+    }).filter(g => g.total > 0).sort((a, b) => b.total - a.total)
+  }
+
+  return {
+    teacher: formatGroup(teacher, teacherTotalAll),
+    events: formatGroup(events, eventTotalAll)
+  }
+})
+
+const largeScaleStats = computed(() => {
+  const statsMap = {}
+
+  interruptionLogs.value.forEach(log => {
+    const intScope = log.scope ? log.scope.trim() : ''
+    const targetDisp = log.target_display ? log.target_display.trim() : ''
+    const rawReason = (log.reason || 'NO NAME').toUpperCase()
+
+    const isSchoolLevel = intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL')
+    const isGradeLevel = intScope === 'grade' || /TAHUN/i.test(targetDisp) || /YEAR/i.test(targetDisp) || /年级/.test(targetDisp)
+    const hasEventTag = rawReason.includes('[AKADEMIK]') || rawReason.includes('[ACADEMIC]') || rawReason.includes('[学术]') ||
+                        rawReason.includes('[ACARA]') || rawReason.includes('[EVENT]') || rawReason.includes('[节庆]') ||
+                        rawReason.includes('[CERAMAH]') || rawReason.includes('[SEMINAR]') || rawReason.includes('[讲座]') ||
+                        rawReason.includes('[CUTI KHAS]') || rawReason.includes('[HOLIDAY]') || rawReason.includes('[假期]')
+
+    if (isSchoolLevel || isGradeLevel || hasEventTag || log.type === 'class') {
+      const reasonClean = (log.reason || 'NO NAME').replace(/\[.*?\]\s*/, '').trim() || (log.reason || 'NO NAME')
+      const scopeText = isSchoolLevel ? 'WHOLE SCHOOL' : (isGradeLevel ? (log.grade ? `YEAR ${log.grade}` : 'WHOLE GRADE') : 'SPECIFIC CLASS')
+      const key = `${reasonClean}_${scopeText}`
+      const pCount = (log.end_period || 0) - (log.start_period || 0) + 1
+
+      if (!statsMap[key]) {
+        statsMap[key] = {
+          reason: reasonClean,
+          scope: scopeText,
+          totalPeriods: 0,
+          frequency: 0,
+          type: isSchoolLevel ? 'school' : 'grade'
+        }
+      }
+      statsMap[key].totalPeriods += pCount
+      statsMap[key].frequency += 1
+    }
+  })
+  return Object.values(statsMap)
+})
 
 const smartSort = (valA, valB, asc) => {
   const a = valA ?? '';
@@ -638,6 +816,14 @@ const sortTeacherTable = (key) => {
 }
 const sortedTeacherStats = computed(() => [...stats.value].sort((a, b) => smartSort(a[teacherSortKey.value], b[teacherSortKey.value], teacherSortAsc.value)))
 
+const largeScaleSortKey = ref('totalPeriods')
+const largeScaleSortAsc = ref(false)
+const sortLargeScaleTable = (key) => {
+  if (largeScaleSortKey.value === key) largeScaleSortAsc.value = !largeScaleSortAsc.value
+  else { largeScaleSortKey.value = key; largeScaleSortAsc.value = true }
+}
+const sortedLargeScaleStats = computed(() => [...largeScaleStats.value].sort((a, b) => smartSort(a[largeScaleSortKey.value], b[largeScaleSortKey.value], largeScaleSortAsc.value)))
+
 const totalSubstituteCount = computed(() => stats.value.reduce((acc, cur) => acc + (cur.count || 0), 0))
 const totalInterruptionPeriods = computed(() => interruptionLogs.value.reduce((acc, cur) => acc + ((cur.end_period || 0) - (cur.start_period || 0) + 1), 0))
 const sortedSubstituteStats = computed(() => [...stats.value].sort((a, b) => (b.count || 0) - (a.count || 0)))
@@ -653,15 +839,15 @@ const resetDateFilter = () => {
 
 const cleanClassName = (rawStr) => {
   if (!rawStr) return '';
-  let cleaned = rawStr.replace(/^(班级|班級|KELAS|CLASS)\s*[:：]\s*/i, '').trim();
-  cleaned = cleaned.replace(/^(班级|班級|KELAS|CLASS)\s*[:：]\s*/i, '').trim();
+  let cleaned = rawStr.replace(/^(KELAS|CLASS|班级|班級)\s*[:：]\s*/i, '').trim();
+  cleaned = cleaned.replace(/^(KELAS|CLASS|班级|班級)\s*[:：]\s*/i, '').trim();
   if (!cleaned || /VIRTUAL_CLASS/i.test(cleaned)) return '';
   return cleaned.toUpperCase();
 };
 
 const expandClassNames = (rawStr) => {
   if (!rawStr) return [];
-  let cleaned = rawStr.replace(/^(班级|班級|KELAS|CLASS)\s*[:：]\s*/i, '').trim();
+  let cleaned = rawStr.replace(/^(KELAS|CLASS|班级|班級)\s*[:：]\s*/i, '').trim();
   if (!cleaned || /VIRTUAL_CLASS/i.test(cleaned)) return [];
 
   const separators = /,|、|\//;
@@ -681,9 +867,6 @@ const expandClassNames = (rawStr) => {
   }
 };
 
-// ========================================================================
-// 💡 1. Helper Functions (Must be before loadAllData)
-// ========================================================================
 const fetchAllRows = async (tableName, queryBuilder = null) => {
   let allData = []
   let from = 0
@@ -736,9 +919,6 @@ const isSubjectMatch = (subjA, subjB) => {
   return cA === cB || cA.includes(cB) || cB.includes(cA)
 }
 
-// ========================================================================
-// 💡 2. Core Data Loading Function
-// ========================================================================
 const loadAllData = async () => {
   try {
     const { data: schoolData } = await supabase.from('school_settings').select('*').limit(1).single()
@@ -783,7 +963,6 @@ const loadAllData = async () => {
 
   interruptionLogs.value = mmiData || []
 
-  // Calculate Overview & Reasons Data
   const teacherMap = {}
   const teacherNameSet = new Set()
   
@@ -820,18 +999,6 @@ const loadAllData = async () => {
 
   if (mmiData) {
     const totalPAll = mmiData.reduce((acc, cur) => acc + ((cur.end_period || 0) - (cur.start_period || 0) + 1), 0)
-    const reasons = {}
-    mmiData.forEach(l => { 
-      const pCount = (l.end_period || 0) - (l.start_period || 0) + 1; 
-      let rawReason = (l.reason || 'NO DATA').trim().toUpperCase();
-      rawReason = rawReason.replace(/^(教师请假:\s*|CUTI GURU:\s*|TEACHER LEAVE:\s*)/i, ''); 
-      reasons[rawReason] = (reasons[rawReason] || 0) + pCount;
-    })
-    
-    reasonStats.value = Object.entries(reasons)
-      .map(([reason, count]) => ({ reason, count, percentage: totalPAll > 0 ? ((count / totalPAll) * 100).toFixed(1) : 0 }))
-      .sort((a, b) => b.count - a.count)
-
     const dayNames = { 1: 'MONDAY', 2: 'TUESDAY', 3: 'WEDNESDAY', 4: 'THURSDAY', 5: 'FRIDAY', 6: 'SATURDAY', 7: 'SUNDAY' }
     const daysCount = {}
     mmiData.forEach(l => { 
@@ -841,13 +1008,10 @@ const loadAllData = async () => {
       daysCount[dName] = (daysCount[dName] || 0) + pCount 
     })
     dayOfWeekStats.value = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'].map(day => ({ 
-      day, 
-      count: daysCount[day] || 0, 
-      percentage: totalPAll > 0 ? (((daysCount[day] || 0) / totalPAll) * 100).toFixed(1) : 0 
+      day, count: daysCount[day] || 0, percentage: totalPAll > 0 ? (((daysCount[day] || 0) / totalPAll) * 100).toFixed(1) : 0 
     }))
   }
 
-  // Calculate Target-Based Class and Subject Loss (Deduplication Logic)
   const teacherMapForMatch = {}
   teachers?.forEach(tch => {
     if (tch.id) teacherMapForMatch[String(tch.id)] = tch
@@ -941,12 +1105,12 @@ const loadAllData = async () => {
           const intWeekday = intDate.getDay()
 
           let isClassAffected = false;
-          if (intScope === 'all' || targetDisp.includes('全校') || targetDisp.includes('SELURUH SEKOLAH') || targetDisp.includes('ALL CLASSES')) {
+          if (intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('WHOLE SCHOOL') || targetDisp.includes('全校') || targetDisp.includes('ALL CLASSES')) {
             isClassAffected = true;
           } else if (intScope === 'grade' && intGrade === Number(cls.grade)) {
             isClassAffected = true;
-          } else if (targetDisp.includes('全年级') || targetDisp.includes('Tahun') || targetDisp.includes('TAHUN') || targetDisp.includes('Year') || targetDisp.includes('YEAR')) {
-            const match = targetDisp.match(/Tahun\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/) || targetDisp.match(/Year\s*(\d)/i);
+          } else if (/TAHUN/i.test(targetDisp) || /YEAR/i.test(targetDisp) || /年级/.test(targetDisp) || targetDisp.includes('全年级')) {
+            const match = targetDisp.match(/(?:TAHUN|YEAR|Tahun|Year)\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/);
             const gradeNum = match ? match[1] : null;
             if (gradeNum) {
               isClassAffected = clsName.startsWith(gradeNum);
@@ -1018,7 +1182,8 @@ onActivated(() => {
 const exportSinglePdf = async () => {
  const REPORT_TITLES = {
     overview: 'RINGKASAN OPERASI & BEBAN GURU GANTI',
-    reason: 'ANALISIS PUNCA KETIDAKHADIRAN & GANGGUAN PDPC',
+    reason: 'ANALISIS PUNCA KETIDAKHADIRAN GURU',
+    'large-scale': 'ANALISIS GANGGUAN ACARA & AKTIVITI KELAS',
     trend: 'STATISTIK TREND & PUNCAK GANGGUAN KELAS',
     class: 'ANALISIS GANGGUAN MENGIKUT KELAS',
     subject: 'ANALISIS GANGGUAN MENGIKUT SUBJEK & KELAS',
@@ -1283,9 +1448,9 @@ const exportSinglePdf = async () => {
     y += 14
   }
 
-  const drawReasonGroups = () => {
-    drawSectionTitle('INTERRUPTION CATEGORY STATISTICS')
-    groupedReasonStats.value.forEach(group => {
+  const drawGroupBlocks = (groups, sectionTitle) => {
+    drawSectionTitle(sectionTitle)
+    groups.forEach(group => {
       ensureSpace(90)
       setFont(15, 800)
       ctx.fillStyle = '#1e1b4b'
@@ -1313,6 +1478,15 @@ const exportSinglePdf = async () => {
       })
       y += 10
     })
+  }
+
+  const drawTeacherReasons = () => drawGroupBlocks(categorizedReasons.value.teacher, 'TEACHER ABSENCE REASON ANALYSIS (CATEGORY)')
+  
+  const drawLargeScale = () => {
+    drawGroupBlocks(categorizedReasons.value.events, 'CLASS EVENT CONTENTION ANALYSIS (CATEGORY)')
+    drawSectionTitle('DETAILED LARGE-SCALE EVENT LIST (SCHOOL & GRADE)')
+    const rows = sortedLargeScaleStats.value.map(s => [s.reason, s.scope, `${s.frequency}`, `${s.totalPeriods}`])
+    drawTable(['EVENT / ACTIVITY NAME', 'IMPACT SCOPE', 'FREQUENCY', 'TOTAL LOST SLOTS'], rows, [460, 240, 200, 240])
   }
 
   const drawOverview = () => {
@@ -1349,7 +1523,7 @@ const exportSinglePdf = async () => {
   }
 
   const drawSubject = () => {
-    drawSectionTitle('DETAILED SUBJECT ANALYSIS')
+    drawSectionTitle('DETAILED SUBJECT & CLASS ANALYSIS')
     const rows = filteredSubjectStats.value.map(s => [s.grade, s.className, s.subjectName, `${s.totalPeriods}`])
     drawTable(['GRADE', 'CLASS', 'AFFECTED SUBJECT', 'INTERRUPTED PERIODS'], rows, [180, 300, 460, 200])
   }
@@ -1368,7 +1542,8 @@ const exportSinglePdf = async () => {
     y = MARGIN + HEADER_H + 10
 
     if (currentTab.value === 'overview') drawOverview()
-    else if (currentTab.value === 'reason') drawReasonGroups()
+    else if (currentTab.value === 'reason') drawTeacherReasons()
+    else if (currentTab.value === 'large-scale') drawLargeScale()
     else if (currentTab.value === 'trend') drawTrend()
     else if (currentTab.value === 'class') drawClass()
     else if (currentTab.value === 'subject') drawSubject()
@@ -1379,7 +1554,51 @@ const exportSinglePdf = async () => {
     pdf.save(`MMI_${safeFileName}.pdf`)
   } catch (error) {
     console.error('PDF Generation Failed:', error)
-    alert('PDF Generation Failed, please check console.')
+    alert('Failed to generate PDF. Please check the browser console.')
   }
 }
+
+onMounted(loadAllData)
+onActivated(loadAllData)
+
 </script>
+
+<style scoped>
+.print-header {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: portrait; 
+    margin: 10mm;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-header {
+    display: block !important;
+    margin-bottom: 20px;
+  }
+  body, * {
+    font-family: "Microsoft YaHei", "PingFang SC", "Heiti SC", Arial, sans-serif !important;
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .print-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 11px !important;
+  }
+  .print-table th, .print-table td {
+    border: 1px solid #cbd5e1 !important;
+    padding: 8px 10px !important;
+  }
+  .print-table th {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+  }
+}
+</style>
