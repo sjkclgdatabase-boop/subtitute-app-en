@@ -646,9 +646,12 @@ const categorizedReasons = computed(() => {
     const intScope = log.scope ? log.scope.trim() : ''
     const targetDisp = log.target_display ? log.target_display.trim() : ''
     
-    const isSchoolLevel = intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL') || targetDisp.includes('ALL CLASSES')
-    const isGradeLevel = intScope === 'grade' || /(?:TAHUN|YEAR|GRADE)/i.test(targetDisp) || /年级/.test(targetDisp)
-    const hasEventTag = /\[(?:学术|AKADEMIK|ACADEMIC|节庆|ACARA|EVENT|讲座|CERAMAH|SEMINAR|假期|CUTI KHAS|HOLIDAY)\]/i.test(rawReason)
+    const isSchoolLevel = intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL')
+    const isGradeLevel = intScope === 'grade' || /TAHUN/i.test(targetDisp) || /YEAR/i.test(targetDisp) || /GRADE/i.test(targetDisp) || /年级/.test(targetDisp)
+    const hasEventTag = rawReason.includes('[AKADEMIK]') || rawReason.includes('[ACADEMIC]') || rawReason.includes('[学术]') ||
+                        rawReason.includes('[ACARA]') || rawReason.includes('[EVENT]') || rawReason.includes('[节庆]') ||
+                        rawReason.includes('[CERAMAH]') || rawReason.includes('[SEMINAR]') || rawReason.includes('[讲座]') ||
+                        rawReason.includes('[CUTI KHAS]') || rawReason.includes('[HOLIDAY]') || rawReason.includes('[假期]')
     const isLikelyEvent = isSchoolLevel || isGradeLevel || hasEventTag || log.type === 'class'
     
     // 1. Precise match using bilingual tags
@@ -721,9 +724,12 @@ const largeScaleStats = computed(() => {
     const targetDisp = log.target_display ? log.target_display.trim() : ''
     const rawReason = (log.reason || 'NO NAME').toUpperCase()
 
-    const isSchoolLevel = intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL') || targetDisp.includes('ALL CLASSES')
-    const isGradeLevel = intScope === 'grade' || /(?:TAHUN|YEAR|GRADE)/i.test(targetDisp) || /年级/.test(targetDisp)
-    const hasEventTag = /\[(?:学术|AKADEMIK|ACADEMIC|节庆|ACARA|EVENT|讲座|CERAMAH|SEMINAR|假期|CUTI KHAS|HOLIDAY)\]/i.test(rawReason)
+    const isSchoolLevel = intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL')
+    const isGradeLevel = intScope === 'grade' || /TAHUN/i.test(targetDisp) || /YEAR/i.test(targetDisp) || /GRADE/i.test(targetDisp) || /年级/.test(targetDisp)
+    const hasEventTag = rawReason.includes('[AKADEMIK]') || rawReason.includes('[ACADEMIC]') || rawReason.includes('[学术]') ||
+                        rawReason.includes('[ACARA]') || rawReason.includes('[EVENT]') || rawReason.includes('[节庆]') ||
+                        rawReason.includes('[CERAMAH]') || rawReason.includes('[SEMINAR]') || rawReason.includes('[讲座]') ||
+                        rawReason.includes('[CUTI KHAS]') || rawReason.includes('[HOLIDAY]') || rawReason.includes('[假期]')
 
     if (isSchoolLevel || isGradeLevel || hasEventTag || log.type === 'class') {
       const reasonClean = (log.reason || 'NO NAME').replace(/\[.*?\]\s*/, '').trim() || (log.reason || 'NO NAME')
@@ -1048,8 +1054,10 @@ const loadAllData = async () => {
           let isClassAffected = false;
           if (intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL') || targetDisp.includes('ALL CLASSES')) {
             isClassAffected = true;
-          } else if (/(?:TAHUN|YEAR|GRADE)/i.test(targetDisp) || /年级/.test(targetDisp) || targetDisp.includes('全年级')) {
-            const match = targetDisp.match(/(?:TAHUN|YEAR|GRADE)\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/);
+          } else if (intScope === 'grade' && intGrade === Number(cls.grade)) {
+            isClassAffected = true;
+          } else if (/TAHUN/i.test(targetDisp) || /YEAR/i.test(targetDisp) || /年级/.test(targetDisp) || targetDisp.includes('全年级')) {
+            const match = targetDisp.match(/(?:TAHUN|YEAR|Tahun|Year)\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/);
             const gradeNum = match ? match[1] : null;
             if (gradeNum) {
               isClassAffected = clsName.startsWith(gradeNum);
