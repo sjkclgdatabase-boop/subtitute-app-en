@@ -9,37 +9,12 @@
         MMI INTERRUPTION RECORD CENTER
       </h1>
       <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
-        PROTECTING INSTRUCTIONAL TIME · RECORDS BY CLASS AND TEACHER TO GUARANTEE TEACHING HOURS.
+        PROTECTING INSTRUCTIONAL TIME · RECORDS BY CLASS TO GUARANTEE TEACHING HOURS.
       </p>
     </div>
 
-    <!-- Mode Switcher Card: Unified style guidelines -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 space-y-4">
-      <div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
-        <span class="text-lg font-bold text-slate-900">SELECT INTERRUPTION RECORD MODE</span>
-      </div>
-
-      <div class="inline-flex bg-slate-100 p-1.5 rounded-2xl shadow-inner">
-        <button 
-          @click="activeTab = 'class'" 
-          :class="activeTab === 'class' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'"
-          class="px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <School class="w-4 h-4" /> CLASS RECORDS
-        </button>
-        <button 
-          @click="activeTab = 'teacher'" 
-          :class="activeTab === 'teacher' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'"
-          class="px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <Users class="w-4 h-4" /> TEACHER RECORDS
-        </button>
-      </div>
-    </div>
-
     <!-- Dimension 1: Record Interruption by Class -->
-    <div v-if="activeTab === 'class'" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 mb-8">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 mb-8">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
         INTERRUPTION REGISTRATION
@@ -57,7 +32,6 @@
           />
         </div>
 
-        <!-- 🌟 2. English Category Selection -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
             <AlertTriangle class="w-4 h-4 text-amber-500" /> INTERRUPTION CATEGORY (AUTO TAGGED):
@@ -200,104 +174,6 @@
       </button>
     </div>
 
-    <!-- Dimension 2: Record Interruption by Teacher -->
-    <div v-if="activeTab === 'teacher'" class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 mb-8">
-      <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full bg-violet-600"></span>
-        TEACHER INTERRUPTION REGISTRATION
-      </h2>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
-            <CalendarDays class="w-4 h-4 text-violet-600" /> INTERRUPTION DATE:
-          </label>
-          <input 
-            type="date" 
-            v-model="teacherForm.date" 
-            @change="loadTeacherSubjects"
-            class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
-          />
-        </div>
-
-        <div class="relative w-full">
-          <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
-            <Users class="w-4 h-4 text-violet-600" /> SELECT AFFECTED / LEAVING TEACHER
-          </label>
-          <select 
-            v-model="teacherForm.teacherId" 
-            @change="loadTeacherSubjects"
-            class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none pr-8 truncate cursor-pointer"
-          >
-            <option value="" disabled>-- PLEASE SELECT A TEACHER --</option>
-            <option v-for="t in teachersList" :key="t.id" :value="t.id">{{ t.name }}</option>
-          </select>
-          <div class="absolute right-4 top-[38px] pointer-events-none text-slate-500">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-          </div>
-        </div>
-      </div>
-
-      <!-- 🌟 3. English Teacher Category Selection -->
-      <div class="mb-6">
-        <label class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
-          <AlertTriangle class="w-4 h-4 text-amber-500" /> ABSENCE CATEGORY (AUTO TAGGED):
-        </label>
-        
-        <div class="flex flex-wrap gap-2 mb-3">
-          <label v-for="cat in ['[PERSONAL LEAVE]', '[OFFICIAL DUTY]', '[INTERNAL TASK]', '[UNCATEGORIZED]']" :key="cat" class="cursor-pointer">
-            <input type="radio" v-model="teacherForm.category" :value="cat" class="hidden" />
-            <span :class="teacherForm.category === cat ? 'bg-violet-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all inline-block">
-              {{ cat }}
-            </span>
-          </label>
-        </div>
-
-        <input 
-          v-model="teacherForm.eventName" 
-          type="text" 
-          placeholder="PLEASE SPECIFY DETAILS (E.G. ACCOMPANYING TEAM, CURRICULUM MEETING, SICK LEAVE)..." 
-          class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-semibold text-slate-800 uppercase shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-        />
-      </div>
-
-      <div class="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 mb-6">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900 mb-3 flex items-center justify-between">
-          <span>📚 Automatic Data Adjustment: Original Timetable and Affected Classes</span>
-          <span v-if="loadingSubjects" class="text-xs font-normal text-indigo-600 animate-pulse">LOADING TIMETABLE</span>
-        </h3>
-
-        <div v-if="exportedSubjects.length === 0" class="text-xs text-slate-400 py-4 text-center">
-          PLEASE SELECT DATE AND TEACHER TO LOAD AFFECTED CLASSES AND SUBJECTS
-        </div>
-
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          <div 
-            v-for="sub in exportedSubjects" 
-            :key="sub.period"
-            class="p-3 bg-white border border-indigo-100 rounded-xl shadow-sm flex items-center justify-between"
-          >
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-extrabold text-slate-900">PERIOD {{ sub.period }}</span>
-                <span v-if="sub.is_combined" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[9px] font-bold">COMBINED CLASS</span>
-              </div>
-              <span class="text-xs text-slate-500">{{ sub.class_name }} · {{ sub.subject }}</span>
-            </div>
-            <span class="text-[10px] px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 font-bold">AFFECTED</span>
-          </div>
-        </div>
-      </div>
-
-      <button 
-        @click="submitTeacherInterruption" 
-        :disabled="exportedSubjects.length === 0"
-        class="bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer flex items-center gap-2"
-      >
-        <Save class="w-4 h-4" /> CONFIRM AND SAVE TEACHER INTERRUPTION RECORD
-      </button>
-    </div>
-
     <!-- Interruption Log History Table Area -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5">
       
@@ -320,17 +196,6 @@
 
       <!-- Filters -->
       <div class="flex flex-wrap items-center gap-3 mb-6">
-        <div class="relative min-w-[140px]">
-          <select v-model="typeFilter" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none appearance-none pr-8 cursor-pointer">
-            <option value="all">ALL TYPES</option>
-            <option value="class">CLASS INTERRUPTION</option>
-            <option value="teacher">TEACHER INTERRUPTION</option>
-          </select>
-          <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-          </div>
-        </div>
-
         <div class="relative min-w-[200px]">
           <select v-model="dateRangeFilter" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none appearance-none pr-8 cursor-pointer">
             <option value="all">ALL TIME PERIODS</option>
@@ -356,7 +221,7 @@
           <input 
             type="text" 
             v-model="searchQuery" 
-            placeholder="SEARCH TEACHER / CLASS / REASON..." 
+            placeholder="SEARCH CLASS / REASON..." 
             class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
@@ -426,8 +291,8 @@
               <td class="py-4 px-4 font-bold text-slate-900 text-left">{{ log.interruption_date }}</td>
               
               <td class="py-4 px-4 text-center">
-                <span :class="log.type === 'class' ? 'bg-indigo-50 text-indigo-700' : 'bg-violet-50 text-violet-700'" class="px-2.5 py-1 rounded-full text-xs font-bold inline-block">
-                  {{ log.type === 'class' ? 'CLASS' : 'TEACHER' }}
+                <span class="bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full text-xs font-bold inline-block">
+                  CLASS
                 </span>
               </td>
 
@@ -489,11 +354,7 @@
           <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
             <span class="font-bold text-indigo-900 block mb-1">📄 NOTES & TIMETABLE CONTENT:</span>
             
-            <p v-if="currentDetailLog?.type === 'teacher'" class="text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">
-              {{ currentDetailLog?.remarks?.replace('自动同步自请假录入 ', '') }}
-            </p>
-            
-            <div v-if="currentDetailLog?.type === 'class'" class="text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">
+            <div class="text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">
               <span v-if="currentDetailLog?.remarks">{{ currentDetailLog.remarks }}<br/><br/></span>
               
               <span v-if="loadingDetail" class="animate-pulse inline-flex items-center gap-1">
@@ -523,7 +384,6 @@ import { useToast } from '../utils/toast'
 import { 
   GraduationCap, 
   School, 
-  Users, 
   CalendarDays, 
   Clock, 
   Save, 
@@ -538,7 +398,6 @@ import {
 } from 'lucide-vue-next'
 
 const toast = useToast()
-const activeTab = ref('class')
 
 const getLocalToday = () => {
   const now = new Date()
@@ -590,21 +449,9 @@ const fetchClasses = async () => {
   }
 }
 
-const teacherForm = ref({
-  date: getLocalToday(),
-  teacherId: '',
-  category: '[OFFICIAL DUTY]', 
-  eventName: ''              
-})
-
-const teachersList = ref([])
-const exportedSubjects = ref([])
-const loadingSubjects = ref(false)
-
 const interruptionLogs = ref([])
 
 const searchQuery = ref('')
-const typeFilter = ref('all')         
 const dateRangeFilter = ref('all')    
 const selectedMonth = ref('all')      
 
@@ -630,70 +477,65 @@ const openDetailModal = async (log) => {
   showDetailModal.value = true
   currentDetailAffectedClasses.value = ''
 
-  if (log.type === 'class') {
-    loadingDetail.value = true
-    try {
-      const logDate = new Date(log.interruption_date)
-      const weekdayNum = logDate.getDay() 
-      const queryWeekday = weekdayNum === 0 ? 7 : weekdayNum
+  loadingDetail.value = true
+  try {
+    const logDate = new Date(log.interruption_date)
+    const weekdayNum = logDate.getDay() 
+    const queryWeekday = weekdayNum === 0 ? 7 : weekdayNum
 
-      const { data: timetables, error } = await supabase
-        .from('timetable')
-        .select('*')
-        .eq('weekday', queryWeekday)
-      if (error) throw error
+    const { data: timetables, error } = await supabase
+      .from('timetable')
+      .select('*')
+      .eq('weekday', queryWeekday)
+    if (error) throw error
 
-      if (timetables && timetables.length > 0) {
-        const startP = Number(log.start_period)
-        const endP = Number(log.end_period)
-        const targetDisp = log.target_display || ''
+    if (timetables && timetables.length > 0) {
+      const startP = Number(log.start_period)
+      const endP = Number(log.end_period)
+      const targetDisp = log.target_display || ''
 
-        const matched = timetables.filter(t => {
-          const itemWeekday = Number(t.weekday)
-          const matchWd = itemWeekday === weekdayNum || itemWeekday === (weekdayNum === 0 ? 7 : weekdayNum)
-          if (!matchWd) return false
+      const matched = timetables.filter(t => {
+        const itemWeekday = Number(t.weekday)
+        const matchWd = itemWeekday === weekdayNum || itemWeekday === (weekdayNum === 0 ? 7 : weekdayNum)
+        if (!matchWd) return false
 
-          const p = Number(t.period)
-          if (p < startP || p > endP) return false
+        const p = Number(t.period)
+        if (p < startP || p > endP) return false
 
-          // 1. 全校影响 (三语兼容)
-          if (targetDisp.includes('SEMUA') || targetDisp.includes('ALL') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL')) return true
-          
-          // 2. 年级影响 (三语兼容)
-          if (targetDisp.includes('TAHUN') || targetDisp.includes('GRADE') || targetDisp.includes('全年级') || targetDisp.includes('Tahun') || targetDisp.includes('YEAR') || targetDisp.includes('年级')) {
-            const match = targetDisp.match(/(?:TAHUN|GRADE|Tahun|YEAR|Year)\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/)
-            const grade = match ? match[1] : null
-            return grade && String(t.class_name).startsWith(grade)
-          }
-          
-          // 3. 班级影响 (三语兼容)
-          const cleanTarget = targetDisp.replace(/^(?:KELAS|CLASS|班级)[:：]\s*/i, '').trim()
-          const classList = cleanTarget.split(',').map(c => c.trim())
-          
-          return classList.some(c => 
-            t.class_name === c || 
-            t.class_name.toLowerCase() === c.toLowerCase() || 
-            t.class_name.includes(c) || 
-            c.includes(t.class_name)
-          )
-        })
-
-        if (matched.length > 0) {
-          matched.sort((a, b) => Number(a.period) - Number(b.period))
-          const periods = [...new Set(matched.map(m => m.period))].sort((a, b) => a - b).join(', ')
-          const classes = matched.map(m => `${m.class_name}(${m.subject || m.subject_name})`).join(', ')
-          
-          currentDetailAffectedClasses.value = `(INVOLVING SLOTS: PERIOD ${periods} | SUBJECTS: ${classes})`
-        } else {
-          currentDetailAffectedClasses.value = 'NO TIMETABLE RECORD OR AFFECTED CLASSES'
+        if (targetDisp.includes('SEMUA') || targetDisp.includes('ALL') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL')) return true
+        
+        if (targetDisp.includes('TAHUN') || targetDisp.includes('GRADE') || targetDisp.includes('全年级') || targetDisp.includes('Tahun') || targetDisp.includes('YEAR') || targetDisp.includes('年级')) {
+          const match = targetDisp.match(/(?:TAHUN|GRADE|Tahun|YEAR|Year)\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/)
+          const grade = match ? match[1] : null
+          return grade && String(t.class_name).startsWith(grade)
         }
+        
+        const cleanTarget = targetDisp.replace(/^(?:KELAS|CLASS|班级)[:：]\s*/i, '').trim()
+        const classList = cleanTarget.split(',').map(c => c.trim())
+        
+        return classList.some(c => 
+          t.class_name === c || 
+          t.class_name.toLowerCase() === c.toLowerCase() || 
+          t.class_name.includes(c) || 
+          c.includes(t.class_name)
+        )
+      })
+
+      if (matched.length > 0) {
+        matched.sort((a, b) => Number(a.period) - Number(b.period))
+        const periods = [...new Set(matched.map(m => m.period))].sort((a, b) => a - b).join(', ')
+        const classes = matched.map(m => `${m.class_name}(${m.subject || m.subject_name})`).join(', ')
+        
+        currentDetailAffectedClasses.value = `(INVOLVING SLOTS: PERIOD ${periods} | SUBJECTS: ${classes})`
+      } else {
+        currentDetailAffectedClasses.value = 'NO TIMETABLE RECORD OR AFFECTED CLASSES'
       }
-    } catch (err) {
-      console.error("FAILED TO LOAD DETAILS:", err)
-      currentDetailAffectedClasses.value = 'FAILED TO LOAD AFFECTED CLASSES'
-    } finally {
-      loadingDetail.value = false
     }
+  } catch (err) {
+    console.error("FAILED TO LOAD DETAILS:", err)
+    currentDetailAffectedClasses.value = 'FAILED TO LOAD AFFECTED CLASSES'
+  } finally {
+    loadingDetail.value = false
   }
 }
 
@@ -705,8 +547,6 @@ const filteredLogs = computed(() => {
       log.reason?.toLowerCase().includes(query) ||
       log.remarks?.toLowerCase().includes(query) ||
       log.interruption_date?.includes(query)
-
-    const matchesType = typeFilter.value === 'all' || log.type === typeFilter.value
 
     let matchesDateRange = true
     if (dateRangeFilter.value !== 'all' && log.interruption_date) {
@@ -730,7 +570,7 @@ const filteredLogs = computed(() => {
       matchesMonth = (logDate.getFullYear() === currentYear) && (logMonth === Number(selectedMonth.value))
     }
 
-    return matchesSearch && matchesType && matchesDateRange && matchesMonth
+    return matchesSearch && matchesDateRange && matchesMonth
   })
 
   return result.sort((a, b) => {
@@ -747,49 +587,6 @@ const filteredLogs = computed(() => {
     return 0
   })
 })
-
-const loadTeachers = async () => {
-  const { data } = await supabase.from('teachers').select('id, name')
-  if (data) teachersList.value = data
-}
-
-const loadTeacherSubjects = async () => {
-  if (!teacherForm.value.teacherId || !teacherForm.value.date) {
-    exportedSubjects.value = []
-    return
-  }
-  loadingSubjects.value = true
-  try {
-    const { data } = await supabase
-      .from('leave_requests')
-      .select('*')
-      .eq('teacher_id', teacherForm.value.teacherId)
-      .eq('leave_date', teacherForm.value.date)
-      .order('period', { ascending: true })
-
-    const periodMap = new Map()
-    ;(data || []).forEach(s => {
-      if (!periodMap.has(s.period)) {
-        periodMap.set(s.period, {
-          ...s,
-          is_combined: false
-        })
-      } else {
-        const existing = periodMap.get(s.period)
-        if (!existing.class_name.includes(s.class_name)) {
-          existing.class_name = `${existing.class_name}/${s.class_name}`
-          existing.is_combined = true 
-        }
-      }
-    })
-
-    exportedSubjects.value = Array.from(periodMap.values())
-  } catch (err) {
-    toast.error("FAILED TO EXTRACT SUBJECTS: " + err.message)
-  } finally {
-    loadingSubjects.value = false
-  }
-}
 
 const submitClassInterruption = async () => {
   if (!classForm.value.eventName.trim()) {
@@ -832,46 +629,6 @@ const submitClassInterruption = async () => {
   }
 }
 
-const submitTeacherInterruption = async () => {
-  if (exportedSubjects.value.length === 0) return
-
-  if (!teacherForm.value.eventName.trim()) {
-    return toast.error("PLEASE SPECIFY ABSENCE DETAILS!")
-  }
-
-  const teacher = teachersList.value.find(t => t.id === teacherForm.value.teacherId)
-  const periods = exportedSubjects.value.map(s => Number(s.period)).sort((a,b) => a-b)
-  const startP = periods[0] || 1
-  const endP = periods[periods.length - 1] || 1
-
-  const subjectSummary = exportedSubjects.value.map(s => `${s.class_name}(${s.subject})`).join(', ')
-
-  let finalCategory = teacherForm.value.category
-  if (finalCategory === '[UNCATEGORIZED]') finalCategory = ''
-  
-  const finalReason = `${finalCategory} ${teacherForm.value.eventName.trim()}`.trim().toUpperCase()
-
-  try {
-    const { error } = await supabase.from('mmi_interruptions').insert({
-      interruption_date: teacherForm.value.date,
-      type: 'teacher',
-      target_display: `TEACHER: ${teacher?.name || ''}`,
-      start_period: startP,
-      end_period: endP,
-      reason: finalReason,
-      remarks: `(INVOLVING SLOTS: PERIOD ${periods.join(', ')} | SUBJECTS: ${subjectSummary})`
-    })
-
-    if (error) throw error
-
-    toast.success("TEACHER INTERRUPTION RECORD SAVED SUCCESSFULLY!")
-    fetchLogs()
-    teacherForm.value.eventName = ''
-  } catch (err) {
-    toast.error("FAILED TO SAVE: " + err.message)
-  }
-}
-
 const fetchLogs = async () => {
   const { data } = await supabase
     .from('mmi_interruptions')
@@ -888,7 +645,7 @@ const exportLogsToExcel = () => {
 
   let csvContent = "\uFEFFDATE,TYPE,TARGET,TIME SLOT,REASON,NOTES\n"
   filteredLogs.value.forEach(item => {
-    const typeStr = item.type === 'class' ? 'CLASS' : 'TEACHER'
+    const typeStr = 'CLASS'
     const row = [
       item.interruption_date,
       typeStr,
@@ -911,7 +668,6 @@ const exportLogsToExcel = () => {
   toast.success("REPORT EXPORTED SUCCESSFULLY!")
 }
 
-// 🌟 三语兼容的表格格式化
 const formatTargetDisplay = (text) => {
   if (!text) return ''
   return text.replace(/^(KELAS|CLASS|班级)[:：]\s*/i, '').trim()
@@ -928,45 +684,7 @@ const deleteLog = async (log) => {
 
     if (mmiErr) throw mmiErr
 
-    // 🌟 三语兼容的教师判断
-    if (log.type === 'teacher' || (log.target_display && (log.target_display.includes('GURU') || log.target_display.includes('TEACHER') || log.target_display.includes('教师')))) {
-      let teacherName = ''
-      if (log.target_display) {
-        teacherName = log.target_display.replace(/(?:GURU|TEACHER|教师)[:：]?\s*/i, '').trim()
-      }
-
-      if (teacherName) {
-        const { data: teacherObj } = await supabase
-          .from('teachers')
-          .select('id')
-          .eq('name', teacherName)
-          .single()
-
-        if (teacherObj) {
-          const { data: leaveReqs } = await supabase
-            .from('leave_requests')
-            .select('id')
-            .eq('teacher_id', teacherObj.id)
-            .eq('leave_date', log.interruption_date)
-
-          if (leaveReqs && leaveReqs.length > 0) {
-            const leaveIds = leaveReqs.map(l => l.id)
-
-            await supabase
-              .from('substitute_assignments')
-              .delete()
-              .in('leave_request_id', leaveIds)
-
-            await supabase
-              .from('leave_requests')
-              .delete()
-              .in('id', leaveIds)
-          }
-        }
-      }
-    }
-
-    toast.success("INTERRUPTION AND RELATED LEAVE RECORDS DELETED SUCCESSFULLY!")
+    toast.success("INTERRUPTION RECORD DELETED SUCCESSFULLY!")
     fetchLogs()
   } catch (err) {
     toast.error("FAILED TO DELETE: " + err.message)
@@ -976,9 +694,7 @@ const deleteLog = async (log) => {
 onMounted(() => {
   const today = getLocalToday()
   classForm.value.date = today
-  teacherForm.value.date = today
 
-  loadTeachers()
   fetchLogs()
   fetchClasses()
 })
@@ -986,6 +702,5 @@ onMounted(() => {
 onActivated(() => {
   const today = getLocalToday()
   classForm.value.date = today
-  teacherForm.value.date = today
 })
 </script>
