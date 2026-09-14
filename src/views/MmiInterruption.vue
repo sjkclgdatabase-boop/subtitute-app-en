@@ -674,9 +674,40 @@ const formatTargetDisplay = (text) => {
 }
 
 const deleteLog = async (log) => {
-  if (!confirm(`ARE YOU SURE YOU WANT TO DELETE THIS MMI INTERRUPTION RECORD ON ${log.interruption_date}?`)) return
+  if (!confirm(`ARE YOU SURE YOU WANT TO DELETE THIS MMI INTERRUPTION RECORD ON ${log.interruption_date}? ASSOCIATED RELIEF SCHEDULES WILL ALSO BE REMOVED.`)) return
 
   try {
+    // 1. Find all leave_requests created by this MMI interruption
+    const { data: relatedLeaves, error: fetchErr } = await supabase
+      .from('leave_requests')
+      .select('id')
+      .eq('leave_date', log.interruption_date)
+      .eq('reason', log.reason)
+      .gte('period', log.start_period)
+      .lte('period', log.end_period)
+
+    if (fetchErr) throw fetchErr
+
+    const leaveIds = (relatedLeaves || []).map(l => l.id)
+
+    // 2. Remove substitute assignments and relief requests if any exist
+    if (leaveIds.length > 0) {
+      const { error: subErr } = await supabase
+        .from('substitute_assignments')
+        .delete()
+        .in('leave_request_id', leaveIds)
+
+      if (subErr) throw subErr
+
+      const { error: leaveErr } = await supabase
+        .from('leave_requests')
+        .delete()
+        .in('id', leaveIds)
+
+      if (leaveErr) throw leaveErr
+    }
+
+    // 3. Delete the MMI interruption record itself
     const { error: mmiErr } = await supabase
       .from('mmi_interruptions')
       .delete()
@@ -684,12 +715,13 @@ const deleteLog = async (log) => {
 
     if (mmiErr) throw mmiErr
 
-    toast.success("INTERRUPTION RECORD DELETED SUCCESSFULLY!")
+    toast.success("INTERRUPTION RECORD AND ASSOCIATED RELIEF SCHEDULES DELETED SUCCESSFULLY!")
     fetchLogs()
   } catch (err) {
     toast.error("FAILED TO DELETE: " + err.message)
   }
 }
+
 
 onMounted(() => {
   const today = getLocalToday()
