@@ -2,7 +2,7 @@
   <!-- 🌟 1. 统一的桌面端最小宽度约束 -->
   <div class="p-4 sm:p-8 mx-auto min-h-screen space-y-8 min-w-[1024px]">
     
-    <!-- Header Section: Unified card style, typography, and gradient title -->
+    <!-- Header Section -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 space-y-2">
       <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 flex items-center gap-3">
         <GraduationCap class="w-8 h-8 text-indigo-700 shrink-0" />
@@ -76,9 +76,16 @@
         </div>
 
         <div v-if="classForm.scopeType === 'specific'" class="space-y-3 pt-2">
-          <div class="flex justify-between items-center pb-2 border-b border-slate-200/80 text-xs">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-2 border-b border-slate-200/80 text-xs gap-2">
             <span class="font-bold text-slate-500">Please select affected classes:</span>
-            <div class="space-x-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" @click="selectAllMorningClasses" class="text-sky-600 hover:text-sky-800 font-bold bg-sky-50 px-2.5 py-1 rounded-lg cursor-pointer transition">
+                ☀️ Select All Morning Classes
+              </button>
+              <button type="button" @click="selectAllAfternoonClasses" class="text-amber-600 hover:text-amber-800 font-bold bg-amber-50 px-2.5 py-1 rounded-lg cursor-pointer transition">
+                🌙 Select All Afternoon Classes
+              </button>
+              <span class="text-slate-300">|</span>
               <button type="button" @click="selectAllClasses" class="text-indigo-600 hover:text-indigo-800 font-bold cursor-pointer">
                 Select All
               </button>
@@ -90,7 +97,7 @@
           </div>
 
           <div v-for="(classes, grade) in groupedClasses" :key="grade" class="flex flex-col sm:flex-row sm:items-center gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-xs">
-            <div class="w-28 shrink-0 flex items-center justify-between sm:justify-start gap-2">
+            <div class="w-36 shrink-0 flex items-center justify-between sm:justify-start gap-2">
               <span class="text-xs font-black text-slate-700 uppercase tracking-wider">GRADE {{ grade }}</span>
               <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-extrabold">
                 {{ classes.filter(c => classForm.selectedClasses.includes(c)).length }}/{{ classes.length }}
@@ -102,10 +109,14 @@
                 v-for="c in classes" 
                 :key="c" 
                 :class="classForm.selectedClasses.includes(c) ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs scale-105' : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/30'"
-                class="w-14 h-9 border rounded-xl text-xs font-extrabold flex items-center justify-center cursor-pointer transition-all select-none"
+                class="w-16 h-9 border rounded-xl text-xs font-extrabold flex items-center justify-center gap-1 cursor-pointer transition-all select-none"
+                :title="classSessionMap[c] === 'petang' ? 'Afternoon Session' : 'Morning Session'"
               >
                 <input type="checkbox" :value="c" v-model="classForm.selectedClasses" class="hidden" />
-                {{ c }}
+                <span>{{ c }}</span>
+                <span class="text-[8px] font-normal opacity-75">
+                  {{ classSessionMap[c] === 'petang' ? '🌙' : '☀️' }}
+                </span>
               </label>
             </div>
           </div>
@@ -421,6 +432,9 @@ const classForm = ref({
 
 const groupedClasses = ref({})
 
+// 🏫 独立班级上下午属性映射表 (精确匹配 1A, 1B 等具体的 session)
+const classSessionMap = ref({})
+
 const selectAllClasses = () => {
   const all = []
   Object.values(groupedClasses.value).forEach(arr => all.push(...arr))
@@ -431,21 +445,57 @@ const clearAllClasses = () => {
   classForm.value.selectedClasses = []
 }
 
+// ☀️ Select all morning classes (精准匹配具体班级的 session)
+const selectAllMorningClasses = () => {
+  const classesToSelect = []
+  Object.values(groupedClasses.value).forEach(classes => {
+    classes.forEach(cName => {
+      if (classSessionMap.value[cName] === 'morning') {
+        classesToSelect.push(cName)
+      }
+    })
+  })
+  classForm.value.selectedClasses = [...new Set([...classForm.value.selectedClasses, ...classesToSelect])]
+  toast.success("Successfully selected all morning session classes!")
+}
+
+// 🌙 Select all afternoon classes (精准匹配具体班级的 session)
+const selectAllAfternoonClasses = () => {
+  const classesToSelect = []
+  Object.values(groupedClasses.value).forEach(classes => {
+    classes.forEach(cName => {
+      if (classSessionMap.value[cName] === 'petang') {
+        classesToSelect.push(cName)
+      }
+    })
+  })
+  classForm.value.selectedClasses = [...new Set([...classForm.value.selectedClasses, ...classesToSelect])]
+  toast.success("Successfully selected all afternoon session classes!")
+}
+
 const fetchClasses = async () => {
+  // 读取 classes 表中的 class_name, grade 以及 session 字段
   const { data } = await supabase
     .from('classes')
-    .select('class_name, grade')
+    .select('class_name, grade, session')
     .order('grade', { ascending: true })
     .order('class_name', { ascending: true })
   
   if (data) {
     const groups = {}
+    const sessionMap = {}
+    
     data.forEach(c => {
       const g = c.grade || c.class_name[0]
       if (!groups[g]) groups[g] = []
       groups[g].push(c.class_name)
+      
+      // 记录每个班级独立的上下午属性（若未单独设置则默认按 morning 处理）
+      sessionMap[c.class_name] = c.session || 'morning'
     })
+    
     groupedClasses.value = groups
+    classSessionMap.value = sessionMap
   }
 }
 
@@ -677,7 +727,6 @@ const deleteLog = async (log) => {
   if (!confirm(`ARE YOU SURE YOU WANT TO DELETE THIS MMI INTERRUPTION RECORD ON ${log.interruption_date}? ASSOCIATED RELIEF SCHEDULES WILL ALSO BE REMOVED.`)) return
 
   try {
-    // 1. Find all leave_requests created by this MMI interruption
     const { data: relatedLeaves, error: fetchErr } = await supabase
       .from('leave_requests')
       .select('id')
@@ -690,7 +739,6 @@ const deleteLog = async (log) => {
 
     const leaveIds = (relatedLeaves || []).map(l => l.id)
 
-    // 2. Remove substitute assignments and relief requests if any exist
     if (leaveIds.length > 0) {
       const { error: subErr } = await supabase
         .from('substitute_assignments')
@@ -707,7 +755,6 @@ const deleteLog = async (log) => {
       if (leaveErr) throw leaveErr
     }
 
-    // 3. Delete the MMI interruption record itself
     const { error: mmiErr } = await supabase
       .from('mmi_interruptions')
       .delete()
@@ -721,7 +768,6 @@ const deleteLog = async (log) => {
     toast.error("FAILED TO DELETE: " + err.message)
   }
 }
-
 
 onMounted(() => {
   const today = getLocalToday()

@@ -240,6 +240,7 @@
       </div>
     </div>
 
+    <!-- 🏫 SCHOOL BASIC CLASS MANAGEMENT (With Session & Edit Options) -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center font-bold text-xs"><School class="w-4 h-4" /></span>
@@ -247,27 +248,35 @@
       </h2>
       <p class="text-slate-500 text-xs font-medium mb-6">MAINTAIN STANDARD SCHOOL CLASSES FOR TIMETABLES, LEAVES & MMI INTERRUPTION RECORDS.</p>
 
-      <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 mb-8 flex flex-col sm:flex-row gap-4 items-end">
-        <div class="w-full sm:w-1/3">
+      <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 mb-8 grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+        <div>
           <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">GRADE:</label>
           <select v-model="newClassGrade" class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 cursor-pointer">
             <option v-for="g in [1, 2, 3, 4, 5, 6]" :key="g" :value="g">GRADE {{ g }}</option>
           </select>
         </div>
 
-        <div class="w-full sm:w-1/2">
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">CLASS NAME (E.G. 1A, 4C):</label>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">CLASS NAME (E.G. 1A):</label>
           <input 
             type="text" 
             v-model="newClassName" 
-            placeholder="ENTER STANDARD CLASS NAME..." 
+            placeholder="ENTER CLASS NAME..." 
             class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">SESSION:</label>
+          <select v-model="newClassSession" class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 cursor-pointer">
+            <option value="morning">☀️ MORNING SESSION</option>
+            <option value="petang">🌙 AFTERNOON SESSION</option>
+          </select>
+        </div>
+
         <button 
           @click="addClass" 
-          class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all shrink-0 cursor-pointer"
+          class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all shrink-0 cursor-pointer"
         >
           ➕ ADD CLASS
         </button>
@@ -302,19 +311,64 @@
               <div 
                 v-for="c in classListGroup" 
                 :key="c.id"
-                class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm flex items-center justify-between group hover:border-indigo-300 transition-all min-w-[120px]"
+                class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm flex items-center justify-between group hover:border-indigo-300 transition-all min-w-[160px]"
               >
-                <div>
-                  <div class="text-xs font-bold text-slate-900">{{ c.class_name }}</div>
-                  <div class="text-[10px] text-slate-400 font-medium">GRADE {{ c.grade }}</div>
-                </div>
-                <button 
-                  @click.stop="deleteClass(c.id)" 
-                  class="text-slate-300 hover:text-red-600 text-xs font-bold p-1 transition opacity-0 group-hover:opacity-100 ml-3 cursor-pointer"
-                  title="DELETE"
-                >
-                  ✕
-                </button>
+                <!-- Normal Display Mode -->
+                <template v-if="editingClassId !== c.id">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-bold text-slate-900">{{ c.class_name }}</span>
+                      <span :class="c.session === 'petang' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-sky-50 text-sky-700 border-sky-200'" 
+                            class="text-[9px] px-1.5 py-0.5 rounded-md font-bold border">
+                        {{ c.session === 'petang' ? 'AFTERNOON' : 'MORNING' }}
+                      </span>
+                    </div>
+                    <div class="text-[10px] text-slate-400 font-medium mt-0.5">GRADE {{ c.grade }}</div>
+                  </div>
+                  <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition ml-3">
+                    <button 
+                      @click.stop="startEditClass(c)" 
+                      class="text-slate-400 hover:text-indigo-600 text-xs font-bold p-1 cursor-pointer"
+                      title="EDIT"
+                    >
+                      ✏️
+                    </button>
+                    <button 
+                      @click.stop="deleteClass(c.id)" 
+                      class="text-slate-300 hover:text-red-600 text-xs font-bold p-1 cursor-pointer"
+                      title="DELETE"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </template>
+
+                <!-- Inline Edit Mode -->
+                <template v-else>
+                  <div class="space-y-2 w-full">
+                    <div class="flex gap-2">
+                      <select v-model.number="editForm.grade" class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg text-xs font-bold text-slate-800">
+                        <option v-for="g in [1, 2, 3, 4, 5, 6]" :key="g" :value="g">G {{ g }}</option>
+                      </select>
+                      <input 
+                        type="text" 
+                        v-model="editForm.class_name" 
+                        class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg text-xs font-bold text-slate-800 w-20"
+                      />
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                      <select v-model="editForm.session" class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg text-[10px] font-bold text-slate-800">
+                        <option value="morning">MORNING</option>
+                        <option value="petang">AFTERNOON</option>
+                      </select>
+                      <div class="flex gap-1">
+                        <button @click="saveEditClass(c.id)" class="bg-indigo-600 text-white px-2 py-1 rounded-lg text-[10px] font-bold cursor-pointer">SAVE</button>
+                        <button @click="cancelEditClass" class="bg-slate-200 text-slate-700 px-2 py-1 rounded-lg text-[10px] font-bold cursor-pointer">CANCEL</button>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+
               </div>
             </div>
 
@@ -523,7 +577,7 @@ const fetchUsers = async () => {
 
 const handleCreateUser = async () => {
   if (!newUserEmail.value.trim() || !newUserPassword.value) {
-    return toast.error("请完整填写邮箱与初始密码！")
+    return toast.error("Please fill in the email and initial password completely!")
   }
 
   creatingUser.value = true
@@ -540,19 +594,19 @@ const handleCreateUser = async () => {
       throw new Error(error?.message || data?.error)
     }
 
-    toast.success("新用户创建成功！")
+    toast.success("New user created successfully!")
     newUserEmail.value = ''
     newUserPassword.value = ''
     fetchUsers()
   } catch (err) {
-    toast.error("创建用户失败: " + err.message)
+    toast.error("Failed to create user: " + err.message)
   } finally {
     creatingUser.value = false
   }
 }
 
 const handleDeleteUser = async (userId, email) => {
-  if (!confirm(`⚠️ 确定要删除管理员账号 ${email} 吗？`)) return
+  if (!confirm(`⚠️ Are you sure you want to delete admin account ${email}?`)) return
 
   try {
     const { data, error } = await supabase.functions.invoke('create-user', {
@@ -566,10 +620,10 @@ const handleDeleteUser = async (userId, email) => {
       throw new Error(error?.message || data?.error)
     }
 
-    toast.success("用户已成功删除")
+    toast.success("User deleted successfully")
     fetchUsers()
   } catch (err) {
-    toast.error("删除用户失败: " + err.message)
+    toast.error("Failed to delete user: " + err.message)
   }
 }
 
@@ -606,6 +660,49 @@ const finishProgress = async (successMsg = 'IMPORT SUCCESSFUL') => {
 const classList = ref([])
 const newClassGrade = ref(1)
 const newClassName = ref('')
+const newClassSession = ref('morning') // ☀️ Session state
+
+// ✏️ Class editing state
+const editingClassId = ref(null)
+const editForm = ref({ grade: 1, class_name: '', session: 'morning' })
+
+const startEditClass = (c) => {
+  editingClassId.value = c.id
+  editForm.value = {
+    grade: c.grade || 1,
+    class_name: c.class_name || '',
+    session: c.session || 'morning'
+  }
+}
+
+const cancelEditClass = () => {
+  editingClassId.value = null
+}
+
+const saveEditClass = async (id) => {
+  if (!editForm.value.class_name.trim()) {
+    return toast.error("CLASS NAME CANNOT BE EMPTY!")
+  }
+
+  try {
+    const { error } = await supabase
+      .from('classes')
+      .update({
+        grade: editForm.value.grade,
+        class_name: editForm.value.class_name.trim().toUpperCase(),
+        session: editForm.value.session
+      })
+      .eq('id', id)
+
+    if (error) throw error
+
+    toast.success("CLASS UPDATED SUCCESSFULLY!")
+    editingClassId.value = null
+    fetchClasses()
+  } catch (err) {
+    toast.error("UPDATE FAILED: " + err.message)
+  }
+}
 
 const expandedGrades = ref({ 1: true, 2: true, 3: true, 4: true, 5: true, 6: true })
 const allExpanded = computed(() => Object.values(expandedGrades.value).every(v => v))
@@ -687,7 +784,8 @@ const addClass = async () => {
   try {
     const { error } = await supabase.from('classes').insert({
       grade: newClassGrade.value,
-      class_name: newClassName.value.trim().toUpperCase()
+      class_name: newClassName.value.trim().toUpperCase(),
+      session: newClassSession.value
     })
 
     if (error) throw error
