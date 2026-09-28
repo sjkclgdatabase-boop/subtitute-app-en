@@ -445,21 +445,22 @@ const clearAllClasses = () => {
   classForm.value.selectedClasses = []
 }
 
-// ☀️ Select all morning classes (精准匹配具体班级的 session)
+// ☀️ Select all morning classes (精准匹配 Supabase 中的 'pagi')
 const selectAllMorningClasses = () => {
   const classesToSelect = []
   Object.values(groupedClasses.value).forEach(classes => {
     classes.forEach(cName => {
-      if (classSessionMap.value[cName] === 'morning') {
+      const session = classSessionMap.value[cName]
+      if (session === 'pagi' || !session) {
         classesToSelect.push(cName)
       }
     })
   })
   classForm.value.selectedClasses = [...new Set([...classForm.value.selectedClasses, ...classesToSelect])]
-  toast.success("Successfully selected all morning session classes!")
+  toast.success(`Successfully selected all morning classes (${classesToSelect.length} classes)!`)
 }
 
-// 🌙 Select all afternoon classes (精准匹配具体班级的 session)
+// 🌙 Select all afternoon classes (精准匹配 Supabase 中的 'petang')
 const selectAllAfternoonClasses = () => {
   const classesToSelect = []
   Object.values(groupedClasses.value).forEach(classes => {
@@ -469,8 +470,12 @@ const selectAllAfternoonClasses = () => {
       }
     })
   })
+  if (classesToSelect.length === 0) {
+    toast.error("No afternoon session classes (petang) found in the system!")
+    return
+  }
   classForm.value.selectedClasses = [...new Set([...classForm.value.selectedClasses, ...classesToSelect])]
-  toast.success("Successfully selected all afternoon session classes!")
+  toast.success(`Successfully selected all afternoon classes (${classesToSelect.length} classes)!`)
 }
 
 const fetchClasses = async () => {
