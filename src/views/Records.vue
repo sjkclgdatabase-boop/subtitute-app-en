@@ -1,5 +1,5 @@
 <template>
-  <!-- 保持 min-w-[1024px] 确保表格不会无限变宽 -->
+  <!-- Keep min-w-[1024px] to ensure the table does not stretch infinitely -->
   <div class="p-4 sm:p-8 mx-auto min-h-screen space-y-8 min-w-[1024px] print:p-0 print:min-w-0 print:w-auto print:m-0 print:space-y-0">
     
     <!-- Screen Action Bar (Automatically hidden during printing) -->
@@ -202,7 +202,7 @@
               </tr>
 
               <tr>
-                <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.8px] tracking-tighter whitespace-nowrap">
+                <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.2px] tracking-tighter whitespace-nowrap">
                   SIGNATURE
                 </td>
 
@@ -316,6 +316,57 @@
             </template>
           </tbody>
         </table>
+      </div>
+
+      <!-- ⭐️ Dynamic side-by-side Remarks section (UI) -->
+      <div v-if="remarksList.length > 0 && remarksList.some(r => r.trim())" class="mt-4 pt-3 border-t border-dashed border-slate-300">
+        <h4 class="text-xs font-bold text-black font-serif uppercase underline mb-2">REMARKS:</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <template v-for="(rmk, rIdx) in remarksList" :key="rIdx">
+            <div v-if="rmk.trim()" class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs font-serif leading-relaxed">
+              <span class="font-bold text-indigo-900 block mb-1">Remark {{ rIdx + 1 }}:</span>
+              <div class="whitespace-pre-wrap text-slate-700">{{ rmk }}</div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⭐️ Dynamic Multi-Textbox Remarks Management Area -->
+    <div class="print:hidden bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 space-y-4">
+      <div class="flex items-center justify-between">
+        <label class="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2">
+          <span>📝 DYNAMIC REMARKS BOXES (SUPPORTS PRINTING & PDF EXPORT)</span>
+        </label>
+        <button
+          @click="addRemarkBox"
+          class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+        >
+          <span>+ Add Remark Box</span>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div v-for="(rmk, index) in remarksList" :key="index" class="flex items-start gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+          <span class="text-xs font-bold text-indigo-900 whitespace-nowrap pt-2">Remark {{ index + 1 }}:</span>
+          <textarea
+            v-model="remarksList[index]"
+            @input="syncRemarksToGlobal"
+            @blur="saveCustomSheetsToCloud"
+            rows="2"
+            placeholder="Enter remark content (supports line breaks/Enter)..."
+            class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-y"
+          ></textarea>
+          <button
+            @click="removeRemarkBox(index)"
+            class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-2 bg-white hover:bg-red-50 border border-red-200 rounded-xl cursor-pointer transition whitespace-nowrap shadow-2xs mt-1"
+          >
+            Delete
+          </button>
+        </div>
+        <div v-if="remarksList.length === 0" class="text-center py-4 text-xs text-slate-400 font-medium">
+          Click "+ Add Remark Box" button above to add your first remark box.
+        </div>
       </div>
     </div>
 
@@ -1084,6 +1135,34 @@ const classPickerTarget = ref({
 })
 const selectedClassToFill = ref('')
 
+// ⭐️ 动态多备注数组状态
+const remarksList = ref([''])
+
+// 同步数组到全局存储字符串（以换行符分隔存储）
+const syncRemarksToGlobal = () => {
+  globalPageRemark.value = remarksList.value.join('\n')
+}
+
+// 增加一个备注输入框
+const addRemarkBox = () => {
+  remarksList.value.push('')
+  syncRemarksToGlobal()
+  saveCustomSheetsToCloud()
+}
+
+// 删除指定备注输入框
+const removeRemarkBox = (index) => {
+  remarksList.value.splice(index, 1)
+  if (remarksList.value.length === 0) {
+    remarksList.value = ['']
+  }
+  syncRemarksToGlobal()
+  saveCustomSheetsToCloud()
+}
+
+// 全局页面备注底层变量
+const globalPageRemark = ref('')
+
 // =====================================================
 // School Identity
 // =====================================================
@@ -1231,6 +1310,8 @@ const sessionCustomSheets = ref({
 const fetchManualDrafts = async () => {
   manualEntries.value = {}
   sessionCustomSheets.value[currentSession.value] = []
+  globalPageRemark.value = ''
+  remarksList.value = ['']
 
   try {
     const { data, error } = await supabase
@@ -1247,6 +1328,11 @@ const fetchManualDrafts = async () => {
         sessionCustomSheets.value[currentSession.value] =
           data.draft_data.__custom_sheets__
       }
+      if (data.draft_data.__global_remark__) {
+        globalPageRemark.value = data.draft_data.__global_remark__
+        const parsed = globalPageRemark.value.split(/\r?\n/).map(s => s.trim())
+        remarksList.value = parsed.length > 0 ? parsed : ['']
+      }
     }
   } catch (err) {
     console.error('Failed to load manual drafts:', err)
@@ -1254,8 +1340,10 @@ const fetchManualDrafts = async () => {
 }
 
 const saveCustomSheetsToCloud = async () => {
+  syncRemarksToGlobal()
   manualEntries.value['__custom_sheets__'] =
     sessionCustomSheets.value[currentSession.value]
+  manualEntries.value['__global_remark__'] = globalPageRemark.value
 
   try {
     await supabase
@@ -2845,7 +2933,7 @@ const handleExportPdf = async () => {
           rowH,
           'SUBSTITUTE',
           {
-            fontSize: 5.2, // ⭐️ 完美适配 PDF 导出时的 SUBSTITUTE 字号
+            fontSize: 5.2,
             bold: true
           }
         )
@@ -2896,7 +2984,7 @@ const handleExportPdf = async () => {
           rowH,
           'SIGNATURE',
           {
-            fontSize: 5.2, // ⭐️ 完美适配 PDF 导出时的 SIGNATURE 字号
+            fontSize: 5.2,
             bold: true
           }
         )
@@ -2935,6 +3023,46 @@ const handleExportPdf = async () => {
         )
 
         y += rowH * 3
+      }
+
+      // ⭐️ PDF 端自动将多备注数按列横向并排渲染
+      const remarksListPdf = remarksList.value.map(s => s.trim()).filter(Boolean)
+
+      if (remarksListPdf.length > 0) {
+        y += 4
+        doc.setFont('Georgia', 'bold')
+        doc.setFontSize(8)
+        doc.setTextColor(...BLACK)
+        doc.text('REMARKS:', M, y)
+        
+        y += 4
+        const colCount = Math.min(remarksListPdf.length, 3) // 最多3列横排
+        const colWidth = (CONTENT_W - (colCount - 1) * 4) / colCount
+        
+        let startX = M
+        let maxBlockH = 0
+        
+        remarksListPdf.forEach((rmkText, rIdx) => {
+          const colIndex = rIdx % colCount
+          if (colIndex === 0 && rIdx > 0) {
+            y += maxBlockH + 3
+            startX = M
+          }
+          
+          doc.setFont('Georgia', 'bold')
+          doc.setFontSize(7)
+          doc.text(`Remark ${rIdx + 1}:`, startX, y)
+          
+          doc.setFont('Georgia', 'normal')
+          doc.setFontSize(6.5)
+          const splitText = doc.splitTextToSize(rmkText, colWidth)
+          doc.text(splitText, startX, y + 3.5)
+          
+          const blockH = 3.5 + splitText.length * 3
+          if (blockH > maxBlockH) maxBlockH = blockH
+          
+          startX += colWidth + 4
+        })
       }
     }
 
