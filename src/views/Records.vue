@@ -285,7 +285,7 @@
                       contenteditable="true"
                       @blur="saveManualEntry(`page_${pageIndex}_${slotIndex}`, 'ganti', p, $event)"
                       v-text="getManualEntry(`page_${pageIndex}_${slotIndex}`, 'ganti', p)"
-                      class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-bold text-indigo-900 text-[10px] whitespace-pre-wrap leading-tight flex items-center justify-center text-center"
+                      class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-bold text-[10px] text-indigo-900 whitespace-pre-wrap leading-tight flex items-center justify-center text-center"
                     ></div>
 
                     <button
@@ -324,7 +324,6 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <template v-for="(rmk, rIdx) in remarksList" :key="rIdx">
             <div v-if="rmk.trim()" class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs font-serif leading-relaxed">
-              <span class="font-bold text-indigo-900 block mb-1">Remark {{ rIdx + 1 }}:</span>
               <div class="whitespace-pre-wrap text-slate-700">{{ rmk }}</div>
             </div>
           </template>
@@ -336,25 +335,23 @@
     <div class="print:hidden bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 space-y-4">
       <div class="flex items-center justify-between">
         <label class="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2">
-          <span>📝 DYNAMIC REMARKS BOXES (SUPPORTS PRINTING & PDF EXPORT)</span>
+          <span>📝 REMARKS MANAGEMENT </span>
         </label>
         <button
           @click="addRemarkBox"
           class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
         >
-          <span>+ Add Remark Box</span>
+          <span>+ ADD REMARK BOX</span>
         </button>
       </div>
 
       <div class="space-y-3">
         <div v-for="(rmk, index) in remarksList" :key="index" class="flex items-start gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
-          <span class="text-xs font-bold text-indigo-900 whitespace-nowrap pt-2">Remark {{ index + 1 }}:</span>
           <textarea
             v-model="remarksList[index]"
             @input="syncRemarksToGlobal"
             @blur="saveCustomSheetsToCloud"
-            rows="2"
-            placeholder="Enter remark content (supports line breaks/Enter)..."
+            rows="3"placeholder="ENTER REMARKS HERE..."
             class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-y"
           ></textarea>
           <button
@@ -3025,8 +3022,8 @@ const handleExportPdf = async () => {
         y += rowH * 3
       }
 
-      // ⭐️ PDF 端自动将多备注数按列横向并排渲染
-      const remarksListPdf = remarksList.value.map(s => s.trim()).filter(Boolean)
+      // ⭐️ PDF End: Render Remarks horizontally side by side (No index)
+      const remarksListPdf = remarksList.value.map(s => s.replace(/\t/g, '    ').trim()).filter(Boolean)
 
       if (remarksListPdf.length > 0) {
         y += 4
@@ -3036,29 +3033,40 @@ const handleExportPdf = async () => {
         doc.text('REMARKS:', M, y)
         
         y += 4
-        const colCount = Math.min(remarksListPdf.length, 3) // 最多3列横排
+        const colCount = Math.min(remarksListPdf.length, 3) // Max 3 columns per row
         const colWidth = (CONTENT_W - (colCount - 1) * 4) / colCount
         
         let startX = M
         let maxBlockH = 0
+        let currentY = y
+
+        doc.setFont('Georgia', 'normal')
+        doc.setFontSize(6.5)
+        const lineHeight = 3.2 // mm
         
         remarksListPdf.forEach((rmkText, rIdx) => {
           const colIndex = rIdx % colCount
           if (colIndex === 0 && rIdx > 0) {
-            y += maxBlockH + 3
+            currentY += maxBlockH + 3
             startX = M
+            maxBlockH = 0
           }
           
-          doc.setFont('Georgia', 'bold')
-          doc.setFontSize(7)
-          doc.text(`Remark ${rIdx + 1}:`, startX, y)
+          // Split by newline to preserve manual line breaks
+          const rawLines = rmkText.split(/\r?\n/)
+          let printLines = []
+          rawLines.forEach(line => {
+            const wrapped = doc.splitTextToSize(line, colWidth)
+            printLines.push(...wrapped)
+          })
           
-          doc.setFont('Georgia', 'normal')
-          doc.setFontSize(6.5)
-          const splitText = doc.splitTextToSize(rmkText, colWidth)
-          doc.text(splitText, startX, y + 3.5)
+          let lineY = currentY
+          printLines.forEach(line => {
+            doc.text(line, startX, lineY)
+            lineY += lineHeight
+          })
           
-          const blockH = 3.5 + splitText.length * 3
+          const blockH = printLines.length * lineHeight
           if (blockH > maxBlockH) maxBlockH = blockH
           
           startX += colWidth + 4
